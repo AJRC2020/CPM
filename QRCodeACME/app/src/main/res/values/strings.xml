@@ -1,0 +1,9 @@
+<resources>
+  <string name="app_name">ACME Code Gen</string>
+  <string name="price_hint">Enter the price</string>
+  <string name="price_tag">Price:</string>
+  <string name="product_hint">Enter the product name</string>
+  <string name="product_tag">Product:</string>
+  <string name="title_create">Create a Product QR Code</string>
+  <string name="bt_qr">Generate QR</string>
+</resources>
