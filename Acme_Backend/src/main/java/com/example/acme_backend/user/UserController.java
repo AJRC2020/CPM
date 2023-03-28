@@ -7,8 +7,13 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.util.List;
+import java.util.*;
 import com.example.acme_backend.bodies.*;
+import com.example.acme_backend.item.AppItem;
+import com.example.acme_backend.product.AppProduct;
+import com.example.acme_backend.purchase.AppPurchase;
+import com.example.acme_backend.voucher.AppVoucher;
+
 import java.io.*;
 
 @RestController
@@ -45,4 +50,43 @@ public class UserController {
         return new ReturnNewUser(uuid, send_key);
     }
 
+    @PostMapping("/vouchers")
+    public List<ReturnVoucher> getVouchersUser(@RequestBody SignedId sign) {
+        AppUser user = userService.getByUuid(sign.uuid);
+
+        Iterator<AppVoucher> vouchers = user.getVoucher().iterator();
+        List<ReturnVoucher> retVouchers = new ArrayList<ReturnVoucher>();
+
+        while (vouchers.hasNext()) {
+            AppVoucher voucher = vouchers.next();
+            retVouchers.add(new ReturnVoucher(voucher.getEmitted(), voucher.getUsed(), voucher.getDate(), user.getUsername()));
+        }
+
+        return retVouchers;
+    }
+
+    @PostMapping("/purchases")
+    public List<ReturnPurchase> getPurchasesUser(@RequestBody SignedId sign) {
+        AppUser user = userService.getByUuid(sign.uuid);
+
+        Iterator<AppPurchase> purchases = user.getPurchases().iterator();
+        List<ReturnPurchase> retPurchases = new ArrayList<ReturnPurchase>();
+
+        while (purchases.hasNext()) {
+            AppPurchase purchase = purchases.next();
+            Iterator<AppItem> items = purchase.getItems().iterator();
+
+            List<ProductAndQuantity> itemsList = new ArrayList<ProductAndQuantity>();
+
+            while(items.hasNext()) {
+                AppItem item = items.next();
+                AppProduct product = item.getProduct();
+                itemsList.add(new ProductAndQuantity(product.getName(), item.getQuantity()));
+            }
+
+            retPurchases.add(new ReturnPurchase(purchase.getDate(), purchase.getVoucher(), purchase.getPrice(), itemsList));
+        }
+
+        return retPurchases;
+    }
 }

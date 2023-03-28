@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.example.acme_backend.bodies.NewPurchase;
 import com.example.acme_backend.bodies.ProductAndQuantity;
+import com.example.acme_backend.bodies.ReturnPurchase;
 import com.example.acme_backend.item.ItemService;
 import com.example.acme_backend.product.AppProduct;
 import com.example.acme_backend.product.ProductService;
@@ -41,7 +42,7 @@ public class PurchaseController {
     }
 
     @PostMapping("/new")
-    public AppPurchase createPurchase(@RequestBody NewPurchase content) {
+    public ReturnPurchase createPurchase(@RequestBody NewPurchase content) throws Exception {
         Float total = 0.0f;
         AppUser user = userService.getByUuid(content.user_id);
 
@@ -52,6 +53,7 @@ public class PurchaseController {
             total += product.getPrice() * products.quantity;
 
             itemService.createItem(products.quantity, product, purchase);
+            products.product = product.getName();
         }   
 
         if (content.discount) {
@@ -72,8 +74,11 @@ public class PurchaseController {
         LocalDate date = LocalDate.now();
 
         AppPurchase updated_purchase = purchaseService.updatePurchase(total, Date.valueOf(date), content.discount, user, purchase.getId());
-
-        Integer count = (int)(total / 100);
+        
+        
+        Integer previous = (int)(user.getTotal() / 100);
+        Integer next = (int)((total + user.getTotal()) / 100);
+        Integer count = next - previous;
 
         for (int i = 0; i < count; i++) {
             voucherService.createVoucher(user);
@@ -81,6 +86,6 @@ public class PurchaseController {
 
         userService.updateTotal(content.user_id, total);
 
-        return updated_purchase;
+        return new ReturnPurchase(updated_purchase.getDate(), updated_purchase.getVoucher(), updated_purchase.getPrice(), content.products);
     }
 }
