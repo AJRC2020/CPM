@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".RegisterActivity">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="60sp"
+        android:background="#AFD0F7">
+
+        <ImageButton
+            android:id="@+id/registerBackButton"
+            android:layout_width="60sp"
+            android:layout_height="60sp"
+            android:background="@android:color/transparent"
+            android:contentDescription="Back"
+            app:srcCompat="@drawable/back_arrow" />
+
+        <ImageView
+            android:id="@+id/registerLogoImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:contentDescription="Acme Logo"
+            android:padding="10sp"
+            app:srcCompat="@drawable/logo" />
+
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/registerTitleText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Register"
+        android:textAlignment="center"
+        android:fontFamily="@font/imprima_regular"
+        android:textSize="50sp"
+        android:textColor="#344870"/>
+
+    <TextView
+        android:id="@+id/registerDescriptionText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Insert your information to be able to use the app."
+        android:textAlignment="center"
+        android:fontFamily="@font/imprima_regular"
+        android:textSize="25sp"
+        android:textColor="#000"
+        android:paddingHorizontal="30sp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="40sp"
+        android:paddingTop="30sp">
+
+        <TextView
+            android:id="@+id/registerNameFieldTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Name:"
+            android:textColor="#000"
+            android:textSize="20sp"
+            android:fontFamily="@font/imprima_regular" />
+
+        <EditText
+            android:id="@+id/registerNameFieldInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="#ddd"
+            android:ems="10"
+            android:fontFamily="@font/Imprima_Regularr"
+            android:inputType="textPersonName"
+            android:textSize="40sp"
+            tools:ignore="SpeakableTextPresentCheck" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="40sp"
+        android:paddingTop="10sp">
+
+        <TextView
+            android:id="@+id/registerNicknameFieldTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Nickname:"
+            android:textColor="#000"
+            android:textSize="20sp"
+            android:fontFamily="@font/imprima_regular" />
+
+        <EditText
+            android:id="@+id/registerNicknameFieldInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="#ddd"
+            android:ems="10"
+            android:fontFamily="@font/imprima_regular"
+            android:inputType="textPersonName"
+            android:textSize="40sp"
+            tools:ignore="SpeakableTextPresentCheck" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="40sp"
+        android:paddingTop="10sp">
+
+        <TextView
+            android:id="@+id/registerPasswordFieldTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Password:"
+            android:textColor="#000"
+            android:textSize="20sp"
+            android:fontFamily="@font/imprima_regular" />
+
+        <EditText
+            android:id="@+id/registerPasswordFieldInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="#ddd"
+            android:ems="10"
+            android:fontFamily="@font/imprima_regular"
+            android:inputType="textPassword"
+            android:textSize="40sp"
+            tools:ignore="SpeakableTextPresentCheck" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="40sp"
+        android:paddingTop="10sp">
+
+        <TextView
+            android:id="@+id/registerPaymentMethodFieldTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Payment Method:"
+            android:textColor="#000"
+            android:textSize="20sp"
+            android:fontFamily="@font/imprima_regular" />
+
+        <EditText
+            android:id="@+id/registerPaymentMethodFieldInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="#ddd"
+            android:ems="10"
+            android:fontFamily="@font/imprima_regular"
+            android:inputType="textPersonName"
+            android:textSize="40sp"
+            tools:ignore="SpeakableTextPresentCheck" />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="200sp"
+        android:layout_height="60sp"
+        android:text="Register"
+        android:textAllCaps="false"
+        android:layout_gravity="center"
+        android:fontFamily="@font/imprima_regular"
+        android:layout_marginTop="40sp"
+        android:textSize="26sp"
+        android:backgroundTint="#558FFF"/>
+</LinearLayout>
