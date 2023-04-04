@@ -12,8 +12,12 @@ import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
 import com.google.zxing.MultiFormatWriter
 import com.google.zxing.common.BitMatrix
+import java.io.File
 import java.math.BigInteger
+import java.nio.charset.Charset
+import java.nio.file.Files
 import java.security.*
+import java.security.spec.PKCS8EncodedKeySpec
 import java.util.*
 import javax.crypto.Cipher
 import javax.security.auth.x500.X500Principal
@@ -40,25 +44,36 @@ class ShowCodeActivity : AppCompatActivity() {
     }
   }
 
+
+
+  private fun getPrivate(filename: String): PrivateKey? {
+    try{
+      val file = assets.open("keys/$filename")
+      val keyBytes = file.readBytes()
+      val spec = PKCS8EncodedKeySpec(keyBytes)
+      val kf = KeyFactory.getInstance("RSA")
+      return kf.generatePrivate(spec)
+    }
+    catch (e: Exception) {
+      Log.d("error", e.message.toString());
+      throw e;
+    }
+  }
+
   private fun encryptContent(content : String) : ByteArray {
     if (content.isEmpty()) return ByteArray(0)
-    Log.d("length", content.length.toString())
-    try {
-      val entry = KeyStore.getInstance(Constants.ANDROID_KEYSTORE).run {
-        load(null)
-        getEntry(Constants.keyname, null)
-      }
-      val prKey = (entry as KeyStore.PrivateKeyEntry).privateKey
+    return try {
+      val prKey = getPrivate("privatekey.pem")
       val result = Cipher.getInstance(Constants.ENC_ALGO).run {
         init(Cipher.ENCRYPT_MODE, prKey)
         doFinal(content.encodeToByteArray())
       }
-      // display encrypted result
-      return result;
+      Log.d("encrypted",result.toString())
+      result
     }
     catch (e: Exception) {
       Log.d("error", e.toString())
-      return ByteArray(0);
+      ByteArray(0);
     }
   }
 
@@ -89,6 +104,7 @@ class ShowCodeActivity : AppCompatActivity() {
 
   private fun generateAndStoreKeys(): Boolean {
     try {
+
       if (!generated){
         val spec = KeyPairGeneratorSpec.Builder(this)
           .setKeySize(Constants.KEY_SIZE)
@@ -98,12 +114,14 @@ class ShowCodeActivity : AppCompatActivity() {
           .setStartDate(GregorianCalendar().time)
           .setEndDate(GregorianCalendar().apply { add(Calendar.YEAR, 10) }.time)
           .build()
+
         KeyPairGenerator.getInstance(Constants.KEY_ALGO, Constants.ANDROID_KEYSTORE).run {
           initialize(spec)
           generateKeyPair()
         }
       }
     }
+
     catch (ex: Exception) {
       Log.d("error", ex.toString())
       return false
