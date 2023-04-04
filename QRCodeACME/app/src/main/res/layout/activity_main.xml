@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/teal_100"
+    android:orientation="vertical"
+    android:paddingHorizontal="10dp"
+    tools:context=".MainActivity">
+
+  <TextView
+      android:id="@+id/titleCreate"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="40dp"
+      android:text="@string/title_create"
+      android:textAlignment="center"
+      android:textSize="48sp" />
+
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="10dp"
+      android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/priceText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10sp"
+        android:text="@string/price_tag"
+        android:textSize="24sp" />
+
+    <EditText
+        android:id="@+id/priceInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/price_hint"
+        android:inputType="textPersonName"
+        android:minWidth="48dp"
+        android:minHeight="48dp" />
+
+  </LinearLayout>
+
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="10dp"
+      android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/productText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10sp"
+        android:text="@string/product_tag"
+        android:textSize="24sp" />
+
+    <EditText
+        android:id="@+id/productInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/product_hint"
+        android:inputType="textPersonName"
+        android:minWidth="48dp"
+        android:minHeight="48dp" />
+
+  </LinearLayout>
+
+  <Button
+      android:id="@+id/bt_qr"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:text="@string/bt_qr" />
+
+</LinearLayout>
