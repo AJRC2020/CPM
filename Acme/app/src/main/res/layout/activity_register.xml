@@ -17,7 +17,7 @@
             android:layout_width="60sp"
             android:layout_height="60sp"
             android:background="@android:color/transparent"
-            android:contentDescription="Back"
+            android:contentDescription="@string/back"
             app:srcCompat="@drawable/back_arrow" />
 
         <ImageView
@@ -25,7 +25,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:contentDescription="Acme Logo"
+            android:contentDescription="@string/logo_alt"
             android:padding="10sp"
             app:srcCompat="@drawable/logo" />
 
@@ -35,22 +35,22 @@
         android:id="@+id/registerTitleText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Register"
-        android:textAlignment="center"
         android:fontFamily="@font/imprima_regular"
-        android:textSize="50sp"
-        android:textColor="#344870"/>
+        android:text="@string/register"
+        android:textAlignment="center"
+        android:textColor="#344870"
+        android:textSize="50sp" />
 
     <TextView
         android:id="@+id/registerDescriptionText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Insert your information to be able to use the app."
-        android:textAlignment="center"
         android:fontFamily="@font/imprima_regular"
-        android:textSize="25sp"
+        android:paddingHorizontal="30sp"
+        android:text="@string/register_instructions"
+        android:textAlignment="center"
         android:textColor="#000"
-        android:paddingHorizontal="30sp"/>
+        android:textSize="25sp" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -64,21 +64,26 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Name:"
+            android:fontFamily="@font/imprima_regular"
+            android:text="@string/name_label"
             android:textColor="#000"
-            android:textSize="20sp"
-            android:fontFamily="@font/imprima_regular" />
+            android:textSize="20sp" />
 
         <EditText
             android:id="@+id/registerNameFieldInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:autofillHints="name"
             android:background="#ddd"
             android:ems="10"
-            android:fontFamily="@font/Imprima_Regularr"
+            android:fontFamily="@font/imprima_regular"
             android:inputType="textPersonName"
-            android:textSize="40sp"
+            android:hint="@string/name_label_hint"
+            android:labelFor="@id/registerNameFieldTitle"
+            android:minHeight="50sp"
+            android:padding="10dp"
+            android:textSize="20sp"
             tools:ignore="SpeakableTextPresentCheck" />
 
     </LinearLayout>
@@ -95,21 +100,26 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Nickname:"
+            android:fontFamily="@font/imprima_regular"
+            android:text="@string/nickname_label"
             android:textColor="#000"
-            android:textSize="20sp"
-            android:fontFamily="@font/imprima_regular" />
+            android:textSize="20sp" />
 
         <EditText
             android:id="@+id/registerNicknameFieldInput"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
+            android:autofillHints="username"
             android:background="#ddd"
             android:ems="10"
             android:fontFamily="@font/imprima_regular"
             android:inputType="textPersonName"
-            android:textSize="40sp"
+            android:hint="@string/nickname_label_hint"
+            android:labelFor="@id/registerNicknameFieldTitle"
+            android:minHeight="50sp"
+            android:padding="10dp"
+            android:textSize="20sp"
             tools:ignore="SpeakableTextPresentCheck" />
 
     </LinearLayout>
@@ -126,10 +136,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Password:"
+            android:fontFamily="@font/imprima_regular"
+            android:text="@string/password_label"
             android:textColor="#000"
-            android:textSize="20sp"
-            android:fontFamily="@font/imprima_regular" />
+            android:textSize="20sp" />
 
         <EditText
             android:id="@+id/registerPasswordFieldInput"
@@ -140,7 +150,12 @@
             android:ems="10"
             android:fontFamily="@font/imprima_regular"
             android:inputType="textPassword"
-            android:textSize="40sp"
+            android:hint="@string/password_label_hint"
+            android:labelFor="@id/registerPasswordFieldTitle"
+            android:minHeight="50sp"
+            android:padding="10dp"
+            android:textSize="20sp"
+            android:autofillHints="none"
             tools:ignore="SpeakableTextPresentCheck" />
 
     </LinearLayout>
@@ -157,10 +172,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Payment Method:"
+            android:fontFamily="@font/imprima_regular"
+            android:text="@string/payment_method_label"
             android:textColor="#000"
-            android:textSize="20sp"
-            android:fontFamily="@font/imprima_regular" />
+            android:textSize="20sp" />
 
         <EditText
             android:id="@+id/registerPaymentMethodFieldInput"
@@ -171,7 +186,12 @@
             android:ems="10"
             android:fontFamily="@font/imprima_regular"
             android:inputType="textPersonName"
-            android:textSize="40sp"
+            android:hint="@string/payment_method_label_hint"
+            android:labelFor="@id/registerPaymentMethodFieldTitle"
+            android:minHeight="50sp"
+            android:padding="10dp"
+            android:textSize="20sp"
+            android:autofillHints="creditCardNumber"
             tools:ignore="SpeakableTextPresentCheck" />
 
     </LinearLayout>
@@ -180,11 +200,12 @@
         android:id="@+id/button"
         android:layout_width="200sp"
         android:layout_height="60sp"
-        android:text="Register"
-        android:textAllCaps="false"
         android:layout_gravity="center"
-        android:fontFamily="@font/imprima_regular"
         android:layout_marginTop="40sp"
-        android:textSize="26sp"
-        android:backgroundTint="#558FFF"/>
+        android:backgroundTint="#558FFF"
+        android:contentDescription="@string/register_button_alt"
+        android:fontFamily="@font/imprima_regular"
+        android:text="@string/register"
+        android:textAllCaps="false"
+        android:textSize="26sp" />
 </LinearLayout>
