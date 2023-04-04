@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import com.example.acme_backend.bodies.NewPurchase;
 import com.example.acme_backend.bodies.ProductAndQuantity;
 import com.example.acme_backend.bodies.ReturnPurchase;
+import com.example.acme_backend.bodies.SignedNewPurchase;
 import com.example.acme_backend.item.ItemService;
 import com.example.acme_backend.product.AppProduct;
 import com.example.acme_backend.product.ProductService;
@@ -15,7 +16,13 @@ import com.example.acme_backend.voucher.VoucherService;
 
 import java.sql.Date;
 import java.time.LocalDate;
-import java.util.List;
+import java.util.*;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectOutputStream;
+import java.security.KeyFactory;
+import java.security.PublicKey;
+import java.security.Signature;
+import java.security.spec.X509EncodedKeySpec;
 
 @RestController
 @RequestMapping(path = "api/purchases")
@@ -42,9 +49,14 @@ public class PurchaseController {
     }
 
     @PostMapping("/new")
-    public ReturnPurchase createPurchase(@RequestBody NewPurchase content) throws Exception {
+    public ReturnPurchase createPurchase(@RequestBody SignedNewPurchase signedContent) throws Exception {
         Float total = 0.0f;
+        NewPurchase content = signedContent.purchase;
         AppUser user = userService.getByUuid(content.user_id);
+
+        if (!verifySignature(signedContent.signature, content, user.getPublic_key())){
+            return null;
+        }
 
         AppPurchase purchase = purchaseService.createPurchase();
         
@@ -87,5 +99,23 @@ public class PurchaseController {
         userService.updateTotal(content.user_id, total);
 
         return new ReturnPurchase(updated_purchase.getDate(), updated_purchase.getVoucher(), updated_purchase.getPrice(), content.products);
+    }
+
+    private boolean verifySignature(String signature, NewPurchase purchase, String public_key) throws Exception {
+        Signature sign = Signature.getInstance("SHA256withRSA");
+
+        KeyFactory kf = KeyFactory.getInstance("RSA");
+        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(Base64.getDecoder().decode(public_key));
+        PublicKey pubKey = kf.generatePublic(keySpec);
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(baos);
+        oos.writeObject(purchase);
+        oos.flush();
+
+        sign.initVerify(pubKey);
+        sign.update(baos.toByteArray());
+
+        return sign.verify(Base64.getDecoder().decode(signature));
     }
 }

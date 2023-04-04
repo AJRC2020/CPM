@@ -7,6 +7,10 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.security.KeyFactory;
+import java.security.PublicKey;
+import java.security.Signature;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.*;
 import com.example.acme_backend.bodies.*;
 import com.example.acme_backend.item.AppItem;
@@ -51,8 +55,12 @@ public class UserController {
     }
 
     @PostMapping("/vouchers")
-    public List<ReturnVoucher> getVouchersUser(@RequestBody SignedId sign) {
+    public List<ReturnVoucher> getVouchersUser(@RequestBody SignedId sign) throws Exception {
         AppUser user = userService.getByUuid(sign.uuid);
+
+        if (!verifySignature(sign.signature, sign.uuid, user.getPublic_key())){
+            return new ArrayList<>();
+        }
 
         Iterator<AppVoucher> vouchers = user.getVoucher().iterator();
         List<ReturnVoucher> retVouchers = new ArrayList<ReturnVoucher>();
@@ -66,8 +74,12 @@ public class UserController {
     }
 
     @PostMapping("/purchases")
-    public List<ReturnPurchase> getPurchasesUser(@RequestBody SignedId sign) {
+    public List<ReturnPurchase> getPurchasesUser(@RequestBody SignedId sign) throws Exception {
         AppUser user = userService.getByUuid(sign.uuid);
+
+        if (!verifySignature(sign.signature, sign.uuid, user.getPublic_key())){
+            return new ArrayList<>();
+        }
 
         Iterator<AppPurchase> purchases = user.getPurchases().iterator();
         List<ReturnPurchase> retPurchases = new ArrayList<ReturnPurchase>();
@@ -88,5 +100,18 @@ public class UserController {
         }
 
         return retPurchases;
+    }
+
+    private boolean verifySignature(String signature, String uuid, String public_key) throws Exception {
+        Signature sign = Signature.getInstance("SHA256withRSA");
+
+        KeyFactory kf = KeyFactory.getInstance("RSA");
+        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(Base64.getDecoder().decode(public_key));
+        PublicKey pubKey = kf.generatePublic(keySpec);
+
+        sign.initVerify(pubKey);
+        sign.update(uuid.getBytes());
+
+        return sign.verify(Base64.getDecoder().decode(signature));
     }
 }
