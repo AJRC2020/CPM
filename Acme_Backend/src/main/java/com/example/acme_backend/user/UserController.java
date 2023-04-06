@@ -40,7 +40,12 @@ public class UserController {
     @ResponseBody
     public ReturnNewUser newUser(@RequestBody NewUser user) throws Exception {
         // TODO: key format is incorrect TT
+        System.out.println(user.public_key);
+        byte[] decodedBytes = Base64.getDecoder().decode(user.public_key);
+        System.out.println(decodedBytes);
+
         String uuid = this.userService.newUser(user);
+
 
         File file = new File("src/main/resources/publickey.der");
 
@@ -49,9 +54,9 @@ public class UserController {
         }
 
         byte[] market_key = Files.readAllBytes(file.toPath());
-        System.out.println(market_key);
+        String encodeKey = Base64.getEncoder().encodeToString(market_key);
 
-        return new ReturnNewUser(uuid, market_key);
+        return new ReturnNewUser(uuid, encodeKey);
     }
 
     @PostMapping("/vouchers")

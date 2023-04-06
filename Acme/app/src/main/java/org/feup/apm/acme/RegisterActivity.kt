@@ -1,16 +1,21 @@
 package org.feup.apm.acme
 
+import android.os.Build
 import android.os.Bundle
 import android.security.KeyPairGeneratorSpec
 import android.util.Log
 import android.view.View
 import android.widget.*
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
 import java.math.BigInteger
+import java.nio.charset.Charset
+import java.security.KeyFactory
 import java.security.KeyPairGenerator
 import java.security.KeyStore
 import java.security.PublicKey
+import java.security.spec.X509EncodedKeySpec
 import java.util.*
 import javax.security.auth.x500.X500Principal
 import kotlin.concurrent.thread
@@ -25,6 +30,7 @@ class RegisterActivity : AppCompatActivity() {
     private val passwordField by lazy { findViewById<EditText>(R.id.registerPasswordFieldInput)}
     private val paymentMethodField by lazy { findViewById<EditText>(R.id.registerPaymentMethodFieldInput)}
     private val progressBar by lazy {findViewById<ProgressBar>(R.id.progressBar)}
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
@@ -35,30 +41,39 @@ class RegisterActivity : AppCompatActivity() {
         }
 
         registerButton.setOnClickListener {
-            try{
-                Log.d("click","click")
-                if (nameField.text.toString().trim().isNotEmpty() &&
-                    usernameField.text.toString().trim().isNotEmpty() &&
-                    passwordField.text.toString().trim().isNotEmpty() &&
-                    paymentMethodField.text.toString().trim().isNotEmpty()){
-                    Log.d("click","filled")
-                    generateAndStoreKeys()
-                    val publicKey: PublicKey = getPublicKey()
-                    Log.d("pubkey",publicKey.toString())
-                    loading()
-                    register(this,
-                        nameField.text.toString() ,
-                        usernameField.text.toString(),
-                        passwordField.text.toString(),
-                        paymentMethodField.text.toString(),
-                        publicKey.encoded.toString()
+            register()
+        }
+    }
 
-                    )
-                }
+    // TODO: o Base64 encoder n existe na versão mais baixa de android q estamos a usar
+    // Alternativas: 1. Usar uma package ou 2. Subir a ver de android
+    // Melhor perguntar ao stor
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun register(){
+        try{
+            Log.d("click","click")
+            if (nameField.text.toString().trim().isNotEmpty() &&
+                usernameField.text.toString().trim().isNotEmpty() &&
+                passwordField.text.toString().trim().isNotEmpty() &&
+                paymentMethodField.text.toString().trim().isNotEmpty()){
+                Log.d("click","filled")
+                generateAndStoreKeys()
+                val publicKey: PublicKey = getPublicKey()
+                val encodedPk = publicKey.encoded
+                val base64Pk = Base64.getEncoder().encodeToString(encodedPk)
+
+                loading()
+                register(this,
+                    nameField.text.toString() ,
+                    usernameField.text.toString(),
+                    passwordField.text.toString(),
+                    paymentMethodField.text.toString(),
+                    base64Pk
+                )
             }
-            catch (ex: Exception){
-                Log.d("error",ex.toString())
-            }
+        }
+        catch (ex: Exception){
+            Log.d("error",ex.toString())
         }
     }
 
