@@ -77,14 +77,16 @@
             android:autofillHints="name"
             android:background="#ddd"
             android:ems="10"
+            android:enabled="true"
             android:fontFamily="@font/imprima_regular"
-            android:inputType="textPersonName"
             android:hint="@string/name_label_hint"
+            android:inputType="textPersonName"
             android:labelFor="@id/registerNameFieldTitle"
             android:minHeight="50sp"
             android:padding="10dp"
             android:textSize="20sp"
-            tools:ignore="SpeakableTextPresentCheck" />
+            tools:ignore="SpeakableTextPresentCheck"
+            tools:inputType="textLongMessage" />
 
     </LinearLayout>
 
@@ -114,13 +116,31 @@
             android:background="#ddd"
             android:ems="10"
             android:fontFamily="@font/imprima_regular"
-            android:inputType="textPersonName"
             android:hint="@string/nickname_label_hint"
+            android:inputType="textPersonName"
             android:labelFor="@id/registerNicknameFieldTitle"
             android:minHeight="50sp"
             android:padding="10dp"
             android:textSize="20sp"
             tools:ignore="SpeakableTextPresentCheck" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/progressLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="40sp"
+        android:paddingTop="10sp"
+        android:visibility="visible">
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
 
     </LinearLayout>
 
@@ -182,28 +202,29 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:autofillHints="creditCardNumber"
             android:background="#ddd"
             android:ems="10"
             android:fontFamily="@font/imprima_regular"
-            android:inputType="textPersonName"
             android:hint="@string/payment_method_label_hint"
+            android:inputType="number"
             android:labelFor="@id/registerPaymentMethodFieldTitle"
             android:minHeight="50sp"
             android:padding="10dp"
             android:textSize="20sp"
-            android:autofillHints="creditCardNumber"
             tools:ignore="SpeakableTextPresentCheck" />
 
     </LinearLayout>
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/registerConfirmButton"
         android:layout_width="200sp"
         android:layout_height="60sp"
         android:layout_gravity="center"
         android:layout_marginTop="40sp"
         android:backgroundTint="#558FFF"
         android:contentDescription="@string/register_button_alt"
+        android:enabled="true"
         android:fontFamily="@font/imprima_regular"
         android:text="@string/register"
         android:textAllCaps="false"
