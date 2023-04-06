@@ -58,13 +58,17 @@ class RegisterActivity : AppCompatActivity() {
                 val encodedPk = publicKey.encoded
                 val base64Pk =  android.util.Base64.encodeToString(encodedPk, android.util.Base64.NO_WRAP)
                 loading()
-                register(this,
-                    nameField.text.toString() ,
-                    usernameField.text.toString(),
-                    passwordField.text.toString(),
-                    paymentMethodField.text.toString(),
-                    base64Pk
-                )
+                thread{
+                    register(this,
+                        nameField.text.toString() ,
+                        usernameField.text.toString(),
+                        passwordField.text.toString(),
+                        paymentMethodField.text.toString(),
+                        base64Pk
+                    )
+                    this.runOnUiThread { stopLoading() }
+                }
+
             }
         }
         catch (ex: Exception){
