@@ -25,13 +25,15 @@
                 android:layout_width="430sp"
                 android:layout_height="500sp"
                 android:layout_marginTop="-100sp"
+                android:contentDescription="@string/semi_circle_alt"
                 app:srcCompat="@drawable/group_18" />
 
             <ImageView
-                android:layout_marginTop="30sp"
                 android:id="@+id/imageView2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="30sp"
+                android:contentDescription="@string/logo_alt"
                 app:srcCompat="@drawable/logo" />
         </FrameLayout>
 
@@ -39,29 +41,29 @@
             android:id="@+id/homeWelcomeText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="30sp"
             android:fontFamily="@font/imprima_regular"
-            android:text="Welcome!"
+            android:text="@string/welcome"
             android:textColor="#344870"
-            android:textSize="70sp"
-            android:layout_marginBottom="30sp"/>
+            android:textSize="70sp" />
 
         <Button
             android:id="@+id/homeLoginButton"
             android:layout_width="250sp"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="10sp"
             android:fontFamily="@font/imprima_regular"
-            android:text="Log In"
+            android:text="@string/login"
             android:textAllCaps="false"
             android:textSize="30sp"
-            app:backgroundTint="#558FFF"
-            android:layout_marginBottom="10sp"/>
+            app:backgroundTint="#558FFF" />
 
         <Button
             android:id="@+id/homeRegisterButton"
             android:layout_width="250sp"
             android:layout_height="wrap_content"
             android:fontFamily="@font/imprima_regular"
-            android:text="Register"
+            android:text="@string/register"
             android:textAllCaps="false"
             android:textSize="30sp"
             app:backgroundTint="#558FFF" />

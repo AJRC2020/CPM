@@ -1,3 +1,19 @@
 <resources>
     <string name="app_name">Acme</string>
+    <string name="welcome">Welcome!</string>
+    <string name="logo_alt">Logo - The ACME Electronic Supermarket</string>
+    <string name="semi_circle_alt">Semi-circle decoration</string>
+    <string name="login">Log In</string>
+    <string name="register">Register</string>
+    <string name="register_button_alt">Submit Registration</string>
+    <string name="name_label">Name:</string>
+    <string name="nickname_label">Nickname:</string>
+    <string name="password_label">Password:</string>
+    <string name="payment_method_label">Credit Card number:</string>
+    <string name="name_label_hint">Insert your name</string>
+    <string name="nickname_label_hint">Insert your nickname</string>
+    <string name="password_label_hint">Insert your password</string>
+    <string name="payment_method_label_hint"> Insert your credit card number </string>
+    <string name="back">Back</string>
+    <string name="register_instructions">Insert your information to be able to use the app.</string>
 </resources>

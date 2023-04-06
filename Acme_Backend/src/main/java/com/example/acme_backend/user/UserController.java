@@ -39,19 +39,20 @@ public class UserController {
     @PostMapping("/new")
     @ResponseBody
     public ReturnNewUser newUser(@RequestBody NewUser user) throws Exception {
+
         String uuid = this.userService.newUser(user);
 
-        File file = new File("src/main/resources/publickey.pem");
+
+        File file = new File("src/main/resources/publickey.der");
 
         if (!file.exists()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
 
-        String market_key = new String(Files.readAllBytes(file.toPath()), Charset.defaultCharset());
+        byte[] market_key = Files.readAllBytes(file.toPath());
+        String encodeKey = Base64.getEncoder().encodeToString(market_key);
 
-        String send_key = market_key.replace("-----BEGIN PUBLIC KEY-----", "").replaceAll(System.lineSeparator(), "").replace("-----END PUBLIC KEY-----", "");
-
-        return new ReturnNewUser(uuid, send_key);
+        return new ReturnNewUser(uuid, encodeKey);
     }
 
     @PostMapping("/vouchers")
