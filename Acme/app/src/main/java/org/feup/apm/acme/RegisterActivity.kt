@@ -46,20 +46,14 @@ class RegisterActivity : AppCompatActivity() {
                     val publicKey: PublicKey = getPublicKey()
                     Log.d("pubkey",publicKey.toString())
                     loading()
-                    thread {
-                        register(this,
-                            nameField.text.toString() ,
-                            usernameField.text.toString(),
-                            passwordField.text.toString(),
-                            paymentMethodField.text.toString(),
-                            publicKey.encoded.toString()
+                    register(this,
+                        nameField.text.toString() ,
+                        usernameField.text.toString(),
+                        passwordField.text.toString(),
+                        paymentMethodField.text.toString(),
+                        publicKey.encoded.toString()
 
-                        )
-                    }
-                    //TODO: como é que eu paro o louding screen qnd o pedido acaba
-                    // n dá dentro pq só a thread principal e q pode alterar a view
-                    // n dá fora pq n há maneira de ver qnd a thread acabou
-                    // os handlers estão todos deprecated idk
+                    )
                 }
             }
             catch (ex: Exception){
@@ -86,7 +80,7 @@ class RegisterActivity : AppCompatActivity() {
 
     }
 
-    private fun stopLoading(){
+    fun stopLoading(){
         Log.d("stop","stop")
         progressBar.visibility = View.GONE
         registerButton.isEnabled = true
