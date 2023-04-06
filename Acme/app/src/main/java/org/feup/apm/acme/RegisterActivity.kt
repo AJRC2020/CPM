@@ -45,10 +45,6 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
-    // TODO: o Base64 encoder n existe na versão mais baixa de android q estamos a usar
-    // Alternativas: 1. Usar uma package ou 2. Subir a ver de android
-    // Melhor perguntar ao stor
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun register(){
         try{
             Log.d("click","click")
@@ -60,8 +56,7 @@ class RegisterActivity : AppCompatActivity() {
                 generateAndStoreKeys()
                 val publicKey: PublicKey = getPublicKey()
                 val encodedPk = publicKey.encoded
-                val base64Pk = Base64.getEncoder().encodeToString(encodedPk)
-
+                val base64Pk =  android.util.Base64.encodeToString(encodedPk, android.util.Base64.NO_WRAP)
                 loading()
                 register(this,
                     nameField.text.toString() ,

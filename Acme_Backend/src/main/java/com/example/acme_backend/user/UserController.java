@@ -39,10 +39,6 @@ public class UserController {
     @PostMapping("/new")
     @ResponseBody
     public ReturnNewUser newUser(@RequestBody NewUser user) throws Exception {
-        // TODO: key format is incorrect TT
-        System.out.println(user.public_key);
-        byte[] decodedBytes = Base64.getDecoder().decode(user.public_key);
-        System.out.println(decodedBytes);
 
         String uuid = this.userService.newUser(user);
 
