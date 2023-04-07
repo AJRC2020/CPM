@@ -4,8 +4,13 @@
     <string name="logo_alt">Logo - The ACME Electronic Supermarket</string>
     <string name="semi_circle_alt">Semi-circle decoration</string>
     <string name="login">Log In</string>
+    <string name="logout">Log Out</string>
+    <string name="checkout">Checkout</string>
     <string name="register">Register</string>
     <string name="register_button_alt">Submit Registration</string>
+    <string name="login_button_alt">Log in</string>
+    <string name="logout_button_alt">Log out</string>
+    <string name="checkout_button_alt">Checkout</string>
     <string name="name_label">Name:</string>
     <string name="nickname_label">Nickname:</string>
     <string name="password_label">Password:</string>
@@ -16,4 +21,21 @@
     <string name="payment_method_label_hint"> Insert your credit card number </string>
     <string name="back">Back</string>
     <string name="register_instructions">Insert your information to be able to use the app.</string>
+    <string name="login_instructions">Insert your information to log in.</string>
+    <string name="profile">Profile</string>
+    <string name="name_placeholder">John Doe</string>
+    <string name="nickname_placeholder">johndoe21</string>
+    <string name="change_password">Change Password</string>
+    <string name="change_payment">Change Payment Method</string>
+    <string name="profile_others">Others:</string>
+    <string name="profile_accumulated_discount">Accumulated Discount:</string>
+    <string name="profile_accumulated_discount_placeholder">000,00€</string>
+    <string name="profile_total_amount_spent">Total Amount Spent:</string>
+    <string name="profile_total_amount_spent_placeholder">000,00€</string>
+    <string name="shopping_cart">Shopping Cart</string>
+    <string name="shopping_cart_total_placeholder">Total: 78,34€</string>
+    <string name="vouchers">Vouchers</string>
+    <string name="vouchers_amount_until_next_voucher">Amount until next voucher:</string>
+    <string name="vouchers_amount_until_next_voucher_placeholder">999,99€</string>
+    <string name="receipts">Receipts</string>
 </resources>

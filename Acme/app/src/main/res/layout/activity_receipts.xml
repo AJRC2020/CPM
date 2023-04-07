@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".Vouchers">
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="60sp"
+        android:background="#AFD0F7">
+
+        <ImageButton
+            android:id="@+id/receiptsBackButton"
+            android:layout_width="60sp"
+            android:layout_height="60sp"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/back"
+            app:srcCompat="@drawable/back_arrow" />
+
+        <ImageView
+            android:id="@+id/receiptsLogoImage"
+            android:layout_width="316dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:contentDescription="@string/logo_alt"
+            android:padding="10sp"
+            app:srcCompat="@drawable/logo" />
+
+    </FrameLayout>
+    <TextView
+        android:id="@+id/receiptsActivityTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/imprima_regular"
+        android:text="@string/receipts"
+        android:textAlignment="center"
+        android:textColor="#344870"
+        android:textSize="50sp" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" />
+    </ScrollView>
+
+    <ImageView
+        android:id="@+id/vouchers_navbar"
+        android:layout_width="match_parent"
+        android:layout_height="77sp"
+        android:layout_gravity="end"
+        app:srcCompat="@drawable/navbar_receipts" />
+</LinearLayout>
