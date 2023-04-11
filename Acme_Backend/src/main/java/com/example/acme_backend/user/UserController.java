@@ -62,11 +62,12 @@ public class UserController {
         AppUser user = userService.getByUuid(sign.uuid);
 
         if (!verifySignature(sign.signature, sign.uuid, user.getPublic_key())){
+            //TODO: Should throw an exception
             return new ArrayList<>();
         }
 
         Iterator<AppVoucher> vouchers = user.getVoucher().iterator();
-        List<ReturnVoucher> retVouchers = new ArrayList<ReturnVoucher>();
+        List<ReturnVoucher> retVouchers = new ArrayList<>();
 
         while (vouchers.hasNext()) {
             AppVoucher voucher = vouchers.next();
@@ -76,22 +77,24 @@ public class UserController {
         return retVouchers;
     }
 
+    //TODO: wireframe has voucher number. Should we add it here?
     @PostMapping("/purchases")
     public List<ReturnPurchase> getPurchasesUser(@RequestBody SignedId sign) throws Exception {
         AppUser user = userService.getByUuid(sign.uuid);
 
         if (!verifySignature(sign.signature, sign.uuid, user.getPublic_key())){
+            //TODO: Should throw an exception
             return new ArrayList<>();
         }
 
         Iterator<AppPurchase> purchases = user.getPurchases().iterator();
-        List<ReturnPurchase> retPurchases = new ArrayList<ReturnPurchase>();
+        List<ReturnPurchase> retPurchases = new ArrayList<>();
 
         while (purchases.hasNext()) {
             AppPurchase purchase = purchases.next();
             Iterator<AppItem> items = purchase.getItems().iterator();
 
-            List<ProductAndQuantity> itemsList = new ArrayList<ProductAndQuantity>();
+            List<ProductAndQuantity> itemsList = new ArrayList<>();
 
             while(items.hasNext()) {
                 AppItem item = items.next();
