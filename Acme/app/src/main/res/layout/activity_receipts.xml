@@ -46,9 +46,18 @@
         android:contentDescription="@string/receipts_description">
 
         <LinearLayout
+            android:id="@+id/layoutReceipts"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical" />
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <ProgressBar
+                android:id="@+id/progressBarReceipts"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+        </LinearLayout>
     </ScrollView>
 
     <LinearLayout
