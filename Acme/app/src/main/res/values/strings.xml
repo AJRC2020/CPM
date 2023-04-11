@@ -38,4 +38,5 @@
     <string name="vouchers_amount_until_next_voucher">Amount until next voucher:</string>
     <string name="vouchers_amount_until_next_voucher_placeholder">999,99€</string>
     <string name="receipts">Receipts</string>
+    <string name="receipts_description">Receipts</string>
 </resources>
