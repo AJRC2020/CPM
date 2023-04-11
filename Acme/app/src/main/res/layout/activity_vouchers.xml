@@ -44,7 +44,7 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/imprima_regular"
         android:text="@string/vouchers_amount_until_next_voucher"
-        android:textAlignment="left"
+        android:textAlignment="2"
         android:textColor="#344870"
         android:textSize="28sp"
         android:paddingLeft="10sp"/>
@@ -56,13 +56,13 @@
         android:fontFamily="@font/imprima_regular"
         android:paddingLeft="20sp"
         android:text="@string/vouchers_amount_until_next_voucher_placeholder"
-        android:textAlignment="left"
+        android:textAlignment="2"
         android:textColor="#344870"
         android:textSize="28sp" />
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="0"
+        android:layout_height="0sp"
         android:layout_weight="1">
 
         <LinearLayout
