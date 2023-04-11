@@ -36,6 +36,8 @@ public class UserController {
         return userService.getUsers();
     }
 
+    //TODO: login, change password, change card number
+
     @PostMapping("/new")
     @ResponseBody
     public ReturnNewUser newUser(@RequestBody NewUser user) throws Exception {

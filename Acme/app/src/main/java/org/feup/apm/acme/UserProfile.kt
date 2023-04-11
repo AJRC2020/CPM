@@ -27,7 +27,12 @@ class UserProfile : AppCompatActivity() {
         // TODO: change password
         // TODO: change payment method
 
-        //Buttons
+        navBarList()
+    }
+
+
+    //TODO: make proper navbar
+    private fun navBarList(){
         backButton.setOnClickListener {
             finish()
         }

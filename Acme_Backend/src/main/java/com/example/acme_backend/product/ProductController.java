@@ -26,6 +26,7 @@ public class ProductController {
         return productService.getProducts();
     }
 
+    //TODO: this is supposed to be an encrypted QRCODE I think
     @PostMapping("/new")
     public AppProduct createProduct(@RequestBody NewProduct info) {
         UUID uuid = UUID.randomUUID();
