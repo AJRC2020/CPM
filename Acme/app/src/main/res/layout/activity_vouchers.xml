@@ -47,7 +47,8 @@
         android:textAlignment="2"
         android:textColor="#344870"
         android:textSize="28sp"
-        android:paddingLeft="10sp"/>
+        android:paddingLeft="10sp"
+        android:paddingRight="10sp"/>
 
     <TextView
         android:id="@+id/vouchersAmountUntilNextVoucher"
@@ -55,6 +56,7 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/imprima_regular"
         android:paddingLeft="20sp"
+        android:paddingRight="20sp"
         android:text="@string/vouchers_amount_until_next_voucher_placeholder"
         android:textAlignment="2"
         android:textColor="#344870"
@@ -63,7 +65,8 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0sp"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:contentDescription="@string/vouchers_description">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -71,10 +74,60 @@
             android:orientation="vertical" />
     </ScrollView>
 
-    <ImageView
-        android:id="@+id/vouchers_navbar"
-        android:layout_height="77sp"
-        android:layout_gravity="end"
+    <LinearLayout
         android:layout_width="match_parent"
-        app:srcCompat="@drawable/navbar_vouchers" />
+        android:layout_height="77sp"
+        android:orientation="horizontal"
+        android:background="@color/sky_blue"
+        android:padding="0sp">
+
+        <ImageButton
+            android:id="@+id/vouchers_navbar_receipts_button"
+            android:layout_width="0sp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_margin="0sp"
+            app:srcCompat="@drawable/navbar_receipts_icon"
+            android:background="@color/sky_blue"
+            android:contentDescription="@string/receipts"/>
+
+        <ImageButton
+            android:id="@+id/vouchers_navbar_vouchers_button"
+            android:layout_width="0sp"
+            android:layout_height="match_parent"
+            android:layout_margin="0sp"
+            android:layout_weight="1"
+            android:background="@color/sky_blue"
+            android:contentDescription="@string/vouchers"
+            app:srcCompat="@drawable/navbar_vouchers_icon_higlight" />
+        <ImageButton
+            android:id="@+id/vouchers_navbar_qrcode_button"
+            android:layout_width="0sp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_margin="0sp"
+            app:srcCompat="@drawable/navbar_qrcode_scan_icon"
+            android:background="@color/sky_blue"
+            android:contentDescription="@string/qrcode_scan"/>
+        <ImageButton
+            android:id="@+id/vouchers_navbar_shopping_cart_button"
+            android:layout_width="0sp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_margin="0sp"
+            app:srcCompat="@drawable/navbar_shopping_cart_icon"
+            android:background="@color/sky_blue"
+            android:contentDescription="@string/shopping_cart"/>
+
+        <ImageButton
+            android:id="@+id/vouchers_navbar_profile_button"
+            android:layout_width="0sp"
+            android:layout_height="match_parent"
+            android:layout_margin="0sp"
+            android:layout_weight="1"
+            android:background="@color/sky_blue"
+            app:srcCompat="@drawable/navbar_profile_icon"
+            android:contentDescription="@string/profile"/>
+    </LinearLayout>
+
 </LinearLayout>

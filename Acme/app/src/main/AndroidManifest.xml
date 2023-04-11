@@ -15,6 +15,9 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".QRCodeActivity"
+            android:exported="false" />
+        <activity
             android:name=".Receipts"
             android:exported="false" />
         <activity
