@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".RegisterActivity">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="60sp"
+        android:background="#AFD0F7">
+
+        <ImageButton
+            android:id="@+id/loginBackButton"
+            android:layout_width="60sp"
+            android:layout_height="60sp"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/back"
+            app:srcCompat="@drawable/back_arrow" />
+
+        <ImageView
+            android:id="@+id/registerLogoImage"
+            android:layout_width="316dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:contentDescription="@string/logo_alt"
+            android:padding="10sp"
+            app:srcCompat="@drawable/logo" />
+
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/loginActivityTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/imprima_regular"
+        android:text="@string/login"
+        android:textAlignment="center"
+        android:textColor="#344870"
+        android:textSize="50sp" />
+
+    <TextView
+        android:id="@+id/loginDescriptionText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/imprima_regular"
+        android:paddingHorizontal="30sp"
+        android:text="@string/login_instructions"
+        android:textAlignment="center"
+        android:textColor="#000"
+        android:textSize="25sp" />
+
+    <ImageView
+        android:id="@+id/loginImage"
+        android:layout_width="match_parent"
+        android:layout_height="240sp"
+        app:srcCompat="@drawable/vector"
+        android:paddingTop="30sp"
+        android:paddingBottom="30sp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="40sp"
+        android:paddingTop="10sp">
+
+        <TextView
+            android:id="@+id/loginNicknameFieldTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="@font/imprima_regular"
+            android:text="@string/nickname_label"
+            android:textColor="#000"
+            android:textSize="20sp" />
+
+        <EditText
+            android:id="@+id/loginNicknameFieldInput"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:autofillHints="username"
+            android:background="#ddd"
+            android:ems="10"
+            android:fontFamily="@font/imprima_regular"
+            android:hint="@string/nickname_label_hint"
+            android:inputType="textPersonName"
+            android:labelFor="@id/registerNicknameFieldTitle"
+            android:minHeight="50sp"
+            android:padding="10dp"
+            android:textSize="20sp"
+            tools:ignore="SpeakableTextPresentCheck" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="40sp"
+        android:paddingTop="10sp">
+
+        <TextView
+            android:id="@+id/loginPasswordFieldTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="@font/imprima_regular"
+            android:text="@string/password_label"
+            android:textColor="#000"
+            android:textSize="20sp" />
+
+        <EditText
+            android:id="@+id/loginPasswordFieldInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="#ddd"
+            android:ems="10"
+            android:fontFamily="@font/imprima_regular"
+            android:inputType="textPassword"
+            android:hint="@string/password_label_hint"
+            android:labelFor="@id/registerPasswordFieldTitle"
+            android:minHeight="50sp"
+            android:padding="10dp"
+            android:textSize="20sp"
+            android:autofillHints="none"
+            tools:ignore="SpeakableTextPresentCheck" />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/loginConfirmButton"
+        android:layout_width="200sp"
+        android:layout_height="60sp"
+        android:layout_gravity="center"
+        android:layout_marginTop="40sp"
+        android:backgroundTint="#558FFF"
+        android:contentDescription="@string/login_button_alt"
+        android:enabled="true"
+        android:fontFamily="@font/imprima_regular"
+        android:text="@string/login"
+        android:textAllCaps="false"
+        android:textSize="26sp"
+        android:gravity="center"/>
+</LinearLayout>

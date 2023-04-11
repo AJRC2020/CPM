@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".RegisterActivity">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="60sp"
+        android:background="#AFD0F7">
+
+        <ImageButton
+            android:id="@+id/profileBackButton"
+            android:layout_width="60sp"
+            android:layout_height="60sp"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/back"
+            app:srcCompat="@drawable/back_arrow" />
+
+        <ImageView
+            android:id="@+id/profileLogoImage"
+            android:layout_width="316dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:contentDescription="@string/logo_alt"
+            android:padding="10sp"
+            app:srcCompat="@drawable/logo" />
+
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/profileActivityTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/imprima_regular"
+        android:text="@string/profile"
+        android:textAlignment="center"
+        android:textColor="#344870"
+        android:textSize="50sp" />
+
+    <TextView
+        android:id="@+id/profileNameText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/imprima_regular"
+        android:paddingHorizontal="30sp"
+        android:text="@string/name_placeholder"
+        android:textAlignment="center"
+        android:textColor="#000"
+        android:textSize="70sp" />
+
+    <TextView
+        android:id="@+id/profileNicknameText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/imprima_regular"
+        android:paddingHorizontal="30sp"
+        android:text="@string/nickname_placeholder"
+        android:textAlignment="center"
+        android:textColor="#000"
+        android:textSize="45sp"
+        android:layout_marginBottom="10sp"/>
+
+    <Button
+        android:id="@+id/profileChangePasswordButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/change_password"
+        android:backgroundTint="@color/babyblue"
+        android:textAllCaps="false"
+        android:textSize="25sp"
+        android:layout_marginLeft="30sp"
+        android:layout_marginRight="30sp"/>
+
+    <Button
+        android:id="@+id/profileChangePaymentButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/babyblue"
+        android:text="@string/change_payment"
+        android:textAllCaps="false"
+        android:textSize="25sp"
+        android:layout_marginLeft="30sp"
+        android:layout_marginRight="30sp"/>
+
+    <TextView
+        android:id="@+id/profileOthers"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/profile_others"
+        android:textSize="45sp"
+        android:textColor="#000"
+        android:paddingLeft="20sp"
+        android:layout_marginTop="0sp"
+        android:layout_marginBottom="0sp"
+        />
+
+    <TextView
+        android:id="@+id/profileAccumulatedDiscountTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/profile_accumulated_discount"
+        android:textSize="22sp"
+        android:textColor="#000"
+        android:paddingLeft="40sp"
+        android:layout_marginBottom="5sp"/>
+
+    <TextView
+        android:id="@+id/profileAccumulatedDiscount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="50sp"
+        android:text="@string/profile_accumulated_discount_placeholder"
+        android:textColor="#000"
+        android:textSize="22sp"
+        android:layout_marginBottom="10sp"/>
+
+    <TextView
+        android:id="@+id/profileTotalAmountSpentTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="40sp"
+        android:text="@string/profile_total_amount_spent"
+        android:textColor="#000"
+        android:textSize="22sp"
+        android:layout_marginBottom="5sp"/>
+
+    <TextView
+        android:id="@+id/profileTotalAmountSpent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="50sp"
+        android:text="@string/profile_total_amount_spent_placeholder"
+        android:textColor="#000"
+        android:textSize="22sp" />
+
+        <Button
+            android:id="@+id/profileLogoutButton"
+            android:layout_width="200sp"
+            android:layout_gravity="center"
+            android:layout_marginTop="10sp"
+            android:backgroundTint="#558FFF"
+            android:contentDescription="@string/logout_button_alt"
+            android:enabled="true"
+            android:fontFamily="@font/imprima_regular"
+            android:text="@string/logout"
+            android:textAllCaps="false"
+            android:textSize="26sp"
+            android:gravity="center"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginBottom="10sp"/>
+
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_width="match_parent"
+        android:layout_height="77sp"
+        app:srcCompat="@drawable/navbar_profile"
+        android:layout_gravity="end"/>
+</LinearLayout>
