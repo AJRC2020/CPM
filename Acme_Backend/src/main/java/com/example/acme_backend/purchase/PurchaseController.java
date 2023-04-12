@@ -1,6 +1,8 @@
 package com.example.acme_backend.purchase;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.acme_backend.bodies.NewPurchase;
@@ -13,6 +15,7 @@ import com.example.acme_backend.product.ProductService;
 import com.example.acme_backend.user.AppUser;
 import com.example.acme_backend.user.UserService;
 import com.example.acme_backend.voucher.VoucherService;
+import com.example.acme_backend.voucher.AppVoucher;
 
 import java.sql.Date;
 import java.time.LocalDate;
@@ -49,13 +52,13 @@ public class PurchaseController {
     }
 
     @PostMapping("/new")
-    public ReturnPurchase createPurchase(@RequestBody SignedNewPurchase signedContent) throws Exception {
+    public ResponseEntity<ReturnPurchase> createPurchase(@RequestBody SignedNewPurchase signedContent) throws Exception {
         Float total = 0.0f;
         NewPurchase content = signedContent.purchase;
         AppUser user = userService.getByUuid(content.user_id);
 
         if (!verifySignature(signedContent.signature, content, user.getPublic_key())){
-            return null;
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
         AppPurchase purchase = purchaseService.createPurchase();
@@ -77,17 +80,20 @@ public class PurchaseController {
             }
         }
 
+        LocalDate date = LocalDate.now();
+        AppPurchase updated_purchase = null;
+
         if (content.voucher_id.isPresent()) {
-            voucherService.usedVoucher(content.voucher_id.get());
+            AppVoucher voucher = voucherService.usedVoucher(content.voucher_id.get());
 
             userService.updateDiscount(content.user_id, total * 0.15f);
+
+            updated_purchase = purchaseService.updatePurchase(total, Date.valueOf(date), user, purchase.getId(), voucher);
         }
-
-        LocalDate date = LocalDate.now();
-
-        AppPurchase updated_purchase = purchaseService.updatePurchase(total, Date.valueOf(date), content.discount, user, purchase.getId());
-        
-        
+        else {
+            updated_purchase = purchaseService.updatePurchase(total, Date.valueOf(date), user, purchase.getId());
+        }
+    
         Integer previous = (int)(user.getTotal() / 100);
         Integer next = (int)((total + user.getTotal()) / 100);
         Integer count = next - previous;
@@ -98,7 +104,14 @@ public class PurchaseController {
 
         userService.updateTotal(content.user_id, total);
 
-        return new ReturnPurchase(updated_purchase.getDate(), updated_purchase.getVoucher(), updated_purchase.getPrice(), content.products);
+        if (content.voucher_id.isPresent()) {
+            ReturnPurchase return_purchase = new ReturnPurchase(updated_purchase.getDate(), updated_purchase.getPrice(), content.products, updated_purchase.getVoucher().getUuid());
+            return ResponseEntity.ok().body(return_purchase);
+        }
+        else{
+            ReturnPurchase return_purchase = new ReturnPurchase(updated_purchase.getDate(), updated_purchase.getPrice(), content.products);
+            return ResponseEntity.ok().body(return_purchase);
+        }
     }
 
     private boolean verifySignature(String signature, NewPurchase purchase, String public_key) throws Exception {
