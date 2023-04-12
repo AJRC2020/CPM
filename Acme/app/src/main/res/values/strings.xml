@@ -49,6 +49,7 @@
     <string name="price">Price</string>
     <string name="amount">Amount</string>
     <string name="placeholder">placeholder</string>
-    <string name="euro"> €</string>
+    <string name="euro">€</string>
+    <string name="none">None</string>
     <string name ="expandButton">Expand receipt info</string>
 </resources>
