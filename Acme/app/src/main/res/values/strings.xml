@@ -41,4 +41,14 @@
     <string name="receipts_description">Receipts</string>
     <string name="vouchers_description">Vouchers</string>
     <string name="qrcode_scan">QR Code Scan</string>
+    <string name="no_receipts_warning">You don\'t have any receipts</string>
+    <string name="date">Date:</string>
+    <string name="total">Total:</string>
+    <string name="voucher">Voucher:</string>
+    <string name="products">Product</string>
+    <string name="price">Price</string>
+    <string name="amount">Amount</string>
+    <string name="placeholder">placeholder</string>
+    <string name="euro"> €</string>
+    <string name ="expandButton">Expand receipt info</string>
 </resources>

@@ -36,6 +36,8 @@ public class UserController {
         return userService.getUsers();
     }
 
+    //TODO: login, change password, change card number
+
     @PostMapping("/new")
     @ResponseBody
     public ReturnNewUser newUser(@RequestBody NewUser user) throws Exception {
@@ -64,7 +66,7 @@ public class UserController {
         }
 
         Iterator<AppVoucher> vouchers = user.getVoucher().iterator();
-        List<ReturnVoucher> retVouchers = new ArrayList<ReturnVoucher>();
+        List<ReturnVoucher> retVouchers = new ArrayList<>();
 
         while (vouchers.hasNext()) {
             AppVoucher voucher = vouchers.next();
@@ -74,22 +76,27 @@ public class UserController {
         return ResponseEntity.ok().body(retVouchers);
     }
 
+    //TODO: wireframe has voucher number. Should we add it here?
     @PostMapping("/purchases")
     public ResponseEntity<List<ReturnPurchase>> getPurchasesUser(@RequestBody SignedId sign) throws Exception {
         AppUser user = userService.getByUuid(sign.uuid);
 
-        /*if (!verifySignature(sign.signature, sign.uuid, user.getPublic_key())){
+
+        if (!verifySignature(sign.signature, sign.uuid, user.getPublic_key())){
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }*/
+        }
+
 
         Iterator<AppPurchase> purchases = user.getPurchases().iterator();
-        List<ReturnPurchase> retPurchases = new ArrayList<ReturnPurchase>();
+        List<ReturnPurchase> retPurchases = new ArrayList<>();
 
         while (purchases.hasNext()) {
             AppPurchase purchase = purchases.next();
             Iterator<AppItem> items = purchase.getItems().iterator();
 
+
             List<ProductAndPrice> itemsList = new ArrayList<>();
+
 
             while(items.hasNext()) {
                 AppItem item = items.next();
