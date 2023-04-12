@@ -2,7 +2,6 @@ package org.feup.apm.acme
 
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -10,10 +9,13 @@ import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
-import androidx.cardview.widget.CardView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import org.json.JSONArray
 import kotlin.concurrent.thread
+
 
 class Receipts : AppCompatActivity() {
     private val backButton by lazy { findViewById<ImageButton>(R.id.receiptsBackButton)}
@@ -22,13 +24,19 @@ class Receipts : AppCompatActivity() {
     private val navbarShoppingCartButton by lazy { findViewById<ImageButton>(R.id.receipts_navbar_shopping_cart_button)}
     private val navbarProfileButton by lazy { findViewById<ImageButton>(R.id.receipts_navbar_profile_button)}
     private val progressBar by lazy {findViewById<ProgressBar>(R.id.progressBarReceipts)}
-    private val layoutReceipts by lazy {findViewById<LinearLayout>(R.id.layoutReceipts)}
+    //private val layoutReceipts by lazy {findViewById<LinearLayout>(R.id.layoutReceipts)}
+    private val mRecyclerView by lazy {findViewById<RecyclerView>(R.id.receiptsList)}
+    private var mAdapter: RecyclerView.Adapter<*> = ReceiptsAdapter(JSONArray())
+    private val mLayoutManager: RecyclerView.LayoutManager = LinearLayoutManager(this)
 
     var receipts = JSONArray()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_receipts)
+        mRecyclerView.layoutManager = mLayoutManager;
+        mRecyclerView.adapter = mAdapter;
+
         navListeners()
         loading()
         val sharedPreference = this.getSharedPreferences("user_info", Context.MODE_PRIVATE)
@@ -51,20 +59,8 @@ class Receipts : AppCompatActivity() {
 
 
     private fun addReceipts(){
-        if (receipts.length() == 0){
-            val textView = TextView(this)
-            textView.textSize = 30.0F
-            textView.text = getString(R.string.no_receipts_warning);
-            textView.textAlignment = View.TEXT_ALIGNMENT_CENTER
-            layoutReceipts.addView(textView)
-        }else{
-            (0 until receipts.length()).forEach {
-                val receipt = receipts.getJSONObject(it)
-                val view = layoutInflater.inflate(R.layout.card_receipt,null)
-                layoutReceipts.addView(view)
-            }
-        }
-
+        mAdapter = ReceiptsAdapter(receipts)
+        mRecyclerView.adapter = mAdapter;
     }
 
     fun createSnackBar(text:String){
