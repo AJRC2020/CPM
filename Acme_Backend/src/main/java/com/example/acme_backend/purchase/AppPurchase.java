@@ -4,6 +4,7 @@ import java.sql.Date;
 
 import com.example.acme_backend.item.AppItem;
 import com.example.acme_backend.user.AppUser;
+import com.example.acme_backend.voucher.AppVoucher;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -26,7 +27,6 @@ public class AppPurchase {
     )
     @Column(name = "purchase_id")
     private Long id;
-    private Boolean voucher;
     private Float total_price;
     private Date date;
     @ManyToOne
@@ -34,18 +34,19 @@ public class AppPurchase {
     private AppUser user;
     @OneToMany(mappedBy = "purchase")
     private Set<AppItem> items = new HashSet<>();
+    @OneToOne
+    @JoinColumn(name="voucher_id")
+    private AppVoucher voucher;
 
     public AppPurchase() { }
 
-    public AppPurchase(Long id, Boolean voucher, Float total_price, Date date) {
+    public AppPurchase(Long id, Float total_price, Date date) {
         this.id = id;
-        this.voucher = voucher;
         this.total_price = total_price;
         this.date = date;
     }
 
-    public AppPurchase(Boolean voucher, Float total_price, Date date, AppUser user) {
-        this.voucher = voucher;
+    public AppPurchase(Float total_price, Date date, AppUser user) {
         this.total_price = total_price;
         this.date = date;
         this.user = user;
@@ -53,10 +54,6 @@ public class AppPurchase {
 
     public Long getId() {
         return id;
-    }
-
-    public Boolean getVoucher() {
-        return voucher;
     }
 
     public Float getPrice() {
@@ -71,16 +68,16 @@ public class AppPurchase {
         return user;
     }
 
+    public AppVoucher getVoucher() {
+        return voucher;
+    }
+
     public Set<AppItem> getItems() {
         return items;
     }
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public void setVoucher(Boolean voucher) {
-        this.voucher = voucher;
     }
 
     public void setPrice(Float total_price) {
@@ -99,6 +96,10 @@ public class AppPurchase {
         this.items = items;
     }
 
+    public void setVoucher(AppVoucher voucher) {
+        this.voucher = voucher;
+    }
+
     public void addItem(AppItem item) {
         this.items.add(item);
     }
@@ -111,9 +112,9 @@ public class AppPurchase {
         }
         itemList += "]";
 
-        return "User : {" +
+        return "Purchase : {" +
                 "id=" + id +
-                ", voucher=" + voucher +
+                ", voucher=" + voucher.getUuid() +
                 ", price=" + total_price +
                 ", date=" + date +
                 ", user='" + user.getUsername() + '\'' + 

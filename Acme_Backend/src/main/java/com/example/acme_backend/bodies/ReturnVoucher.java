@@ -7,11 +7,13 @@ public class ReturnVoucher {
     public Boolean used;
     public Date date;
     public String user;
+    public String uuid;
 
-    public ReturnVoucher(Boolean emitted, Boolean used, Date date, String user) {
+    public ReturnVoucher(Boolean emitted, Boolean used, Date date, String user, String uuid) {
         this.emitted = emitted;
         this.used = used;
         this.date = date;
         this.user = user;
+        this.uuid = uuid;
     }
 }

@@ -78,4 +78,24 @@ public class UserService {
 
         userRepository.flush();
     }
+
+    public void updatePassword(String uuid, String new_password) {
+        AppUser user = userRepository.findByUuid(uuid).get(0);
+
+        user.setPassword(new_password);
+
+        userRepository.save(user);
+
+        userRepository.flush();
+    }
+
+    public void updatePayment(String uuid, Long new_payment) {
+        AppUser user = userRepository.findByUuid(uuid).get(0);
+
+        user.setCard_number(new_payment);
+
+        userRepository.save(user);
+
+        userRepository.flush();
+    }
 }

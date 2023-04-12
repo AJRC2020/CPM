@@ -28,6 +28,8 @@ public class ProductController {
 
     @PostMapping("/new")
     public AppProduct createProduct(@RequestBody NewProduct info) {
+        //Comes Encrypted
+
         UUID uuid = UUID.randomUUID();
 
         AppProduct product = productService.createProduct(info.name, info.price, uuid.toString());

@@ -2,10 +2,10 @@ package com.example.acme_backend.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.security.KeyFactory;
 import java.security.PublicKey;
@@ -56,11 +56,11 @@ public class UserController {
     }
 
     @PostMapping("/vouchers")
-    public List<ReturnVoucher> getVouchersUser(@RequestBody SignedId sign) throws Exception {
+    public ResponseEntity<List<ReturnVoucher>> getVouchersUser(@RequestBody SignedId sign) throws Exception {
         AppUser user = userService.getByUuid(sign.uuid);
 
         if (!verifySignature(sign.signature, sign.uuid, user.getPublic_key())){
-            return new ArrayList<>();
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
         Iterator<AppVoucher> vouchers = user.getVoucher().iterator();
@@ -68,19 +68,19 @@ public class UserController {
 
         while (vouchers.hasNext()) {
             AppVoucher voucher = vouchers.next();
-            retVouchers.add(new ReturnVoucher(voucher.getEmitted(), voucher.getUsed(), voucher.getDate(), user.getUsername()));
+            retVouchers.add(new ReturnVoucher(voucher.getEmitted(), voucher.getUsed(), voucher.getDate(), user.getUsername(), voucher.getUuid()));
         }
 
-        return retVouchers;
+        return ResponseEntity.ok().body(retVouchers);
     }
 
     @PostMapping("/purchases")
-    public List<ReturnPurchase> getPurchasesUser(@RequestBody SignedId sign) throws Exception {
+    public ResponseEntity<List<ReturnPurchase>> getPurchasesUser(@RequestBody SignedId sign) throws Exception {
         AppUser user = userService.getByUuid(sign.uuid);
 
-        if (!verifySignature(sign.signature, sign.uuid, user.getPublic_key())){
-            return new ArrayList<>();
-        }
+        /*if (!verifySignature(sign.signature, sign.uuid, user.getPublic_key())){
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }*/
 
         Iterator<AppPurchase> purchases = user.getPurchases().iterator();
         List<ReturnPurchase> retPurchases = new ArrayList<ReturnPurchase>();
@@ -89,18 +89,24 @@ public class UserController {
             AppPurchase purchase = purchases.next();
             Iterator<AppItem> items = purchase.getItems().iterator();
 
-            List<ProductAndQuantity> itemsList = new ArrayList<ProductAndQuantity>();
+            List<ProductAndPrice> itemsList = new ArrayList<>();
 
             while(items.hasNext()) {
                 AppItem item = items.next();
                 AppProduct product = item.getProduct();
-                itemsList.add(new ProductAndQuantity(product.getName(), item.getQuantity()));
+                itemsList.add(new ProductAndPrice(product.getName(), item.getQuantity() * product.getPrice()));
             }
 
-            retPurchases.add(new ReturnPurchase(purchase.getDate(), purchase.getVoucher(), purchase.getPrice(), itemsList));
+            if (purchase.getVoucher() == null) {
+                retPurchases.add(new ReturnPurchase(purchase.getDate(), purchase.getPrice(), itemsList));
+            }
+            else {
+                retPurchases.add(new ReturnPurchase(purchase.getDate(), purchase.getPrice(), itemsList, purchase.getVoucher().getUuid()));
+            }
+
         }
 
-        return retPurchases;
+        return ResponseEntity.ok().body(retPurchases);
     }
 
     private boolean verifySignature(String signature, String uuid, String public_key) throws Exception {
@@ -115,4 +121,45 @@ public class UserController {
 
         return sign.verify(Base64.getDecoder().decode(signature));
     }
+
+    @PostMapping("/info")
+    public ResponseEntity<ReturnUser> getUser(@RequestBody SignedId sign) throws Exception {
+        AppUser user = userService.getByUuid(sign.uuid);
+
+        if (!verifySignature(sign.signature, sign.uuid, user.getPublic_key())){
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
+        ReturnUser return_user = new ReturnUser(user.getName(), user.getUsername(), user.getDiscount(), user.getTotal());
+
+        return ResponseEntity.ok().body(return_user);
+    }
+
+    @PostMapping("update/password")
+    public ResponseEntity<String> updatePassword(@RequestBody UpdatePassword sign) throws Exception {
+        AppUser user = userService.getByUuid(sign.uuid);
+
+        if (!verifySignature(sign.signature, sign.uuid, user.getPublic_key())){
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
+        userService.updatePassword(sign.uuid, sign.password);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("update/payment")
+    public ResponseEntity<String> updatePayment(@RequestBody UpdatePayment sign) throws Exception {
+        AppUser user = userService.getByUuid(sign.uuid);
+
+        if (!verifySignature(sign.signature, sign.uuid, user.getPublic_key())){
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
+        userService.updatePayment(sign.uuid, sign.payment);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    //login
 }

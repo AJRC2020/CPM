@@ -24,11 +24,13 @@ public class VoucherService {
         return voucherRepository.findAll();
     }
 
-    public void usedVoucher(String uuid) {
+    public AppVoucher usedVoucher(String uuid) {
         AppVoucher voucher = voucherRepository.findByUuid(uuid).get(0);
         voucher.setUsed(true);
         voucherRepository.save(voucher);
         voucherRepository.flush();
+
+        return voucher;
     }
 
     public AppVoucher createVoucher(AppUser user) {
