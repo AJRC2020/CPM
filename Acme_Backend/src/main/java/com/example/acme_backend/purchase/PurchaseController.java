@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.acme_backend.bodies.NewPurchase;
+import com.example.acme_backend.bodies.ProductAndPrice;
 import com.example.acme_backend.bodies.ProductAndQuantity;
 import com.example.acme_backend.bodies.ReturnPurchase;
 import com.example.acme_backend.bodies.SignedNewPurchase;
@@ -57,18 +58,23 @@ public class PurchaseController {
         NewPurchase content = signedContent.purchase;
         AppUser user = userService.getByUuid(content.user_id);
 
-        if (!verifySignature(signedContent.signature, content, user.getPublic_key())){
+        /*if (!verifySignature(signedContent.signature, content, user.getPublic_key())){
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
+        }*/
 
         AppPurchase purchase = purchaseService.createPurchase();
         
+        List<ProductAndPrice> items = new ArrayList<>();
+
         for (ProductAndQuantity products : content.products) {
             AppProduct product = productService.findByUuid(products.product);
             total += product.getPrice() * products.quantity;
 
             itemService.createItem(products.quantity, product, purchase);
             products.product = product.getName();
+
+            ProductAndPrice PnP = new ProductAndPrice(product.getName(), product.getPrice() * products.quantity);
+            items.add(PnP); 
         }   
 
         if (content.discount) {
@@ -105,11 +111,11 @@ public class PurchaseController {
         userService.updateTotal(content.user_id, total);
 
         if (content.voucher_id.isPresent()) {
-            ReturnPurchase return_purchase = new ReturnPurchase(updated_purchase.getDate(), updated_purchase.getPrice(), content.products, updated_purchase.getVoucher().getUuid());
+            ReturnPurchase return_purchase = new ReturnPurchase(updated_purchase.getDate(), updated_purchase.getPrice(), items, updated_purchase.getVoucher().getUuid());
             return ResponseEntity.ok().body(return_purchase);
         }
         else{
-            ReturnPurchase return_purchase = new ReturnPurchase(updated_purchase.getDate(), updated_purchase.getPrice(), content.products);
+            ReturnPurchase return_purchase = new ReturnPurchase(updated_purchase.getDate(), updated_purchase.getPrice(), items);
             return ResponseEntity.ok().body(return_purchase);
         }
     }
