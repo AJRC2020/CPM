@@ -76,7 +76,6 @@ public class UserController {
         return ResponseEntity.ok().body(retVouchers);
     }
 
-    //TODO: wireframe has voucher number. Should we add it here?
     @PostMapping("/purchases")
     public ResponseEntity<List<ReturnPurchase>> getPurchasesUser(@RequestBody SignedId sign) throws Exception {
         AppUser user = userService.getByUuid(sign.uuid);

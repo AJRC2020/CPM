@@ -1,7 +1,10 @@
 package org.feup.apm.acme
 
+import android.app.Activity
 import android.content.Context
+import android.provider.ContactsContract.Profile
 import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.BufferedReader
@@ -40,7 +43,7 @@ fun register(
     // Building URL
     val urlRoute = "api/users/new"
     val url = URL("http://${Constants.BASE_ADDRESS}:${Constants.PORT}/$urlRoute")
-
+    var uuid = ""
     // Creating payload
     val payload = JSONObject()
     payload.put("name", name)
@@ -73,7 +76,8 @@ fun register(
                 // Saving data into sharedPreferences
                 val sharedPreference = act.getSharedPreferences("user_info", Context.MODE_PRIVATE)
                 val editor = sharedPreference.edit()
-                editor.putString("uuid", jsonObject["uuid"].toString())
+                uuid =  jsonObject["uuid"].toString()
+                editor.putString("uuid", uuid)
                 editor.putString("name", name)
                 editor.putString("username", username)
                 editor.putString("server_public_key", jsonObject["public_key"].toString())
@@ -183,3 +187,65 @@ private fun signContent(content:String): String {
     }
 }
 
+fun getUserInfo(
+    act: UserProfile,
+    uuid: String,
+
+    ) : Boolean {
+    // Building URL
+    val urlRoute = "api/users/info"
+    val url = URL("http://${Constants.BASE_ADDRESS}:${Constants.PORT}/$urlRoute")
+
+    // Creating payload
+    val payload = JSONObject()
+    payload.put("uuid", uuid)
+    payload.put("signature", signContent(uuid))
+
+
+    var urlConnection: HttpURLConnection? = null
+    var result = false
+    try {
+        // Sending Request
+        urlConnection = (url.openConnection() as HttpURLConnection).apply {
+            doOutput = true
+            doInput = true
+            requestMethod = "POST"
+            setRequestProperty("Content-Type", "application/json")
+            useCaches = false
+            connectTimeout = 5000
+            with(outputStream) {
+                write(payload.toString().toByteArray())
+                flush()
+                close()
+            }
+            if (responseCode == 200) {
+                // Getting response stream
+                val read = readStream(inputStream)
+                // Parsing stream into JSON
+                val jsonObject = JSONObject(read)
+                val sharedPreference = act.getSharedPreferences("user_info", Context.MODE_PRIVATE)
+                val editor = sharedPreference.edit()
+                editor.putString("discount", jsonObject["discount"].toString())
+                editor.putString("total", jsonObject["total"].toString())
+                editor.apply()
+
+                result = true
+            } else {
+                // Putting error info in snack bar
+                //act.createSnackBar("Code: $responseCode - $errorStream")
+                // Putting error info in console
+                Log.d("error", "Code: $responseCode - $errorStream")
+            }
+        }
+    } catch (e: Exception) {
+        // Putting error info in snack bar
+        act.createSnackBar(e.toString())
+        // Putting error info in console
+        Log.d("error", e.toString())
+
+    } finally {
+        // Closing url connection
+        urlConnection?.disconnect()
+    }
+    return result
+}
