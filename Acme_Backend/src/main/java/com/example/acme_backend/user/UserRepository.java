@@ -10,4 +10,6 @@ public interface UserRepository
         extends JpaRepository<AppUser,Long> {
 
                 List<AppUser> findByUuid(String uuid);
+
+                List<AppUser> findByUsername(String username);
 }
