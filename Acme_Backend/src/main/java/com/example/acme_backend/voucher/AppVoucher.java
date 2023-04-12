@@ -1,5 +1,6 @@
 package com.example.acme_backend.voucher;
 
+import com.example.acme_backend.purchase.AppPurchase;
 import com.example.acme_backend.user.AppUser;
 
 import jakarta.persistence.*;
@@ -29,6 +30,8 @@ public class AppVoucher {
     @ManyToOne
     @JoinColumn(name = "app_user_id")
     private AppUser user;
+    @OneToOne(mappedBy = "voucher")
+    private AppPurchase purchase;
 
     public AppVoucher() { 
         this.emitted = false;
@@ -74,6 +77,10 @@ public class AppVoucher {
         return user;
     }
 
+    public AppPurchase getPurchase() {
+        return purchase;
+    }
+
     public void setId(Long id) {
         this.id = id;
     }   
@@ -97,6 +104,10 @@ public class AppVoucher {
     public void setUser(AppUser user) {
         this.user = user;
     }
+
+    public void setPurchase(AppPurchase purchase) {
+        this.purchase = purchase;
+    } 
 
     public String toString() {
         return "Voucher : {" +
