@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.nio.file.Files;
 import java.security.KeyFactory;
@@ -38,7 +37,7 @@ public class UserController {
 
     @PostMapping("/new")
     @ResponseBody
-    public ReturnNewUser newUser(@RequestBody NewUser user) throws Exception {
+    public ResponseEntity<ReturnNewUser> newUser(@RequestBody NewUser user) throws Exception {
 
         String uuid = this.userService.newUser(user);
 
@@ -46,13 +45,15 @@ public class UserController {
         File file = new File("src/main/resources/publickey.der");
 
         if (!file.exists()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         byte[] market_key = Files.readAllBytes(file.toPath());
         String encodeKey = Base64.getEncoder().encodeToString(market_key);
 
-        return new ReturnNewUser(uuid, encodeKey);
+        ReturnNewUser new_user = new ReturnNewUser(uuid, encodeKey);
+
+        return ResponseEntity.ok().body(new_user);
     }
 
     @PostMapping("/vouchers")
@@ -78,9 +79,9 @@ public class UserController {
     public ResponseEntity<List<ReturnPurchase>> getPurchasesUser(@RequestBody SignedId sign) throws Exception {
         AppUser user = userService.getByUuid(sign.uuid);
 
-        /*if (!verifySignature(sign.signature, sign.uuid, user.getPublic_key())){
+        if (!verifySignature(sign.signature, sign.uuid, user.getPublic_key())){
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }*/
+        }
 
         Iterator<AppPurchase> purchases = user.getPurchases().iterator();
         List<ReturnPurchase> retPurchases = new ArrayList<ReturnPurchase>();
