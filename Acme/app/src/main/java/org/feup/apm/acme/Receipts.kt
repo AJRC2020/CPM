@@ -56,7 +56,6 @@ class Receipts : AppCompatActivity() {
                 addReceipts()
             }
         }
-        stopLoading()
     }
 
 
@@ -83,7 +82,7 @@ class Receipts : AppCompatActivity() {
     }
 
 
-    // TODO: Change to a proper navbar
+    // TODO: Should be a navbar
     private fun navListeners(){
         //Buttons
         backButton.setOnClickListener {

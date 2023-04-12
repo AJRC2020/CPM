@@ -29,9 +29,9 @@
     <string name="change_payment">Change Payment Method</string>
     <string name="profile_others">Others:</string>
     <string name="profile_accumulated_discount">Accumulated Discount:</string>
-    <string name="profile_accumulated_discount_placeholder">000,00€</string>
+    <string name="profile_accumulated_discount_placeholder">000,00</string>
     <string name="profile_total_amount_spent">Total Amount Spent:</string>
-    <string name="profile_total_amount_spent_placeholder">000,00€</string>
+    <string name="profile_total_amount_spent_placeholder">000,00</string>
     <string name="shopping_cart">Shopping Cart</string>
     <string name="shopping_cart_total_placeholder">Total: 78,34€</string>
     <string name="vouchers">Vouchers</string>
