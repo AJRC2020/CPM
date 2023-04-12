@@ -49,6 +49,8 @@ class Receipts : AppCompatActivity() {
                 )
             }!!
 
+            Log.d("res",receipts.toString())
+
             this.runOnUiThread {
                 stopLoading()
                 addReceipts()

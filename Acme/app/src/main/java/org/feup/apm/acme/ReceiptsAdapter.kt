@@ -2,10 +2,12 @@ package org.feup.apm.acme
 
 import android.app.ActionBar.LayoutParams
 import android.graphics.Color
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TableLayout
 import android.widget.TableRow
@@ -26,8 +28,8 @@ class ReceiptsAdapter(private val dataSet: JSONArray) :
         val date: TextView
         val total: TextView
         val totalDetails: TextView
-        //TODO: endpoint missing voucher
         val voucherLabel: TextView
+        val voucherTick: ImageView
         val table: TableLayout
         val expandedReceipt: LinearLayout
         val expandButton: ImageButton
@@ -40,6 +42,7 @@ class ReceiptsAdapter(private val dataSet: JSONArray) :
             table = view.findViewById(R.id.table)
             expandedReceipt = view.findViewById(R.id.expandedReceipt)
             expandButton = view.findViewById(R.id.expandButton)
+            voucherTick = view.findViewById(R.id.voucherUsed)
         }
     }
 
@@ -54,7 +57,7 @@ class ReceiptsAdapter(private val dataSet: JSONArray) :
 
     // Replace the contents of a view (invoked by the layout manager)
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-
+        Log.d(position.toString(),dataSet.getJSONObject(position).toString())
         viewHolder.expandButton.setOnClickListener {
             if (viewHolder.expandedReceipt.visibility == View.VISIBLE) {
                 viewHolder.expandedReceipt.visibility = View.GONE
@@ -69,12 +72,18 @@ class ReceiptsAdapter(private val dataSet: JSONArray) :
         viewHolder.totalDetails.textSize = 20f
         viewHolder.total.textSize = 16f
         viewHolder.date.textSize = 16f
-        //viewHolder.voucherLabel.text = dataSet.getJSONObject(position)["voucherLabel"] as CharSequence?
+        if (dataSet.getJSONObject(position)["voucher"].toString() != "null"){
+            viewHolder.voucherLabel.text = dataSet.getJSONObject(position)["voucher"].toString()
+            viewHolder.voucherLabel.textSize = 16f
+            viewHolder.voucherTick.setImageResource(R.drawable.tick)
+        }
+
         val items = dataSet.getJSONObject(position).getJSONArray("items");
         (0 until items.length()).forEach {
             val receipt = items.getJSONObject(it)
             val lp = TableRow.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT,1f)
-            val lps = TableRow.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT,0.2f)
+            val lpb = TableRow.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT,0.95f)
+            val lps = TableRow.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT,0.05f)
 
             val row = TableRow(viewHolder.itemView.context)
             val name = TextView(viewHolder.itemView.context)
@@ -84,24 +93,24 @@ class ReceiptsAdapter(private val dataSet: JSONArray) :
             name.layoutParams = lp
 
 
-            //TODO: Endpoint missing price
             val price = TextView(viewHolder.itemView.context)
-            price.text = "...€"
+            price.text = receipt["price"].toString()
             price.setTextColor(Color.BLACK)
             price.textSize = 16f
-            price.layoutParams = lp
+            price.layoutParams = lpb
             price.textAlignment = View.TEXT_ALIGNMENT_TEXT_END
 
+            val euroSymbol = TextView(viewHolder.itemView.context)
+            euroSymbol.text = "€"
+            euroSymbol.setTextColor(Color.BLACK)
+            euroSymbol.textSize = 16f
+            euroSymbol.layoutParams = lps
+            euroSymbol.textAlignment = View.TEXT_ALIGNMENT_TEXT_END
 
-            val amount = TextView(viewHolder.itemView.context)
-            amount.text = receipt["quantity"].toString()
-            amount.textSize = 16f
-            amount.setTextColor(Color.BLACK)
-            amount.layoutParams = lps
 
-            row.addView(amount)
             row.addView(name)
             row.addView(price)
+            row.addView(euroSymbol)
             viewHolder.table.addView(row)
         }
     }
