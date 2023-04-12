@@ -58,9 +58,9 @@ public class PurchaseController {
         NewPurchase content = signedContent.purchase;
         AppUser user = userService.getByUuid(content.user_id);
 
-        /*if (!verifySignature(signedContent.signature, content, user.getPublic_key())){
+        if (!verifySignature(signedContent.signature, content, user.getPublic_key())){
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }*/
+        }
 
         AppPurchase purchase = purchaseService.createPurchase();
         
