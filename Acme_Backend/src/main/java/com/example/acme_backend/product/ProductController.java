@@ -36,6 +36,7 @@ public class ProductController {
         return productService.getProducts();
     }
 
+    //TODO: this is supposed to be an encrypted QRCODE I think
     @PostMapping("/new")
     public ResponseEntity<AppProduct> createProduct(@RequestBody Encrypt encryption) throws Exception {
         //Comes Encrypted

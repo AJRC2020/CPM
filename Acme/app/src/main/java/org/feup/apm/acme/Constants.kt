@@ -7,5 +7,6 @@ object Constants {
   const val keyname = "myIdKey"
   const val serialNr = 1234567890L
   const val BASE_ADDRESS = "10.0.2.2"
+  const val SIGN_ALGO = "SHA256WithRSA"
   const val PORT = "8080"
 }

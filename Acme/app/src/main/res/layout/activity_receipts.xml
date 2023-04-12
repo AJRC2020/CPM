@@ -39,16 +39,23 @@
         android:textColor="#344870"
         android:textSize="50sp" />
 
+    <ProgressBar
+        android:id="@+id/progressBarReceipts"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0sp"
         android:layout_weight="1"
         android:contentDescription="@string/receipts_description">
 
-        <LinearLayout
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/receiptsList"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical" />
+            android:layout_height="wrap_content" />
     </ScrollView>
 
     <LinearLayout
