@@ -9,4 +9,5 @@ object Constants {
   const val BASE_ADDRESS = "10.0.2.2"
   const val SIGN_ALGO = "SHA256WithRSA"
   const val PORT = "8080"
+  const val REQUEST_CAMERA_ACCESS = 2
 }

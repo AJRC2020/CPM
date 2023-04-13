@@ -31,12 +31,18 @@
 
     </FrameLayout>
 
-    <FrameLayout
-        android:layout_height="0sp"
-        android:layout_weight="1"
-        android:layout_width="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="595dp"
+        android:gravity="center"
+        android:orientation="vertical">
 
-    </FrameLayout>
+        <Button
+            android:id="@+id/openScanner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/readLabel" />
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
