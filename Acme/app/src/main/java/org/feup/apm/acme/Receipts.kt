@@ -24,7 +24,6 @@ class Receipts : AppCompatActivity() {
     private val navbarShoppingCartButton by lazy { findViewById<ImageButton>(R.id.receipts_navbar_shopping_cart_button)}
     private val navbarProfileButton by lazy { findViewById<ImageButton>(R.id.receipts_navbar_profile_button)}
     private val progressBar by lazy {findViewById<ProgressBar>(R.id.progressBarReceipts)}
-    //private val layoutReceipts by lazy {findViewById<LinearLayout>(R.id.layoutReceipts)}
     private val mRecyclerView by lazy {findViewById<RecyclerView>(R.id.receiptsList)}
     private var mAdapter: RecyclerView.Adapter<*> = ReceiptsAdapter(JSONArray())
     private val mLayoutManager: RecyclerView.LayoutManager = LinearLayoutManager(this)

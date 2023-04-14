@@ -9,7 +9,6 @@ import java.nio.file.Files;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.X509EncodedKeySpec;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +35,6 @@ public class ProductController {
         return productService.getProducts();
     }
 
-    //TODO: this is supposed to be an encrypted QRCODE I think
     @PostMapping("/new")
     public ResponseEntity<AppProduct> createProduct(@RequestBody Encrypt encryption) throws Exception {
         //Comes Encrypted

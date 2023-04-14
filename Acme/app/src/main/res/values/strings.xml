@@ -40,7 +40,7 @@
     <string name="receipts">Receipts</string>
     <string name="receipts_description">Receipts</string>
     <string name="vouchers_description">Vouchers</string>
-    <string name="qrcode_scan">QR Code Scan</string>
+    <string name="qrcode_scan">Scan QR code</string>
     <string name="no_receipts_warning">You don\'t have any receipts</string>
     <string name="date">Date:</string>
     <string name="total">Total:</string>
@@ -52,4 +52,8 @@
     <string name="euro">€</string>
     <string name="none">None</string>
     <string name ="expandButton">Expand receipt info</string>
+    <string name ="readLabel">Read label</string>
+    <string name="addToCart">Add to shopping cart</string>
+    <string name="forget">Forget</string>
+    <string name="noScan">Scan a product\'s QR code to add it to your cart</string>
 </resources>
