@@ -5,6 +5,7 @@ import android.content.Context
 import android.provider.ContactsContract.Profile
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import org.feup.apm.acme.models.Product
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.BufferedReader
@@ -248,4 +249,59 @@ fun getUserInfo(
         urlConnection?.disconnect()
     }
     return result
+}
+
+
+fun getProduct(
+    act: QRCodeActivity,
+    encryptedProduct: String,
+
+    ) : Product? {
+    // Building URL
+    val urlRoute = "api/products/new"
+    val url = URL("http://${Constants.BASE_ADDRESS}:${Constants.PORT}/$urlRoute")
+
+    // Creating payload
+    val payload = JSONObject()
+    payload.put("encryption", encryptedProduct)
+
+
+    var urlConnection: HttpURLConnection? = null
+    var result = false
+    try {
+        // Sending Request
+        urlConnection = (url.openConnection() as HttpURLConnection).apply {
+            doOutput = true
+            doInput = true
+            requestMethod = "POST"
+            setRequestProperty("Content-Type", "application/json")
+            useCaches = false
+            connectTimeout = 5000
+            with(outputStream) {
+                write(payload.toString().toByteArray())
+                flush()
+                close()
+            }
+            if (responseCode == 200) {
+                // Getting response stream
+                val read = readStream(inputStream)
+                // Parsing stream into JSON
+                val jsonObject = JSONObject(read)
+
+                return Product(jsonObject["uuid"].toString(),jsonObject["name"].toString(),jsonObject["price"].toString().toFloat())
+            } else {
+                // Putting error info in snack bar
+                act.createSnackBar("Code: $responseCode - $errorStream")
+            }
+        }
+    } catch (e: Exception) {
+        // Putting error info in snack bar
+        act.createSnackBar(e.toString())
+
+    } finally {
+        // Closing url connection
+        urlConnection?.disconnect()
+    }
+
+    return null
 }
