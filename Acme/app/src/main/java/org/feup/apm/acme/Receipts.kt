@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
+import org.feup.apm.acme.models.Receipt
 import org.json.JSONArray
 import kotlin.concurrent.thread
 
@@ -25,10 +26,10 @@ class Receipts : AppCompatActivity() {
     private val navbarProfileButton by lazy { findViewById<ImageButton>(R.id.receipts_navbar_profile_button)}
     private val progressBar by lazy {findViewById<ProgressBar>(R.id.progressBarReceipts)}
     private val mRecyclerView by lazy {findViewById<RecyclerView>(R.id.receiptsList)}
-    private var mAdapter: RecyclerView.Adapter<*> = ReceiptsAdapter(JSONArray())
+    private var mAdapter: RecyclerView.Adapter<*> = ReceiptsAdapter(listOf())
     private val mLayoutManager: RecyclerView.LayoutManager = LinearLayoutManager(this)
 
-    var receipts = JSONArray()
+    var receipts = listOf<Receipt>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

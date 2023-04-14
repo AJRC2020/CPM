@@ -1,11 +1,15 @@
 package org.feup.apm.acme
 
-import android.app.Activity
+import android.app.ActionBar
 import android.content.Context
-import android.provider.ContactsContract.Profile
+import android.graphics.Color
 import android.util.Log
-import androidx.appcompat.app.AppCompatActivity
+import android.view.View
+import android.widget.TableRow
+import android.widget.TextView
 import org.feup.apm.acme.models.Product
+import org.feup.apm.acme.models.ProductReceipt
+import org.feup.apm.acme.models.Receipt
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.BufferedReader
@@ -16,6 +20,9 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.security.KeyStore
 import java.security.Signature
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.util.*
 
 private fun readStream(input: InputStream): String {
     var reader: BufferedReader? = null
@@ -110,7 +117,7 @@ fun getPurchases(
     act: Receipts,
     uuid: String,
 
-) : JSONArray {
+) : List<Receipt> {
     // Building URL
     val urlRoute = "api/users/purchases"
     val url = URL("http://${Constants.BASE_ADDRESS}:${Constants.PORT}/$urlRoute")
@@ -122,7 +129,7 @@ fun getPurchases(
 
 
     var urlConnection: HttpURLConnection? = null
-    var result = false
+    val receipts : MutableList<Receipt> = mutableListOf()
     try {
         // Sending Request
         urlConnection = (url.openConnection() as HttpURLConnection).apply {
@@ -141,8 +148,27 @@ fun getPurchases(
                 // Getting response stream
                 val read = readStream(inputStream)
                 // Parsing stream into JSON
+                val dataSet = JSONArray(read)
 
-                return JSONArray(read);
+
+                (0 until dataSet.length()).forEach { receipt ->
+                    val date = dataSet.getJSONObject(receipt)["date"].toString()
+                    val total = dataSet.getJSONObject(receipt)["price"].toString().toFloat()
+                    val voucher = dataSet.getJSONObject(receipt)["voucher"].toString()
+                    val itemsJson = dataSet.getJSONObject(receipt).getJSONArray("items");
+                    val items : MutableList<ProductReceipt> = mutableListOf()
+                    (0 until itemsJson.length()).forEach {
+                        val item = itemsJson.getJSONObject(it)
+
+                        val name = item["product"].toString()
+                        val price =  item["price"].toString().toFloat()
+                        val amount =  item["amount"].toString().toInt()
+
+                        items.add(ProductReceipt(amount,name,price))
+                    }
+                    receipts.add(Receipt(date,total,items,voucher))
+                }
+
             } else {
                 // Putting error info in snack bar
                 //act.createSnackBar("Code: $responseCode - $errorStream")
@@ -160,7 +186,7 @@ fun getPurchases(
         // Closing url connection
         urlConnection?.disconnect()
     }
-    return JSONArray()
+    return receipts
 }
 
 private fun signContent(content:String): String {

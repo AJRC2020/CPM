@@ -39,7 +39,9 @@ class QRCodeActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_qrcode)
-        forget()
+        if (product == null){
+            forget()
+        }
 
         addToCartBtt.setOnClickListener{
             addToCart()
