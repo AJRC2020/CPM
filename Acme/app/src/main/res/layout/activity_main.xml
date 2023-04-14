@@ -68,6 +68,16 @@
             android:textSize="30sp"
             app:backgroundTint="#558FFF" />
 
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/navbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:menu="@menu/bottom_nav_menu"
+            app:itemIconTint="#ffffff"
+            app:itemTextColor="#ffffff"
+            android:background="@color/sky_blue"
+            app:labelVisibilityMode="unlabeled"/>
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
