@@ -61,20 +61,19 @@ class ReceiptsAdapter(private val dataSet: JSONArray) :
         viewHolder.expandButton.setOnClickListener {
             if (viewHolder.expandedReceipt.visibility == View.VISIBLE) {
                 viewHolder.expandedReceipt.visibility = View.GONE
+                viewHolder.expandButton.rotation = 0F
             } else {
                 viewHolder.expandedReceipt.visibility = View.VISIBLE
+                viewHolder.expandButton.rotation = 180F
             }
         }
 
         viewHolder.date.text = dataSet.getJSONObject(position)["date"].toString()
         viewHolder.total.text = dataSet.getJSONObject(position)["price"].toString()
         viewHolder.totalDetails.text = dataSet.getJSONObject(position)["price"].toString()
-        viewHolder.totalDetails.textSize = 20f
-        viewHolder.total.textSize = 16f
-        viewHolder.date.textSize = 16f
+
         if (dataSet.getJSONObject(position)["voucher"].toString() != "null"){
             viewHolder.voucherLabel.text = dataSet.getJSONObject(position)["voucher"].toString()
-            viewHolder.voucherLabel.textSize = 16f
             viewHolder.voucherTick.setImageResource(R.drawable.tick)
         }
 
@@ -89,21 +88,21 @@ class ReceiptsAdapter(private val dataSet: JSONArray) :
             val name = TextView(viewHolder.itemView.context)
             name.text = receipt["product"].toString()
             name.setTextColor(Color.BLACK)
-            name.textSize = 16f
+            name.textSize = 20f
             name.layoutParams = lp
 
 
             val price = TextView(viewHolder.itemView.context)
             price.text = receipt["price"].toString()
             price.setTextColor(Color.BLACK)
-            price.textSize = 16f
+            price.textSize = 20f
             price.layoutParams = lpb
             price.textAlignment = View.TEXT_ALIGNMENT_TEXT_END
 
             val euroSymbol = TextView(viewHolder.itemView.context)
             euroSymbol.text = "€"
             euroSymbol.setTextColor(Color.BLACK)
-            euroSymbol.textSize = 16f
+            euroSymbol.textSize = 20f
             euroSymbol.layoutParams = lps
             euroSymbol.textAlignment = View.TEXT_ALIGNMENT_TEXT_END
 
