@@ -110,13 +110,13 @@ public class UserController {
             Iterator<AppItem> items = purchase.getItems().iterator();
 
 
-            List<ProductAndPrice> itemsList = new ArrayList<>();
+            List<ProductReceipt> itemsList = new ArrayList<>();
 
 
             while(items.hasNext()) {
                 AppItem item = items.next();
                 AppProduct product = item.getProduct();
-                itemsList.add(new ProductAndPrice(product.getName(), item.getQuantity() * product.getPrice()));
+                itemsList.add(new ProductReceipt(product.getName(), item.getQuantity() * product.getPrice(),item.getQuantity()));
             }
 
             if (purchase.getVoucher() == null) {

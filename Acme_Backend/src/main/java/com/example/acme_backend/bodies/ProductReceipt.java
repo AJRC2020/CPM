@@ -1,10 +1,12 @@
 package com.example.acme_backend.bodies;
 
-public class ProductAndPrice {
+public class ProductReceipt {
     public String product;
     public Float price;
+    public int amount;
 
-    public ProductAndPrice(String product, Float price) {
+    public ProductReceipt(String product, Float price, int amount) {
+        this.amount = amount;
         this.product = product;
         this.price = price;
     }

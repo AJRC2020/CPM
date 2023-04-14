@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.acme_backend.bodies.NewPurchase;
-import com.example.acme_backend.bodies.ProductAndPrice;
+import com.example.acme_backend.bodies.ProductReceipt;
 import com.example.acme_backend.bodies.ProductAndQuantity;
 import com.example.acme_backend.bodies.ReturnPurchase;
 import com.example.acme_backend.bodies.SignedNewPurchase;
@@ -64,7 +64,7 @@ public class PurchaseController {
 
         AppPurchase purchase = purchaseService.createPurchase();
         
-        List<ProductAndPrice> items = new ArrayList<>();
+        List<ProductReceipt> items = new ArrayList<>();
 
         for (ProductAndQuantity products : content.products) {
             AppProduct product = productService.findByUuid(products.product);
@@ -73,7 +73,7 @@ public class PurchaseController {
             itemService.createItem(products.quantity, product, purchase);
             products.product = product.getName();
 
-            ProductAndPrice PnP = new ProductAndPrice(product.getName(), product.getPrice() * products.quantity);
+            ProductReceipt PnP = new ProductReceipt(product.getName(), product.getPrice() * products.quantity,products.quantity);
             items.add(PnP); 
         }   
 

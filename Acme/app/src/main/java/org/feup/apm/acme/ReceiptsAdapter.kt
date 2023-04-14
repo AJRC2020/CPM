@@ -13,11 +13,12 @@ import android.widget.TableLayout
 import android.widget.TableRow
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import org.feup.apm.acme.models.Receipt
 import org.json.JSONArray
 
 
 //TODO: make cards more like mockup
-class ReceiptsAdapter(private val dataSet: JSONArray) :
+class ReceiptsAdapter(private val dataSet: List<Receipt>) :
     RecyclerView.Adapter<ReceiptsAdapter.ViewHolder>() {
 
     /**
@@ -57,7 +58,7 @@ class ReceiptsAdapter(private val dataSet: JSONArray) :
 
     // Replace the contents of a view (invoked by the layout manager)
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        Log.d(position.toString(),dataSet.getJSONObject(position).toString())
+        // Expand button setup
         viewHolder.expandButton.setOnClickListener {
             if (viewHolder.expandedReceipt.visibility == View.VISIBLE) {
                 viewHolder.expandedReceipt.visibility = View.GONE
@@ -68,37 +69,54 @@ class ReceiptsAdapter(private val dataSet: JSONArray) :
             }
         }
 
-        viewHolder.date.text = dataSet.getJSONObject(position)["date"].toString()
-        viewHolder.total.text = dataSet.getJSONObject(position)["price"].toString()
-        viewHolder.totalDetails.text = dataSet.getJSONObject(position)["price"].toString()
+        // Get basic receipt info
+        viewHolder.date.text = dataSet[position].date
+        viewHolder.total.text = dataSet[position].price.toString()
+        viewHolder.totalDetails.text = dataSet[position].price.toString()
+        viewHolder.totalDetails.textSize = 24f
 
-        if (dataSet.getJSONObject(position)["voucher"].toString() != "null"){
-            viewHolder.voucherLabel.text = dataSet.getJSONObject(position)["voucher"].toString()
+        if (dataSet[position].voucher != "null"){
+            viewHolder.voucherLabel.text = dataSet[position].voucher
             viewHolder.voucherTick.setImageResource(R.drawable.tick)
         }
 
-        val items = dataSet.getJSONObject(position).getJSONArray("items");
-        (0 until items.length()).forEach {
-            val receipt = items.getJSONObject(it)
+        // Get items
+        val items = dataSet[position].items
+        (0 until items.size).forEach {
+            val item = items[it]
+
             val lp = TableRow.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT,1f)
+            val lpss = TableRow.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT,0.1f)
             val lpb = TableRow.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT,0.95f)
             val lps = TableRow.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT,0.05f)
 
+            // Create rows
             val row = TableRow(viewHolder.itemView.context)
+
+
+            // Add amount
+            val amount = TextView(viewHolder.itemView.context)
+            amount.text = item.amount.toString()
+            amount.setTextColor(Color.BLACK)
+            amount.textSize = 20f
+            amount.layoutParams = lpss
+
+            // Add name
             val name = TextView(viewHolder.itemView.context)
-            name.text = receipt["product"].toString()
+            name.text = item.name
             name.setTextColor(Color.BLACK)
             name.textSize = 20f
             name.layoutParams = lp
 
-
+            // Add price
             val price = TextView(viewHolder.itemView.context)
-            price.text = receipt["price"].toString()
+            price.text = item.price.toString()
             price.setTextColor(Color.BLACK)
             price.textSize = 20f
             price.layoutParams = lpb
             price.textAlignment = View.TEXT_ALIGNMENT_TEXT_END
 
+            // Add € symbol
             val euroSymbol = TextView(viewHolder.itemView.context)
             euroSymbol.text = "€"
             euroSymbol.setTextColor(Color.BLACK)
@@ -106,15 +124,18 @@ class ReceiptsAdapter(private val dataSet: JSONArray) :
             euroSymbol.layoutParams = lps
             euroSymbol.textAlignment = View.TEXT_ALIGNMENT_TEXT_END
 
-
+            // Add product to row
+            row.addView(amount)
             row.addView(name)
             row.addView(price)
             row.addView(euroSymbol)
+
+            // Add row to table
             viewHolder.table.addView(row)
         }
     }
 
     // Return the size of your dataset (invoked by the layout manager)
-    override fun getItemCount() = dataSet.length()
+    override fun getItemCount() = dataSet.size
 
 }
