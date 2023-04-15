@@ -1,10 +1,12 @@
 package org.feup.apm.acme
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.util.Log
 import android.view.View
 import android.widget.ProgressBar
+import androidx.core.content.ContextCompat.startActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.snackbar.Snackbar
 import org.feup.apm.acme.activities.*
@@ -70,13 +72,14 @@ fun createSnackBar(text:String, act: Activity){
     snack.show()
 }
 
-fun signContent(content:String): String {
+fun signContent(content:String, username:String): String {
     if (content.isEmpty()) throw Exception("no content")
+
 
     try {
         val entry = KeyStore.getInstance(Constants.ANDROID_KEYSTORE).run {
             load(null)
-            getEntry(Constants.keyName, null)
+            getEntry(username, null)
         }
         val prKey = (entry as KeyStore.PrivateKeyEntry).privateKey
         val result = Signature.getInstance(Constants.SIGN_ALGO).run {
@@ -116,4 +119,24 @@ fun convertToEuros(value: Float) : String{
     format.maximumFractionDigits = 2
     format.currency = Currency.getInstance("EUR")
     return format.format(value)
+}
+
+fun checkIfLoggedOut(act: Activity){
+    val sharedPreference = act.getSharedPreferences("user_info", Context.MODE_PRIVATE)
+    val uuid = sharedPreference.getString("uuid","none").toString()
+
+    if (uuid == "none"){
+        val intent = Intent(act, MainActivity::class.java)
+        act.startActivity(intent)
+    }
+}
+
+fun checkIfLoggedIn(act: Activity){
+    val sharedPreference = act.getSharedPreferences("user_info", Context.MODE_PRIVATE)
+    val uuid = sharedPreference.getString("uuid","none").toString()
+
+    if (uuid != "none"){
+        val intent = Intent(act, UserProfile::class.java)
+        act.startActivity(intent)
+    }
 }

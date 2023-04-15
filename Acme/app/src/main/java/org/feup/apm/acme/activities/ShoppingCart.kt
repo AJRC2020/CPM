@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import org.feup.apm.acme.R
 import org.feup.apm.acme.adaptors.ProductsAdapter
+import org.feup.apm.acme.checkIfLoggedOut
 import org.feup.apm.acme.convertToEuros
 import org.feup.apm.acme.models.ProductAmount
 import org.feup.apm.acme.navBarListeners
@@ -28,6 +29,8 @@ class ShoppingCart : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_shopping_cart)
+
+        checkIfLoggedOut(this)
 
         mRecyclerView.layoutManager = mLayoutManager
         mRecyclerView.adapter = mAdapter

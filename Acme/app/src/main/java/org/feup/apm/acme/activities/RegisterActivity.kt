@@ -31,6 +31,8 @@ class RegisterActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
 
+        checkIfLoggedIn(this)
+
 
         backButton.setOnClickListener {
             finish()
@@ -47,8 +49,9 @@ class RegisterActivity : AppCompatActivity() {
                 usernameField.text.toString().trim().isNotEmpty() &&
                 passwordField.text.toString().trim().isNotEmpty() &&
                 paymentMethodField.text.toString().trim().isNotEmpty()){
-                generateAndStoreKeys()
-                val publicKey: PublicKey = getPublicKey()
+                val username = usernameField.text.toString()
+                generateAndStoreKeys(username)
+                val publicKey: PublicKey = getPublicKey(username)
                 val encodedPk = publicKey.encoded
                 val base64Pk =  android.util.Base64.encodeToString(encodedPk, android.util.Base64.NO_WRAP)
                 loading(progressBar, listOf(registerButton))
@@ -56,7 +59,7 @@ class RegisterActivity : AppCompatActivity() {
                     val result = register(
                         this,
                         nameField.text.toString(),
-                        usernameField.text.toString(),
+                        username,
                         passwordField.text.toString(),
                         paymentMethodField.text.toString(),
                         base64Pk
@@ -78,11 +81,11 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
-    private fun getPublicKey(): PublicKey{
+    private fun getPublicKey(username: String): PublicKey{
         try {
             val entry = KeyStore.getInstance(Constants.ANDROID_KEYSTORE).run {
                 load(null)
-                getEntry(Constants.keyName, null)
+                getEntry(username, null)
             }
             return (entry as KeyStore.PrivateKeyEntry).certificate.publicKey
         } catch (ex: Exception) {
@@ -90,12 +93,12 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
-    private fun generateAndStoreKeys() {
+    private fun generateAndStoreKeys(username: String) {
         try {
             val spec = KeyPairGeneratorSpec.Builder(this)
                 .setKeySize(Constants.KEY_SIZE)
-                .setAlias(Constants.keyName)
-                .setSubject(X500Principal("CN=" + Constants.keyName))
+                .setAlias(username)
+                .setSubject(X500Principal("CN=$username"))
                 .setSerialNumber(BigInteger.valueOf(Constants.serialNr))
                 .setStartDate(GregorianCalendar().time)
                 .setEndDate(GregorianCalendar().apply { add(Calendar.YEAR, 10) }.time)

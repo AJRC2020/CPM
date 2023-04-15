@@ -27,6 +27,9 @@ class VouchersActivity : AppCompatActivity() {
     private var vouchers = listOf<Voucher>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        checkIfLoggedOut(this)
+
         setContentView(R.layout.activity_vouchers)
         mRecyclerView.layoutManager = mLayoutManager
         mRecyclerView.adapter = mAdapter
@@ -39,12 +42,13 @@ class VouchersActivity : AppCompatActivity() {
         loading(progressBar, listOf())
         val sharedPreference = this.getSharedPreferences("user_info", Context.MODE_PRIVATE)
         val uuid = sharedPreference.getString("uuid", "none")
+        val username = sharedPreference.getString("username", "none").toString()
 
         thread {
             val vouchersInfo = uuid?.let {
                 getVouchers(
                     this,
-                    it
+                    it,username
                 )
             }!!
             Log.d("res", vouchers.toString())

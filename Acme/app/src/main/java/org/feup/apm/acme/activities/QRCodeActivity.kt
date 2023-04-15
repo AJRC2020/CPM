@@ -35,6 +35,9 @@ class QRCodeActivity : AppCompatActivity() {
     private var product: Product? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        checkIfLoggedOut(this)
+
         setContentView(R.layout.activity_qrcode)
         if (product == null){
             forget()

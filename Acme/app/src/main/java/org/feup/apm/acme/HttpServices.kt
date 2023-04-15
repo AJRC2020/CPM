@@ -83,7 +83,7 @@ fun register(
 fun getPurchases(
     act: Receipts,
     uuid: String,
-
+    username: String
     ) : List<Receipt> {
     // Building URL
     val urlRoute = "api/users/purchases"
@@ -92,7 +92,7 @@ fun getPurchases(
     // Creating payload
     val payload = JSONObject()
     payload.put("uuid", uuid)
-    payload.put("signature", signContent(uuid))
+    payload.put("signature", signContent(uuid,username))
 
 
     var urlConnection: HttpURLConnection? = null
@@ -160,7 +160,7 @@ fun getPurchases(
 fun getVouchers(
     act: VouchersActivity,
     uuid: String,
-
+    username: String
     ) : VouchersInfo {
     // Building URL
     val urlRoute = "api/users/vouchers"
@@ -169,7 +169,7 @@ fun getVouchers(
     // Creating payload
     val payload = JSONObject()
     payload.put("uuid", uuid)
-    payload.put("signature", signContent(uuid))
+    payload.put("signature", signContent(uuid,username))
 
 
     var urlConnection: HttpURLConnection? = null
@@ -232,7 +232,7 @@ fun changePaymentMethod(
     act: UserProfile,
     newCard: Long,
     uuid: String,
-
+    username: String
     ) : Boolean {
     // Building URL
     val urlRoute = "api/users/update/payment"
@@ -242,7 +242,7 @@ fun changePaymentMethod(
     val payload = JSONObject()
     payload.put("uuid", uuid)
     payload.put("payment", newCard)
-    payload.put("signature", signContent(uuid))
+    payload.put("signature", signContent(uuid,username))
 
 
     var urlConnection: HttpURLConnection? = null
@@ -290,7 +290,7 @@ fun changePassword(
     currentPassword: String,
     newPassword: String,
     uuid: String,
-
+    username: String
     ) : Boolean {
     // Building URL
     val urlRoute = "api/users/update/password"
@@ -299,9 +299,9 @@ fun changePassword(
     // Creating payload
     val payload = JSONObject()
     payload.put("uuid", uuid)
-    payload.put("currentPassword", currentPassword)
-    payload.put("newPassword", newPassword)
-    payload.put("signature", signContent(uuid))
+    payload.put("old_password", currentPassword)
+    payload.put("new_password", newPassword)
+    payload.put("signature", signContent(uuid,username))
 
 
     var urlConnection: HttpURLConnection? = null
@@ -343,10 +343,114 @@ fun changePassword(
     return result
 }
 
+
+fun login(
+    act: LoginActivity,
+    username: String,
+    password: String,
+    ) : Boolean {
+    // Building URL
+    val urlRoute = "api/users/login"
+    val url = URL("http://${Constants.BASE_ADDRESS}:${Constants.PORT}/$urlRoute")
+
+    // Creating payload
+    val payload = JSONObject()
+    payload.put("username", username)
+    payload.put("password", password)
+
+
+    var urlConnection: HttpURLConnection? = null
+    var result = false
+    try {
+        // Sending Request
+        urlConnection = (url.openConnection() as HttpURLConnection).apply {
+            doOutput = true
+            doInput = true
+            requestMethod = "POST"
+            setRequestProperty("Content-Type", "application/json")
+            useCaches = false
+            connectTimeout = 5000
+            with(outputStream) {
+                write(payload.toString().toByteArray())
+                flush()
+                close()
+            }
+            if (responseCode == 200) {
+                result = true
+
+            } else {
+                // Putting error info in snack bar
+                createSnackBar("Code: $responseCode - $errorStream", act)
+                // Putting error info in console
+                Log.d("error", "Code: $responseCode - $errorStream")
+            }
+        }
+    } catch (e: Exception) {
+        // Putting error info in snack bar
+        createSnackBar(e.toString(),act)
+        // Putting error info in console
+        Log.d("error", e.toString())
+
+    } finally {
+        // Closing url connection
+        urlConnection?.disconnect()
+    }
+    return result
+}
+
+
+fun getUUID(
+    act: LoginActivity,
+    username: String
+) : Boolean {
+    // Building URL
+    val urlRoute = "api/users/uuid/$username"
+    val url = URL("http://${Constants.BASE_ADDRESS}:${Constants.PORT}/$urlRoute")
+
+    var urlConnection: HttpURLConnection? = null
+    var result = false
+    try {
+        // Sending Request
+        urlConnection = (url.openConnection() as HttpURLConnection).apply {
+            doInput = true
+            setRequestProperty("Content-Type", "application/json")
+            useCaches = false
+            connectTimeout = 5000
+            if (responseCode == 200) {
+
+                val uuid = readStream(inputStream)
+                val sharedPreference = act.getSharedPreferences("user_info", Context.MODE_PRIVATE)
+                val editor = sharedPreference.edit()
+                editor.putString("uuid", uuid)
+                editor.putString("username", username)
+                editor.apply()
+
+                result = true
+
+            } else {
+                // Putting error info in snack bar
+                createSnackBar("Code: $responseCode - $errorStream", act)
+                // Putting error info in console
+                Log.d("error", "Code: $responseCode - $errorStream")
+            }
+        }
+    } catch (e: Exception) {
+        // Putting error info in snack bar
+        createSnackBar(e.toString(),act)
+        // Putting error info in console
+        Log.d("error", e.toString())
+
+    } finally {
+        // Closing url connection
+        urlConnection?.disconnect()
+    }
+    return result
+}
+
 fun getUserInfo(
     act: UserProfile,
     uuid: String,
-
+    username: String
     ) : Boolean {
     // Building URL
     val urlRoute = "api/users/info"
@@ -355,7 +459,7 @@ fun getUserInfo(
     // Creating payload
     val payload = JSONObject()
     payload.put("uuid", uuid)
-    payload.put("signature", signContent(uuid))
+    payload.put("signature", signContent(uuid,username))
 
 
     var urlConnection: HttpURLConnection? = null
@@ -383,6 +487,7 @@ fun getUserInfo(
                 val editor = sharedPreference.edit()
                 editor.putFloat("discount", jsonObject["discount"].toString().toFloat())
                 editor.putFloat("total", jsonObject["total"].toString().toFloat())
+                editor.putString("name", jsonObject["name"].toString())
                 editor.apply()
 
                 result = true

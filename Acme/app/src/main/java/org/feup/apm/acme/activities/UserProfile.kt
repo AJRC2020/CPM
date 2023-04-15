@@ -1,6 +1,7 @@
 package org.feup.apm.acme.activities
 
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -9,7 +10,6 @@ import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
-import androidx.fragment.app.FragmentActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import org.feup.apm.acme.*
 import org.feup.apm.acme.fragments.DialogChangePassword
@@ -27,27 +27,25 @@ class UserProfile : AppCompatActivity() {
     private val changePasswordButt by lazy {findViewById<Button>(R.id.profileChangePasswordButton)}
     private val changePaymentMethodButt by lazy {findViewById<Button>(R.id.profileChangePaymentButton)}
     private val navbar by lazy { findViewById<BottomNavigationView>(R.id.navbar) }
+    private val logOut by lazy { findViewById<Button>(R.id.profileLogoutButton) }
     private var uuid: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_user_profile)
-        backButton.setOnClickListener {
-            finish()
-        }
+
+        checkIfLoggedOut(this)
 
         val sharedPreference = this.getSharedPreferences("user_info", Context.MODE_PRIVATE)
-        nameField.text = sharedPreference.getString("name","error")
-        usernameField.text = sharedPreference.getString("username","error")
-
-
-        loading(progressBar, listOf(otherSection))
+        val username = sharedPreference.getString("username","none").toString()
+        usernameField.text = username
         uuid = sharedPreference.getString("uuid","none").toString()
+        loading(progressBar, listOf(otherSection))
 
         thread{
             getUserInfo(
                 this,
-                uuid
+                uuid,username
             )
 
             this.runOnUiThread {
@@ -56,16 +54,29 @@ class UserProfile : AppCompatActivity() {
             }
         }
 
+        backButton.setOnClickListener {
+            finish()
+        }
+
         changePasswordButt.setOnClickListener {
-            val popupMenu = DialogChangePassword( uuid,this)
+            val popupMenu = DialogChangePassword( uuid,username,this)
             val manager = supportFragmentManager
             popupMenu.show(manager,"PopUp")
         }
 
         changePaymentMethodButt.setOnClickListener {
-            val popupMenu = DialogChangePayment( uuid,this)
+            val popupMenu = DialogChangePayment( uuid,username,this)
             val manager = supportFragmentManager
             popupMenu.show(manager,"PopUp")
+        }
+
+        logOut.setOnClickListener {
+            deleteSharedPreferences("user_info")
+            deleteSharedPreferences("shopping_cart_prod_names")
+            deleteSharedPreferences("shopping_cart_prod_prices")
+            deleteSharedPreferences("shopping_cart_prod_amount")
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
         }
 
         navBarListeners(navbar,this)
@@ -74,5 +85,6 @@ class UserProfile : AppCompatActivity() {
     private fun updateInfo(sharedPreference: SharedPreferences){
         disc.text = convertToEuros(sharedPreference.getFloat("discount",0f))
         tot.text = convertToEuros(sharedPreference.getFloat("total",0f))
+        nameField.text = sharedPreference.getString("name","error")
     }
 }

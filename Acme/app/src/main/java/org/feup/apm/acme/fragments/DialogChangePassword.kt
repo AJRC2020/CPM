@@ -13,7 +13,7 @@ import org.feup.apm.acme.*
 import org.feup.apm.acme.activities.UserProfile
 import kotlin.concurrent.thread
 
-class DialogChangePassword(private val uuid: String, private val act: UserProfile): DialogFragment(){
+class DialogChangePassword(private val uuid: String, private val username: String,private val act: UserProfile): DialogFragment(){
 
 
     override fun onCreateView(
@@ -46,7 +46,7 @@ class DialogChangePassword(private val uuid: String, private val act: UserProfil
                 loading(progressBar, listOf(yesButton))
                 closeButton.isEnabled = false
                 thread {
-                    val result = changePassword(act, currPassword, nPassword, uuid)
+                    val result = changePassword(act, currPassword, nPassword, uuid, username)
                     act.runOnUiThread {
                         stopLoading(progressBar, listOf(yesButton))
                         closeButton.isEnabled = true

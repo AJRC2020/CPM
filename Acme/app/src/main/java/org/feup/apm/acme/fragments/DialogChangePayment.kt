@@ -13,7 +13,7 @@ import org.feup.apm.acme.*
 import org.feup.apm.acme.activities.UserProfile
 import kotlin.concurrent.thread
 
-class DialogChangePayment(private val uuid: String, private val act: UserProfile): DialogFragment(){
+class DialogChangePayment(private val uuid: String, private val username: String, private val act: UserProfile): DialogFragment(){
 
 
     override fun onCreateView(
@@ -43,7 +43,7 @@ class DialogChangePayment(private val uuid: String, private val act: UserProfile
                 loading(progressBar, listOf(yesButton))
                 closeButton.isEnabled = false
                 thread {
-                    val result = changePaymentMethod(act, newCard, uuid)
+                    val result = changePaymentMethod(act, newCard, uuid, username)
                     act.runOnUiThread {
                         stopLoading(progressBar, listOf(yesButton))
                         closeButton.isEnabled = true

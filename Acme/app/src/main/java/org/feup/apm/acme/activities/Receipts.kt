@@ -9,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
-
 import org.feup.apm.acme.*
 import org.feup.apm.acme.adaptors.ReceiptsAdapter
 import org.feup.apm.acme.models.Receipt
@@ -31,6 +30,8 @@ class Receipts : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_receipts)
 
+        checkIfLoggedOut(this)
+
         mRecyclerView.layoutManager = mLayoutManager
         mRecyclerView.adapter = mAdapter
 
@@ -41,11 +42,12 @@ class Receipts : AppCompatActivity() {
         loading(progressBar,listOf())
         val sharedPreference = this.getSharedPreferences("user_info", Context.MODE_PRIVATE)
         val uuid = sharedPreference.getString("uuid","none")
+        val username = sharedPreference.getString("username","none").toString()
 
         thread{
             receipts = uuid?.let {
                 getPurchases(this,
-                    it
+                    it,username
                 )
             }!!
 
