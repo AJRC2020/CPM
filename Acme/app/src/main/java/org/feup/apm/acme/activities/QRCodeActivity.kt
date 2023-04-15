@@ -32,12 +32,15 @@ class QRCodeActivity : AppCompatActivity() {
     private val forgetBtt by lazy { findViewById<ImageButton>(R.id.forgetButton)}
     private val scannedText by lazy {findViewById<LinearLayout>(R.id.productScanned)}
     private val navbar by lazy { findViewById<BottomNavigationView>(R.id.navbar) }
-    private var product: Product? = null
+    private var product: Product? = Product("jksdjksad","hello",12.3f)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_qrcode)
         if (product == null){
             forget()
+        }else{
+            noScanText.visibility = View.GONE
+            updateProductInfo()
         }
 
         backButton.setOnClickListener {

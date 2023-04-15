@@ -64,5 +64,10 @@
     <string name="forget">Forget</string>
     <string name="remove_product">Remove product from cart</string>
     <string name="remove_one">Remove one from cart</string>
+    <string name="close_window">Close Pop-Up</string>
+    <string name="warning">Warning</string>
+    <string name="proceed">Proceed</string>
+    <string name="cancel">Cancel</string>
+    <string name="warning_delete_cart">You\'re about to remove %1$d of the item %2$s from your shopping cart, do you wish to proceed?</string>
     <string name="noScan">Scan a product\'s QR code to add it to your cart</string>
 </resources>

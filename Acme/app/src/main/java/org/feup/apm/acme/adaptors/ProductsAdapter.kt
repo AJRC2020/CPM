@@ -6,9 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import org.feup.apm.acme.R
 import org.feup.apm.acme.convertToEuros
+import org.feup.apm.acme.fragments.DialogWarningDelete
 import org.feup.apm.acme.models.ProductAmount
 
 
@@ -49,9 +51,14 @@ class ProductsAdapter(private val dataSet: MutableList<ProductAmount>) :
         viewHolder.amountField.text = dataSet[position].amount.toString()
         viewHolder.productName.text = dataSet[position].name
         viewHolder.priceField.text = convertToEuros(dataSet[position].price)
+
         viewHolder.removeAllButton.setOnClickListener{
-            dataSet[position].uuid?.let { it1 -> deleteProduct(it1,position,viewHolder) }
+            val delete = {dataSet[position].uuid?.let { it -> deleteProduct(it,position,viewHolder) }}
+            val popupMenu = DialogWarningDelete(dataSet[position].name,dataSet[position].amount, delete)
+            val manager = (viewHolder.itemView.context as FragmentActivity).supportFragmentManager
+            popupMenu.show(manager,"PopUp")
         }
+
         viewHolder.removeOneButton.setOnClickListener{
             decreaseProductAmount(dataSet[position],position,viewHolder)
         }
