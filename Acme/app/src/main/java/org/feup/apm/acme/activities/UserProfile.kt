@@ -9,8 +9,11 @@ import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.fragment.app.FragmentActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import org.feup.apm.acme.*
+import org.feup.apm.acme.fragments.DialogChangePassword
+import org.feup.apm.acme.fragments.DialogChangePayment
 import kotlin.concurrent.thread
 
 class UserProfile : AppCompatActivity() {
@@ -22,8 +25,9 @@ class UserProfile : AppCompatActivity() {
     private val progressBar by lazy {findViewById<ProgressBar>(R.id.progressBarProfile)}
     private val otherSection by lazy {findViewById<LinearLayout>(R.id.others)}
     private val changePasswordButt by lazy {findViewById<Button>(R.id.profileChangePasswordButton)}
-    private val changePaymentMethodButt by lazy {findViewById<Button>(R.id.profileChangePasswordButton)}
+    private val changePaymentMethodButt by lazy {findViewById<Button>(R.id.profileChangePaymentButton)}
     private val navbar by lazy { findViewById<BottomNavigationView>(R.id.navbar) }
+    private var uuid: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,14 +42,13 @@ class UserProfile : AppCompatActivity() {
 
 
         loading(progressBar, listOf(otherSection))
-        val uuid = sharedPreference.getString("uuid","none")
+        uuid = sharedPreference.getString("uuid","none").toString()
 
         thread{
-            uuid?.let {
-                getUserInfo(this,
-                    it
-                )
-            }!!
+            getUserInfo(
+                this,
+                uuid
+            )
 
             this.runOnUiThread {
                 updateInfo(sharedPreference)
@@ -53,8 +56,18 @@ class UserProfile : AppCompatActivity() {
             }
         }
 
-        // TODO: change password
-        // TODO: change payment method
+        changePasswordButt.setOnClickListener {
+            val popupMenu = DialogChangePassword( uuid,this)
+            val manager = supportFragmentManager
+            popupMenu.show(manager,"PopUp")
+        }
+
+        changePaymentMethodButt.setOnClickListener {
+            val popupMenu = DialogChangePayment( uuid,this)
+            val manager = supportFragmentManager
+            popupMenu.show(manager,"PopUp")
+        }
+
         navBarListeners(navbar,this)
     }
 
@@ -62,5 +75,4 @@ class UserProfile : AppCompatActivity() {
         disc.text = convertToEuros(sharedPreference.getFloat("discount",0f))
         tot.text = convertToEuros(sharedPreference.getFloat("total",0f))
     }
-
 }

@@ -80,7 +80,7 @@
                 android:paddingTop="30sp">
 
                 <TextView
-                    android:id="@+id/registerNameFieldTitle"
+                    android:id="@+id/currentPasswordTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -90,7 +90,7 @@
                     android:textSize="20sp" />
 
                 <EditText
-                    android:id="@+id/registerNameFieldInput"
+                    android:id="@+id/newPasswordField"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -101,7 +101,7 @@
                     android:fontFamily="@font/imprima_regular"
                     android:hint="@string/name_label_hint"
                     android:inputType="textPersonName"
-                    android:labelFor="@id/registerNameFieldTitle"
+                    android:labelFor="@id/currentPasswordTitle"
                     android:minHeight="50sp"
                     android:padding="10dp"
                     android:textSize="20sp"

@@ -67,6 +67,15 @@
     <string name="close_window">Close Pop-Up</string>
     <string name="warning">Warning</string>
     <string name="proceed">Proceed</string>
+    <string name="current_password">Current Password</string>
+    <string name="current_passwordInsert">Insert current password</string>
+    <string name="new_password">New Password</string>
+    <string name="new_passwordInsert">Insert new password</string>
+    <string name="change_password_text">Fill the fields bellow to change your password.</string>
+    <string name="new_card_number">New Card Number</string>
+    <string name="new_card_number_insert">Insert new card number</string>
+    <string name="change_card_text">Write your new card number bellow to change it.</string>
+    <string name="submit">Submit</string>
     <string name="cancel">Cancel</string>
     <string name="warning_delete_cart">You\'re about to remove %1$d of the item %2$s from your shopping cart, do you wish to proceed?</string>
     <string name="noScan">Scan a product\'s QR code to add it to your cart</string>

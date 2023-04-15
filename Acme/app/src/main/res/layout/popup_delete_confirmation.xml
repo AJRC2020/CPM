@@ -19,10 +19,11 @@
             android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center|start"
             android:layout_margin="4sp"
             android:text="@string/warning"
             android:textColor="@color/white"
-            android:textSize="34sp" />
+            android:textSize="24sp" />
 
         <ImageButton
             android:id="@+id/closePopUpButton"

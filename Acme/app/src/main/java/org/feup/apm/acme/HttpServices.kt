@@ -228,7 +228,120 @@ fun getVouchers(
     }
     return vouchersInfo
 }
+fun changePaymentMethod(
+    act: UserProfile,
+    newCard: Long,
+    uuid: String,
 
+    ) : Boolean {
+    // Building URL
+    val urlRoute = "api/users/update/payment"
+    val url = URL("http://${Constants.BASE_ADDRESS}:${Constants.PORT}/$urlRoute")
+
+    // Creating payload
+    val payload = JSONObject()
+    payload.put("uuid", uuid)
+    payload.put("payment", newCard)
+    payload.put("signature", signContent(uuid))
+
+
+    var urlConnection: HttpURLConnection? = null
+    var result = false
+    try {
+        // Sending Request
+        urlConnection = (url.openConnection() as HttpURLConnection).apply {
+            doOutput = true
+            doInput = true
+            requestMethod = "POST"
+            setRequestProperty("Content-Type", "application/json")
+            useCaches = false
+            connectTimeout = 5000
+            with(outputStream) {
+                write(payload.toString().toByteArray())
+                flush()
+                close()
+            }
+            if (responseCode == 200) {
+                result = true
+
+            } else {
+                // Putting error info in snack bar
+                createSnackBar("Code: $responseCode - $errorStream", act)
+                // Putting error info in console
+                Log.d("error", "Code: $responseCode - $errorStream")
+            }
+        }
+    } catch (e: Exception) {
+        // Putting error info in snack bar
+        createSnackBar(e.toString(),act)
+        // Putting error info in console
+        Log.d("error", e.toString())
+
+    } finally {
+        // Closing url connection
+        urlConnection?.disconnect()
+    }
+    return result
+}
+
+
+fun changePassword(
+    act: UserProfile,
+    currentPassword: String,
+    newPassword: String,
+    uuid: String,
+
+    ) : Boolean {
+    // Building URL
+    val urlRoute = "api/users/update/password"
+    val url = URL("http://${Constants.BASE_ADDRESS}:${Constants.PORT}/$urlRoute")
+
+    // Creating payload
+    val payload = JSONObject()
+    payload.put("uuid", uuid)
+    payload.put("currentPassword", currentPassword)
+    payload.put("newPassword", newPassword)
+    payload.put("signature", signContent(uuid))
+
+
+    var urlConnection: HttpURLConnection? = null
+    var result = false
+    try {
+        // Sending Request
+        urlConnection = (url.openConnection() as HttpURLConnection).apply {
+            doOutput = true
+            doInput = true
+            requestMethod = "POST"
+            setRequestProperty("Content-Type", "application/json")
+            useCaches = false
+            connectTimeout = 5000
+            with(outputStream) {
+                write(payload.toString().toByteArray())
+                flush()
+                close()
+            }
+            if (responseCode == 200) {
+                 result = true
+
+            } else {
+                // Putting error info in snack bar
+                createSnackBar("Code: $responseCode - $errorStream", act)
+                // Putting error info in console
+                Log.d("error", "Code: $responseCode - $errorStream")
+            }
+        }
+    } catch (e: Exception) {
+        // Putting error info in snack bar
+        createSnackBar(e.toString(),act)
+        // Putting error info in console
+        Log.d("error", e.toString())
+
+    } finally {
+        // Closing url connection
+        urlConnection?.disconnect()
+    }
+    return result
+}
 
 fun getUserInfo(
     act: UserProfile,
