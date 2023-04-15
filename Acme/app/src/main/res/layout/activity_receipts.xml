@@ -49,7 +49,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            tools:context=".Vouchers">
+            tools:context=".activities.Vouchers">
 
             <TextView
                 android:id="@+id/receiptsActivityTitle"
@@ -70,7 +70,7 @@
 
             <ScrollView
                 android:layout_width="match_parent"
-                android:layout_height="528dp"
+                android:layout_height="0dp"
                 android:layout_weight="1"
                 android:contentDescription="@string/receipts_description">
 
@@ -80,66 +80,18 @@
                     android:layout_height="wrap_content" />
             </ScrollView>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="77sp"
-                android:background="@color/sky_blue"
-                android:orientation="horizontal"
-                android:padding="0sp">
-
-                <ImageButton
-                    android:id="@+id/receipts_navbar_receipts_button"
-                    android:layout_width="0sp"
-                    android:layout_height="match_parent"
-                    android:layout_margin="0sp"
-                    android:layout_weight="1"
-                    android:background="@color/sky_blue"
-                    android:contentDescription="@string/receipts"
-                    app:srcCompat="@drawable/navbar_receipts_icon_higlight" />
-
-                <ImageButton
-                    android:id="@+id/receipts_navbar_vouchers_button"
-                    android:layout_width="0sp"
-                    android:layout_height="match_parent"
-                    android:layout_margin="0sp"
-                    android:layout_weight="1"
-                    android:background="@color/sky_blue"
-                    android:contentDescription="@string/vouchers"
-                    app:srcCompat="@drawable/navbar_voucher_icon" />
-
-                <ImageButton
-                    android:id="@+id/receipts_navbar_qrcode_button"
-                    android:layout_width="0sp"
-                    android:layout_height="match_parent"
-                    android:layout_margin="0sp"
-                    android:layout_weight="1"
-                    android:background="@color/sky_blue"
-                    android:contentDescription="@string/qrcode_scan"
-                    app:srcCompat="@drawable/navbar_qrcode_scan_icon" />
-
-                <ImageButton
-                    android:id="@+id/receipts_navbar_shopping_cart_button"
-                    android:layout_width="0sp"
-                    android:layout_height="match_parent"
-                    android:layout_margin="0sp"
-                    android:layout_weight="1"
-                    android:background="@color/sky_blue"
-                    android:contentDescription="@string/shopping_cart"
-                    app:srcCompat="@drawable/navbar_shopping_cart_icon" />
-
-                <ImageButton
-                    android:id="@+id/receipts_navbar_profile_button"
-                    android:layout_width="0sp"
-                    android:layout_height="match_parent"
-                    android:layout_margin="0sp"
-                    android:layout_weight="1"
-                    android:background="@color/sky_blue"
-                    android:contentDescription="@string/profile"
-                    app:srcCompat="@drawable/navbar_profile_icon" />
-            </LinearLayout>
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
-
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/navbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@color/sky_blue"
+        app:itemIconTint="#ffffff"
+        app:itemTextColor="#ffffff"
+        app:labelVisibilityMode="unlabeled"
+        app:menu="@menu/bottom_nav_menu" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

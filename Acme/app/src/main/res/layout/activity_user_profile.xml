@@ -40,7 +40,7 @@
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
 
 
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
@@ -49,7 +49,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            tools:context=".RegisterActivity">
+            tools:context=".activities.RegisterActivity">
 
             <TextView
                 android:id="@+id/profileActivityTitle"
@@ -76,35 +76,35 @@
                 android:id="@+id/profileNicknameText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="10sp"
                 android:fontFamily="@font/imprima_regular"
                 android:paddingHorizontal="30sp"
                 android:text="@string/nickname_placeholder"
                 android:textAlignment="center"
                 android:textColor="#000"
-                android:textSize="45sp"
-                android:layout_marginBottom="10sp" />
+                android:textSize="45sp" />
 
             <Button
                 android:id="@+id/profileChangePasswordButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/change_password"
-                android:backgroundTint="@color/babyblue"
-                android:textAllCaps="false"
-                android:textSize="25sp"
                 android:layout_marginLeft="30sp"
-                android:layout_marginRight="30sp" />
+                android:layout_marginRight="30sp"
+                android:backgroundTint="@color/babyblue"
+                android:text="@string/change_password"
+                android:textAllCaps="false"
+                android:textSize="25sp" />
 
             <Button
                 android:id="@+id/profileChangePaymentButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="30sp"
+                android:layout_marginRight="30sp"
                 android:backgroundTint="@color/babyblue"
                 android:text="@string/change_payment"
                 android:textAllCaps="false"
-                android:textSize="25sp"
-                android:layout_marginLeft="30sp"
-                android:layout_marginRight="30sp" />
+                android:textSize="25sp" />
 
             <TextView
                 android:id="@+id/profileOthers"
@@ -216,66 +216,18 @@
                 android:textAllCaps="false"
                 android:textSize="26sp" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="77sp"
-                android:orientation="horizontal"
-                android:background="@color/sky_blue"
-                android:padding="0sp">
-
-                <ImageButton
-                    android:id="@+id/profile_navbar_receipts_button"
-                    android:layout_width="0sp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:layout_margin="0sp"
-                    app:srcCompat="@drawable/navbar_receipts_icon"
-                    android:background="@color/sky_blue"
-                    android:contentDescription="@string/receipts" />
-
-                <ImageButton
-                    android:id="@+id/profile_navbar_vouchers_button"
-                    android:layout_width="0sp"
-                    android:layout_height="match_parent"
-                    android:layout_margin="0sp"
-                    android:layout_weight="1"
-                    android:background="@color/sky_blue"
-                    android:contentDescription="@string/vouchers"
-                    app:srcCompat="@drawable/navbar_voucher_icon" />
-
-                <ImageButton
-                    android:id="@+id/profile_navbar_qrcode_button"
-                    android:layout_width="0sp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:layout_margin="0sp"
-                    app:srcCompat="@drawable/navbar_qrcode_scan_icon"
-                    android:background="@color/sky_blue"
-                    android:contentDescription="@string/qrcode_scan" />
-
-                <ImageButton
-                    android:id="@+id/profile_navbar_shopping_cart_button"
-                    android:layout_width="0sp"
-                    android:layout_height="match_parent"
-                    android:layout_margin="0sp"
-                    android:layout_weight="1"
-                    android:background="@color/sky_blue"
-                    android:contentDescription="@string/shopping_cart"
-                    app:srcCompat="@drawable/navbar_shopping_cart_icon" />
-
-                <ImageButton
-                    android:id="@+id/profile_navbar_profile_button"
-                    android:layout_width="0sp"
-                    android:layout_height="match_parent"
-                    android:layout_margin="0sp"
-                    android:layout_weight="1"
-                    android:background="@color/sky_blue"
-                    app:srcCompat="@drawable/navbar_profile_icon_higlight"
-                    android:contentDescription="@string/profile" />
-            </LinearLayout>
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
-
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/navbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@color/sky_blue"
+        app:itemIconTint="#ffffff"
+        app:itemTextColor="#ffffff"
+        app:labelVisibilityMode="unlabeled"
+        app:menu="@menu/bottom_nav_menu" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
