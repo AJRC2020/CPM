@@ -59,8 +59,8 @@ class UserProfile : AppCompatActivity() {
     }
 
     private fun updateInfo(sharedPreference: SharedPreferences){
-        disc.text = sharedPreference.getString("discount","error")
-        tot.text = sharedPreference.getString("total","error")
+        disc.text = convertToEuros(sharedPreference.getFloat("discount",0f))
+        tot.text = convertToEuros(sharedPreference.getFloat("total",0f))
     }
 
 }

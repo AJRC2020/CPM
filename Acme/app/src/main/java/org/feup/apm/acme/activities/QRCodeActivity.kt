@@ -137,7 +137,7 @@ class QRCodeActivity : AppCompatActivity() {
 
     private fun updateProductInfo(){
         productName.text = product?.name
-        productPrice.text = product?.price.toString()
+        productPrice.text = product?.price?.let { convertToEuros(it) }
     }
 
     private fun stopLoading(){

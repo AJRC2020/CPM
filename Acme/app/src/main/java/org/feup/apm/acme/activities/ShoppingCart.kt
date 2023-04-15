@@ -5,20 +5,33 @@ import android.os.Bundle
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import org.feup.apm.acme.R
-import org.feup.apm.acme.models.Product
+import org.feup.apm.acme.adaptors.ProductsAdapter
+import org.feup.apm.acme.convertToEuros
+import org.feup.apm.acme.models.ProductAmount
 import org.feup.apm.acme.navBarListeners
 
 class ShoppingCart : AppCompatActivity() {
     private val backButton by lazy { findViewById<ImageButton>(R.id.shoppingCartBackButton)}
-    private val shoppingList by lazy { findViewById<TextView>(R.id.shoppingList)}
     private val shoppingCartTotal by lazy { findViewById<TextView>(R.id.shoppingCartTotal)}
     private val navbar by lazy { findViewById<BottomNavigationView>(R.id.navbar) }
+    private val mRecyclerView by lazy {findViewById<RecyclerView>(R.id.shoppingList)}
+    private var mAdapter: ProductsAdapter = ProductsAdapter(mutableListOf())
+    private val mLayoutManager: RecyclerView.LayoutManager = LinearLayoutManager(this)
 
+    private var products : MutableList<ProductAmount> = mutableListOf()
+    private var total = 0f
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_shopping_cart)
+
+        mRecyclerView.layoutManager = mLayoutManager
+        mRecyclerView.adapter = mAdapter
+
         seeProductsInCart()
         //Buttons
         backButton.setOnClickListener {
@@ -27,62 +40,43 @@ class ShoppingCart : AppCompatActivity() {
         navBarListeners(navbar,this)
     }
 
-
-    private fun deleteProduct(uuid: String){
-        val sharedPreference = this.getSharedPreferences("shopping_cart_prod_names", Context.MODE_PRIVATE)
-        val sharedPreferencePrices = this.getSharedPreferences("shopping_cart_prod_prices", Context.MODE_PRIVATE)
-        val sharedPreferenceAmount = this.getSharedPreferences("shopping_cart_prod_amount", Context.MODE_PRIVATE)
-        val editor = sharedPreference.edit()
-        val editorPrices = sharedPreferencePrices.edit()
-        val editorAmount = sharedPreferenceAmount.edit()
-        editor.remove(uuid)
-        editor.apply()
-        editorPrices.remove(uuid)
-        editorPrices.apply()
-        editorAmount.remove(uuid)
-        editorAmount.apply()
-    }
-
-    private fun decreaseProductAmount(uuid: String){
-
-        val sharedPreferenceAmount = this.getSharedPreferences("shopping_cart_prod_amount", Context.MODE_PRIVATE)
-        val amount = sharedPreferenceAmount.getInt(uuid,0)
-
-        if (amount <=1){
-            deleteProduct(uuid)
-        }else{
-            val editorAmount = sharedPreferenceAmount.edit()
-            editorAmount.putInt(uuid,amount+1)
-            editorAmount.apply()
-        }
-    }
-
-
     private fun seeProductsInCart(){
+        getCartProducts()
+        mAdapter = ProductsAdapter(products)
+        mRecyclerView.adapter = mAdapter
 
+        mAdapter.registerAdapterDataObserver(object : AdapterDataObserver() {
+            override fun onItemRangeChanged(positionStart: Int, itemCount: Int) {
+                super.onItemRangeChanged(positionStart, itemCount)
+                getCartProducts()
+            }
+        })
+    }
+
+    private fun getCartProducts(){
+        products = mutableListOf()
         val sharedPreference = this.getSharedPreferences("shopping_cart_prod_names", Context.MODE_PRIVATE)
         val sharedPreferencePrices = this.getSharedPreferences("shopping_cart_prod_prices", Context.MODE_PRIVATE)
         val sharedPreferenceAmount = this.getSharedPreferences("shopping_cart_prod_amount", Context.MODE_PRIVATE)
 
-        var total = 0f
         val allEntries: Map<String, *> = sharedPreference.all
         for ((key, value) in allEntries) {
-            var finalString = ""
             val price = sharedPreferencePrices.getFloat(key,0f)
             val amount = sharedPreferenceAmount.getInt(key,0)
-            total += price * amount
-
-            var product = Product(key,value.toString(),price).toString()
-
-            // TODO: Code for testing, Needs to be a recycler adapter later receiving a Array<Product> later
-            finalString += amount.toString() + "X - " + Product(key,value.toString(),price).toString()
-            val textView = TextView(this)
-            textView.text = finalString
-
+            val product = ProductAmount(key,amount,value.toString(),price)
+            products.add(product)
         }
-        shoppingCartTotal.text = total.toString()
+        getTotal()
+    }
 
 
+    private fun getTotal(){
+        total = 0f
+        products.forEach{ product ->
+            total += product.amount * product.price
+        }
+
+        shoppingCartTotal.text = convertToEuros(total)
     }
 
 

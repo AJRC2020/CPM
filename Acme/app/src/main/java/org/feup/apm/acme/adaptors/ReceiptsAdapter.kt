@@ -13,10 +13,10 @@ import android.widget.TableRow
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import org.feup.apm.acme.R
+import org.feup.apm.acme.convertToEuros
 import org.feup.apm.acme.models.Receipt
 
 
-//TODO: make cards more like mockup
 class ReceiptsAdapter(private val dataSet: List<Receipt>) :
     RecyclerView.Adapter<ReceiptsAdapter.ViewHolder>() {
 
@@ -70,8 +70,8 @@ class ReceiptsAdapter(private val dataSet: List<Receipt>) :
 
         // Get basic receipt info
         viewHolder.date.text = dataSet[position].date
-        viewHolder.total.text = dataSet[position].price.toString()
-        viewHolder.totalDetails.text = dataSet[position].price.toString()
+        viewHolder.total.text = convertToEuros(dataSet[position].price)
+        viewHolder.totalDetails.text = convertToEuros(dataSet[position].price)
         viewHolder.totalDetails.textSize = 24f
 
         if (dataSet[position].voucher != "null"){
@@ -85,9 +85,7 @@ class ReceiptsAdapter(private val dataSet: List<Receipt>) :
             val item = items[it]
 
             val lp = TableRow.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT,1f)
-            val lpss = TableRow.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT,0.1f)
-            val lpb = TableRow.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT,0.95f)
-            val lps = TableRow.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT,0.05f)
+            val lps = TableRow.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT,0.1f)
 
             // Create rows
             val row = TableRow(viewHolder.itemView.context)
@@ -98,7 +96,7 @@ class ReceiptsAdapter(private val dataSet: List<Receipt>) :
             amount.text = item.amount.toString()
             amount.setTextColor(Color.BLACK)
             amount.textSize = 20f
-            amount.layoutParams = lpss
+            amount.layoutParams = lps
 
             // Add name
             val name = TextView(viewHolder.itemView.context)
@@ -109,25 +107,17 @@ class ReceiptsAdapter(private val dataSet: List<Receipt>) :
 
             // Add price
             val price = TextView(viewHolder.itemView.context)
-            price.text = item.price.toString()
+            price.text =  convertToEuros(item.price)
             price.setTextColor(Color.BLACK)
             price.textSize = 20f
-            price.layoutParams = lpb
+            price.layoutParams = lp
             price.textAlignment = View.TEXT_ALIGNMENT_TEXT_END
 
-            // Add € symbol
-            val euroSymbol = TextView(viewHolder.itemView.context)
-            euroSymbol.text = "€"
-            euroSymbol.setTextColor(Color.BLACK)
-            euroSymbol.textSize = 20f
-            euroSymbol.layoutParams = lps
-            euroSymbol.textAlignment = View.TEXT_ALIGNMENT_TEXT_END
 
             // Add product to row
             row.addView(amount)
             row.addView(name)
             row.addView(price)
-            row.addView(euroSymbol)
 
             // Add row to table
             viewHolder.table.addView(row)

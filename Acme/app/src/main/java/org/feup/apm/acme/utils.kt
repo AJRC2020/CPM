@@ -14,6 +14,8 @@ import java.io.InputStream
 import java.io.InputStreamReader
 import java.security.KeyStore
 import java.security.Signature
+import java.text.NumberFormat
+import java.util.*
 
 fun navBarListeners(navbar: BottomNavigationView, act: Activity){
     navbar.setOnItemSelectedListener { menuItem ->
@@ -24,7 +26,7 @@ fun navBarListeners(navbar: BottomNavigationView, act: Activity){
                 true
             }
             R.id.navbar_vouchers_item -> {
-                val intent2 = Intent(act, Vouchers::class.java)
+                val intent2 = Intent(act, VouchersActivity::class.java)
                 act.startActivity(intent2)
                 true
             }
@@ -107,4 +109,11 @@ fun readStream(input: InputStream): String {
     }
     reader?.close()
     return response.toString()
+}
+
+fun convertToEuros(value: Float) : String{
+    val format: NumberFormat = NumberFormat.getCurrencyInstance()
+    format.maximumFractionDigits = 2
+    format.currency = Currency.getInstance("EUR")
+    return format.format(value)
 }

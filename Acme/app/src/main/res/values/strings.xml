@@ -45,7 +45,8 @@
     <string name="voucher_percentage_placeholder">15% off</string>
     <string name="voucher_date_format">Date: %1$s</string>
     <string name="voucher_code_format">Code: %1$s</string>
-    <string name="voucher_percentage_format">15%% off</string>
+    <string name="money_format">%1$s€</string>
+    <string name="voucher_percentage_format">15% off</string>
     <string name="qrcode_scan">Scan QR code</string>
     <string name="no_receipts_warning">You don\'t have any receipts</string>
     <string name="date">Date:</string>
@@ -61,5 +62,7 @@
     <string name ="readLabel">Read label</string>
     <string name="addToCart">Add to shopping cart</string>
     <string name="forget">Forget</string>
+    <string name="remove_product">Remove product from cart</string>
+    <string name="remove_one">Remove one from cart</string>
     <string name="noScan">Scan a product\'s QR code to add it to your cart</string>
 </resources>

@@ -1,25 +1,17 @@
 package org.feup.apm.acme.adaptors
 
-import android.app.ActionBar.LayoutParams
-import android.graphics.Color
-import android.provider.Settings.Global.getString
+
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
 import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TableLayout
-import android.widget.TableRow
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import org.feup.apm.acme.R
-import org.feup.apm.acme.models.Receipt
 import org.feup.apm.acme.models.Voucher
 
 
-//TODO: make cards more like mockup
 class VouchersAdapter(private val dataSet: List<Voucher>) :
     RecyclerView.Adapter<VouchersAdapter.ViewHolder>() {
 

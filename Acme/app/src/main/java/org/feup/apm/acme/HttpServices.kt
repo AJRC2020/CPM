@@ -3,10 +3,7 @@ package org.feup.apm.acme
 import android.content.Context
 import android.util.Log
 import org.feup.apm.acme.activities.*
-import org.feup.apm.acme.models.Product
-import org.feup.apm.acme.models.ProductReceipt
-import org.feup.apm.acme.models.Receipt
-import org.feup.apm.acme.models.Voucher
+import org.feup.apm.acme.models.*
 import org.json.JSONArray
 import org.json.JSONObject
 import java.net.HttpURLConnection
@@ -126,7 +123,7 @@ fun getPurchases(
                     val total = dataSet.getJSONObject(receipt)["price"].toString().toFloat()
                     val voucher = dataSet.getJSONObject(receipt)["voucher"].toString()
                     val itemsJson = dataSet.getJSONObject(receipt).getJSONArray("items")
-                    val items : MutableList<ProductReceipt> = mutableListOf()
+                    val items : MutableList<ProductAmount> = mutableListOf()
                     (0 until itemsJson.length()).forEach {
                         val item = itemsJson.getJSONObject(it)
 
@@ -134,7 +131,7 @@ fun getPurchases(
                         val price =  item["price"].toString().toFloat()
                         val amount =  item["amount"].toString().toInt()
 
-                        items.add(ProductReceipt(amount,name,price))
+                        items.add(ProductAmount(null,amount,name,price))
                     }
                     receipts.add(Receipt(date,total,items,voucher))
                 }
@@ -161,10 +158,10 @@ fun getPurchases(
 
 
 fun getVouchers(
-    act: Vouchers,
+    act: VouchersActivity,
     uuid: String,
 
-    ) : List<Voucher> {
+    ) : VouchersInfo {
     // Building URL
     val urlRoute = "api/users/vouchers"
     val url = URL("http://${Constants.BASE_ADDRESS}:${Constants.PORT}/$urlRoute")
@@ -176,7 +173,8 @@ fun getVouchers(
 
 
     var urlConnection: HttpURLConnection? = null
-    val vouchers : MutableList<Voucher> = mutableListOf()
+
+    var vouchersInfo = VouchersInfo(listOf(),0f)
     try {
         // Sending Request
         urlConnection = (url.openConnection() as HttpURLConnection).apply {
@@ -195,8 +193,11 @@ fun getVouchers(
                 // Getting response stream
                 val read = readStream(inputStream)
                 // Parsing stream into JSON
-                val dataSet = JSONArray(read)
 
+                val info = JSONObject(read)
+                val valueToNext = info["valueToNextVoucher"].toString().toFloat()
+                val dataSet = info.getJSONArray("vouchers")
+                val vouchers : MutableList<Voucher> = mutableListOf()
 
                 (0 until dataSet.length()).forEach { receipt ->
                     val date = dataSet.getJSONObject(receipt)["date"].toString()
@@ -205,6 +206,8 @@ fun getVouchers(
                     val id = dataSet.getJSONObject(receipt)["uuid"].toString()
                     vouchers.add(Voucher(emitted,used,date,id))
                 }
+
+                vouchersInfo = VouchersInfo(vouchers,valueToNext)
 
             } else {
                 // Putting error info in snack bar
@@ -223,7 +226,7 @@ fun getVouchers(
         // Closing url connection
         urlConnection?.disconnect()
     }
-    return vouchers
+    return vouchersInfo
 }
 
 
@@ -265,8 +268,8 @@ fun getUserInfo(
                 val jsonObject = JSONObject(read)
                 val sharedPreference = act.getSharedPreferences("user_info", Context.MODE_PRIVATE)
                 val editor = sharedPreference.edit()
-                editor.putString("discount", jsonObject["discount"].toString())
-                editor.putString("total", jsonObject["total"].toString())
+                editor.putFloat("discount", jsonObject["discount"].toString().toFloat())
+                editor.putFloat("total", jsonObject["total"].toString().toFloat())
                 editor.apply()
 
                 result = true

@@ -91,7 +91,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:orientation="vertical"
-                        android:visibility="gone">
+                        android:visibility="visible">
 
                         <TextView
                             android:id="@+id/productNameField"
@@ -120,14 +120,6 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/placeholder"
-                                android:textSize="24sp" />
-
-                            <TextView
-                                android:id="@+id/euroSymb"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="4sp"
-                                android:text="@string/euro"
                                 android:textSize="24sp" />
 
                         </LinearLayout>

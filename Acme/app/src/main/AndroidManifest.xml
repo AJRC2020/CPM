@@ -21,7 +21,7 @@
             android:name=".activities.Receipts"
             android:exported="false" />
         <activity
-            android:name=".activities.Vouchers"
+            android:name=".activities.VouchersActivity"
             android:exported="false" />
         <activity
             android:name=".activities.ShoppingCart"
