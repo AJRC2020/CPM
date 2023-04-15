@@ -30,42 +30,49 @@ class LoginActivity : AppCompatActivity() {
                 loading(progressBar, listOf(loginButton))
                 val username = loginNicknameFieldInput.text.toString()
                 val password = loginPasswordFieldInput.text.toString()
-                thread {
-                    val result = login(this,username,password)
-                    if (result){
-                        val uuid = getUUID(this,username)
-                        if (uuid){
-                            this.runOnUiThread {
-                                stopLoading(progressBar,listOf(loginButton))
-                                if (keysPresent(username)){
+                if (keysPresent(username)) {
+                    thread {
+                        val result = login(this, username, password)
+                        if (result) {
+                            val uuid = getUUID(this, username)
+                            if (uuid) {
+                                this.runOnUiThread {
+                                    stopLoading(progressBar, listOf(loginButton))
+
                                     val intent = Intent(this, UserProfile::class.java)
                                     startActivity(intent)
-                                }else{
-                                    createSnackBar("This device is unable to log into this account, please make sure you are using the device you registered your account in",this)
+
+
                                 }
-
+                            } else {
+                                this.runOnUiThread {
+                                    stopLoading(progressBar, listOf(loginButton))
+                                    createSnackBar("Could not retrieve user id, please retry", this)
+                                }
                             }
-                        }else{
+                        } else {
                             this.runOnUiThread {
-                                stopLoading(progressBar,listOf(loginButton))
-                                createSnackBar("Could not retrieve user id, please retry",this)
+                                stopLoading(progressBar, listOf(loginButton))
+                                createSnackBar(
+                                    "Error logging in, please make sure your credentials are correct",
+                                    this
+                                )
                             }
                         }
-                    }
-                    else{
-                        this.runOnUiThread {
-                            stopLoading(progressBar,listOf(loginButton))
-                            createSnackBar("Error logging in, please make sure your credentials are correct",this)
-                        }
-                    }
 
 
+                    }
+
+                } else {
+                    createSnackBar(
+                        "This device is unable to log into this account, please make sure you are using the device you registered your account in",
+                        this
+                    )
+                }
+            }else {
+                    createSnackBar("Nickname and password fields can't be empty", this)
                 }
 
-            }
-            else{
-                createSnackBar("Nickname and password fields can't be empty",this)
-            }
         }
 
         backButton.setOnClickListener {
