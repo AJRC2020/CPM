@@ -24,6 +24,7 @@ public class AppProduct {
     private Long id;
     private String name;
     private Float price;
+    @Column(unique = true)
     private String uuid;
     @OneToMany(mappedBy = "product")
     private Set<AppItem> items = new HashSet<>();

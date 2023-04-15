@@ -39,8 +39,6 @@ public class UserController {
         return userService.getUsers();
     }
 
-    //TODO: login, change password, change card number
-
     @PostMapping("/new")
     @ResponseBody
     public ResponseEntity<ReturnNewUser> newUser(@RequestBody NewUser user) throws Exception {
@@ -74,7 +72,7 @@ public class UserController {
     }
 
     @PostMapping("/vouchers")
-    public ResponseEntity<List<ReturnVoucher>> getVouchersUser(@RequestBody SignedId sign) throws Exception {
+    public ResponseEntity<ReturnVoucherPage> getVouchersUser(@RequestBody SignedId sign) throws Exception {
         AppUser user = userService.getByUuid(sign.uuid);
 
         if (!verifySignature(sign.signature, sign.uuid, user.getPublic_key())){
@@ -89,7 +87,11 @@ public class UserController {
             retVouchers.add(new ReturnVoucher(voucher.getEmitted(), voucher.getUsed(), voucher.getDate(), user.getUsername(), voucher.getUuid()));
         }
 
-        return ResponseEntity.ok().body(retVouchers);
+        Float value = 100 - (user.getTotal() % 100);
+
+        ReturnVoucherPage ret = new ReturnVoucherPage(retVouchers, value);
+
+        return ResponseEntity.ok().body(ret);
     }
 
     @PostMapping("/purchases")

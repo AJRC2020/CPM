@@ -37,8 +37,6 @@ public class ProductController {
 
     @PostMapping("/new")
     public ResponseEntity<AppProduct> createProduct(@RequestBody Encrypt encryption) throws Exception {
-        //Comes Encrypted
-
         File file = new File("src/main/resources/privatekey.der");
 
         if (!file.exists()) {
