@@ -21,7 +21,7 @@ class RegisterActivity : AppCompatActivity() {
 
     private val backButton by lazy { findViewById<ImageButton>(R.id.registerBackButton)}
     private val registerButton by lazy {  findViewById<Button>(R.id.registerConfirmButton) }
-    private val nameField by lazy { findViewById<EditText>(R.id.registerNameFieldInput) }
+    private val nameField by lazy { findViewById<EditText>(R.id.newPasswordField) }
     private val usernameField by lazy { findViewById<EditText>(R.id.registerNicknameFieldInput) }
     private val passwordField by lazy { findViewById<EditText>(R.id.registerPasswordFieldInput)}
     private val paymentMethodField by lazy { findViewById<EditText>(R.id.registerPaymentMethodFieldInput)}
