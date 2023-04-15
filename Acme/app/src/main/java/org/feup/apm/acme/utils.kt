@@ -3,6 +3,7 @@ package org.feup.apm.acme
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.security.KeyPairGeneratorSpec
 import android.util.Log
 import android.view.View
 import android.widget.ProgressBar
@@ -14,10 +15,14 @@ import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
+import java.math.BigInteger
+import java.security.KeyPairGenerator
 import java.security.KeyStore
+import java.security.PublicKey
 import java.security.Signature
 import java.text.NumberFormat
 import java.util.*
+import javax.security.auth.x500.X500Principal
 
 fun navBarListeners(navbar: BottomNavigationView, act: Activity){
     navbar.setOnItemSelectedListener { menuItem ->
@@ -139,4 +144,46 @@ fun checkIfLoggedIn(act: Activity){
         val intent = Intent(act, UserProfile::class.java)
         act.startActivity(intent)
     }
+}
+
+fun getPublicKey(username: String): PublicKey {
+    try {
+        val entry = KeyStore.getInstance(Constants.ANDROID_KEYSTORE).run {
+            load(null)
+            getEntry(username, null)
+        }
+        return (entry as KeyStore.PrivateKeyEntry).certificate.publicKey
+    } catch (ex: Exception) {
+        throw ex
+    }
+}
+
+
+fun generateAndStoreKeys(username: String, act: Activity) {
+    try {
+        val spec = KeyPairGeneratorSpec.Builder(act)
+            .setKeySize(Constants.KEY_SIZE)
+            .setAlias(username)
+            .setSubject(X500Principal("CN=$username"))
+            .setSerialNumber(BigInteger.valueOf(Constants.serialNr))
+            .setStartDate(GregorianCalendar().time)
+            .setEndDate(GregorianCalendar().apply { add(Calendar.YEAR, 10) }.time)
+            .build()
+
+        KeyPairGenerator.getInstance(Constants.KEY_ALGO, Constants.ANDROID_KEYSTORE).run {
+            initialize(spec)
+            generateKeyPair()
+        }
+    }
+    catch (ex: Exception) {
+        throw ex
+    }
+}
+
+fun keysPresent(username: String): Boolean {
+    val entry = KeyStore.getInstance(Constants.ANDROID_KEYSTORE).run {
+        load(null)
+        getEntry(username, null)
+    }
+    return (entry != null)
 }

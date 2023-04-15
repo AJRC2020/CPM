@@ -37,8 +37,13 @@ class LoginActivity : AppCompatActivity() {
                         if (uuid){
                             this.runOnUiThread {
                                 stopLoading(progressBar,listOf(loginButton))
-                                val intent = Intent(this, UserProfile::class.java)
-                                startActivity(intent)
+                                if (keysPresent(username)){
+                                    val intent = Intent(this, UserProfile::class.java)
+                                    startActivity(intent)
+                                }else{
+                                    createSnackBar("This device is unable to log into this account, please make sure you are using the device you registered your account in",this)
+                                }
+
                             }
                         }else{
                             this.runOnUiThread {

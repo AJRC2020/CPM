@@ -50,7 +50,7 @@ class RegisterActivity : AppCompatActivity() {
                 passwordField.text.toString().trim().isNotEmpty() &&
                 paymentMethodField.text.toString().trim().isNotEmpty()){
                 val username = usernameField.text.toString()
-                generateAndStoreKeys(username)
+                generateAndStoreKeys(username,this)
                 val publicKey: PublicKey = getPublicKey(username)
                 val encodedPk = publicKey.encoded
                 val base64Pk =  android.util.Base64.encodeToString(encodedPk, android.util.Base64.NO_WRAP)
@@ -78,39 +78,6 @@ class RegisterActivity : AppCompatActivity() {
         }
         catch (ex: Exception){
             createSnackBar(ex.toString(),this)
-        }
-    }
-
-    private fun getPublicKey(username: String): PublicKey{
-        try {
-            val entry = KeyStore.getInstance(Constants.ANDROID_KEYSTORE).run {
-                load(null)
-                getEntry(username, null)
-            }
-            return (entry as KeyStore.PrivateKeyEntry).certificate.publicKey
-        } catch (ex: Exception) {
-            throw ex
-        }
-    }
-
-    private fun generateAndStoreKeys(username: String) {
-        try {
-            val spec = KeyPairGeneratorSpec.Builder(this)
-                .setKeySize(Constants.KEY_SIZE)
-                .setAlias(username)
-                .setSubject(X500Principal("CN=$username"))
-                .setSerialNumber(BigInteger.valueOf(Constants.serialNr))
-                .setStartDate(GregorianCalendar().time)
-                .setEndDate(GregorianCalendar().apply { add(Calendar.YEAR, 10) }.time)
-                .build()
-
-            KeyPairGenerator.getInstance(Constants.KEY_ALGO, Constants.ANDROID_KEYSTORE).run {
-                initialize(spec)
-                generateKeyPair()
-            }
-        }
-        catch (ex: Exception) {
-            throw ex
         }
     }
 }
