@@ -91,10 +91,12 @@ public class UserService {
         userRepository.flush();
     }
 
-    public void updatePassword(String uuid, String new_password) {
+    public void updatePassword(String uuid, String new_password) throws Exception {
         AppUser user = userRepository.findByUuid(uuid).get(0);
 
-        user.setPassword(new_password);
+        String hashed_password = hashPassword(new_password);
+
+        user.setPassword(hashed_password);
 
         userRepository.save(user);
 

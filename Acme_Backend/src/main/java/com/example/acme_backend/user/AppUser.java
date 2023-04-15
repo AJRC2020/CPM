@@ -24,6 +24,7 @@ public class AppUser {
     private Long id;
     private String name;
     private String username;
+    @Column(nullable = false)
     private String password;
     @Column(unique = true)
     private String public_key;

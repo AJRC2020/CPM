@@ -161,7 +161,11 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
-        userService.updatePassword(sign.uuid, sign.password);
+        if (!validatePassword(sign.old_password, user.getPassword())) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
+        userService.updatePassword(sign.uuid, sign.new_password);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
