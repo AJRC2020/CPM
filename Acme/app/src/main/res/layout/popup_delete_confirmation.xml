@@ -11,21 +11,24 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp">
+        android:layout_gravity="center"
+        android:layout_margin="10dp"
+        android:background="@color/sky_blue">
 
         <TextView
             android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_margin="4sp"
             android:text="@string/warning"
-            android:textColor="@color/black"
+            android:textColor="@color/white"
             android:textSize="34sp" />
 
         <ImageButton
             android:id="@+id/closePopUpButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="end"
+            android:layout_gravity="center|end"
             android:background="@android:color/transparent"
             android:contentDescription="@string/close_window"
             android:minWidth="48dp"
@@ -55,7 +58,8 @@
             android:layout_margin="10dp"
             android:layout_weight="1"
             android:background="@color/sky_blue"
-            android:text="@string/proceed" />
+            android:text="@string/proceed"
+            android:textColor="@color/white" />
 
         <Button
             android:id="@+id/cancelButton"
