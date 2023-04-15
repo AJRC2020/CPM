@@ -32,6 +32,12 @@ public class ProductService {
     }
 
     public AppProduct createProduct(String name, Float price, String uuid) {
+        AppProduct productCheck = findByUuid(uuid);
+
+        if (productCheck != null) {
+            return productCheck;
+        }
+
         AppProduct product = new AppProduct(name, price, uuid);
 
         productRepository.save(product);
@@ -42,6 +48,13 @@ public class ProductService {
     }
 
     public AppProduct findByUuid(String uuid) {
-        return productRepository.findByUuid(uuid).get(0);
+        List<AppProduct> list = productRepository.findByUuid(uuid);
+
+        if (list.isEmpty()) {
+            return null;
+        }
+        else {
+            return list.get(0);
+        }
     }
 }
