@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:title="@string/receipts"
+        android:icon="@drawable/navbar_receipts_icon"
+        android:id="@+id/navbar_receipts_item"/>
+    <item android:title="@string/vouchers"
+        android:icon="@drawable/navbar_voucher_icon"
+        android:id="@+id/navbar_vouchers_item" />
+    <item android:title="@string/qrcode_scan"
+        android:icon="@drawable/navbar_qrcode_scan_icon"
+        android:id="@+id/navbar_qrcode_item" />
+    <item android:title="@string/shopping_cart"
+        android:icon="@drawable/navbar_shopping_cart_icon"
+        android:id="@+id/navbar_shopping_cart_item" />
+    <item android:title="@string/profile"
+        android:icon="@drawable/navbar_profile_icon"
+        android:id="@+id/navbar_profile_item" />
+</menu>

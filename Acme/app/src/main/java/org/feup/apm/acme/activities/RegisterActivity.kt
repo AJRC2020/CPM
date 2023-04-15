@@ -1,22 +1,17 @@
-package org.feup.apm.acme
+package org.feup.apm.acme.activities
 
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.security.KeyPairGeneratorSpec
-import android.util.Log
-import android.view.View
 import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.snackbar.Snackbar
+import org.feup.apm.acme.*
 import java.math.BigInteger
-import java.nio.charset.Charset
-import java.security.KeyFactory
 import java.security.KeyPairGenerator
 import java.security.KeyStore
 import java.security.PublicKey
-import java.security.spec.X509EncodedKeySpec
 import java.util.*
 import javax.security.auth.x500.X500Principal
 import kotlin.concurrent.thread
@@ -48,27 +43,26 @@ class RegisterActivity : AppCompatActivity() {
 
     private fun register(){
         try{
-            Log.d("click","click")
             if (nameField.text.toString().trim().isNotEmpty() &&
                 usernameField.text.toString().trim().isNotEmpty() &&
                 passwordField.text.toString().trim().isNotEmpty() &&
                 paymentMethodField.text.toString().trim().isNotEmpty()){
-                Log.d("click","filled")
                 generateAndStoreKeys()
                 val publicKey: PublicKey = getPublicKey()
                 val encodedPk = publicKey.encoded
                 val base64Pk =  android.util.Base64.encodeToString(encodedPk, android.util.Base64.NO_WRAP)
-                loading()
+                loading(progressBar, listOf(registerButton))
                 thread{
-                    val result = register(this,
-                        nameField.text.toString() ,
+                    val result = register(
+                        this,
+                        nameField.text.toString(),
                         usernameField.text.toString(),
                         passwordField.text.toString(),
                         paymentMethodField.text.toString(),
                         base64Pk
                     )
                     this.runOnUiThread {
-                        stopLoading()
+                        stopLoading(progressBar, listOf(registerButton))
                         if (result){
                             val intent = Intent(this, UserProfile::class.java)
                             startActivity(intent)
@@ -80,44 +74,15 @@ class RegisterActivity : AppCompatActivity() {
             }
         }
         catch (ex: Exception){
-            Log.d("error",ex.toString())
+            createSnackBar(ex.toString(),this)
         }
-    }
-
-
-    fun createSnackBar(text:String){
-        val snack = Snackbar.make(findViewById(android.R.id.content),text,Snackbar.LENGTH_LONG)
-        snack.show()
-    }
-
-
-    private fun loading(){
-        Log.d("loading","loading")
-        progressBar.visibility = View.VISIBLE
-        registerButton.isEnabled = false
-        nameField.isEnabled = false
-        usernameField.isEnabled = false
-        passwordField.isEnabled = false
-        paymentMethodField.isEnabled = false
-
-    }
-
-    private fun stopLoading(){
-        Log.d("stop","stop")
-        progressBar.visibility = View.GONE
-        registerButton.isEnabled = true
-        nameField.isEnabled = true
-        usernameField.isEnabled = true
-        passwordField.isEnabled = true
-        paymentMethodField.isEnabled = true
-
     }
 
     private fun getPublicKey(): PublicKey{
         try {
             val entry = KeyStore.getInstance(Constants.ANDROID_KEYSTORE).run {
                 load(null)
-                getEntry(Constants.keyname, null)
+                getEntry(Constants.keyName, null)
             }
             return (entry as KeyStore.PrivateKeyEntry).certificate.publicKey
         } catch (ex: Exception) {
@@ -129,8 +94,8 @@ class RegisterActivity : AppCompatActivity() {
         try {
             val spec = KeyPairGeneratorSpec.Builder(this)
                 .setKeySize(Constants.KEY_SIZE)
-                .setAlias(Constants.keyname)
-                .setSubject(X500Principal("CN=" + Constants.keyname))
+                .setAlias(Constants.keyName)
+                .setSubject(X500Principal("CN=" + Constants.keyName))
                 .setSerialNumber(BigInteger.valueOf(Constants.serialNr))
                 .setStartDate(GregorianCalendar().time)
                 .setEndDate(GregorianCalendar().apply { add(Calendar.YEAR, 10) }.time)
