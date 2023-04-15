@@ -3,7 +3,6 @@ package org.feup.apm.qrcodeACME
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.os.Bundle
-import android.security.KeyPairGeneratorSpec
 import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
@@ -12,16 +11,11 @@ import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
 import com.google.zxing.MultiFormatWriter
 import com.google.zxing.common.BitMatrix
-import java.io.File
-import java.math.BigInteger
-import java.nio.charset.Charset
-import java.nio.file.Files
+
 import java.security.*
-import java.security.spec.PKCS8EncodedKeySpec
 import java.security.spec.X509EncodedKeySpec
 import java.util.*
 import javax.crypto.Cipher
-import javax.security.auth.x500.X500Principal
 import kotlin.concurrent.thread
 
 private const val SIZE = 600
@@ -35,22 +29,21 @@ class ShowCodeActivity : AppCompatActivity() {
     setContentView(R.layout.activity_show_code)
 
     val image = findViewById<ImageView>(R.id.img_code)
-    val type = intent.getIntExtra("type", 0)
     val value = intent.getStringExtra("value") ?: ""
 
     findViewById<TextView>(R.id.tv_title).text =  "QR Code"
     thread {
-      encodeAsBitmap(type, encryptContent(value).toString()).also { runOnUiThread { image.setImageBitmap(it) } }
+      encodeAsBitmap(encryptContent(value).toString()).also { runOnUiThread { image.setImageBitmap(it) } }
     }
   }
 
-  private fun getPrivate(filename: String): PrivateKey? {
+  private fun getPublic(filename: String): PublicKey? {
     try{
       val file = assets.open("keys/$filename")
       val keyBytes = file.readBytes()
-      val spec = PKCS8EncodedKeySpec(keyBytes)
+      val spec = X509EncodedKeySpec(keyBytes)
       val kf = KeyFactory.getInstance("RSA")
-      return kf.generatePrivate(spec)
+      return kf.generatePublic(spec)
     }
     catch (e: Exception) {
       Log.d("error", e.message.toString());
@@ -59,27 +52,25 @@ class ShowCodeActivity : AppCompatActivity() {
   }
 
 
-  private fun encryptContent(content : String) : ByteArray {
-    if (content.isEmpty()) return ByteArray(0)
+  private fun encryptContent(content : String) : String {
+    if (content.isEmpty()) throw Exception("No Content")
     return try {
-      val prKey = getPrivate("privatekey.der")
+      val prKey = getPublic("publickey.der")
       val result = Cipher.getInstance(Constants.ENC_ALGO).run {
         init(Cipher.ENCRYPT_MODE, prKey)
         doFinal(content.encodeToByteArray())
       }
-      result
+      android.util.Base64.encodeToString(result, android.util.Base64.NO_WRAP)
     }
     catch (e: Exception) {
       Log.d("error", e.toString())
-      ByteArray(0);
+      throw e
     }
   }
 
 
 
-
-
-  private fun encodeAsBitmap(type: Int, str: String): Bitmap? {
+  private fun encodeAsBitmap(str: String): Bitmap? {
     val result: BitMatrix
     val hints = Hashtable<EncodeHintType, String>().apply { put(EncodeHintType.CHARACTER_SET, ISO_SET) }
     val width = SIZE

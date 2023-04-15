@@ -1,109 +1,145 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+
+
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".Vouchers">
-    <FrameLayout
+    android:layout_height="match_parent">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbar"
+
         android:layout_width="match_parent"
-        android:layout_height="60sp"
-        android:background="#AFD0F7">
+        android:layout_height="wrap_content" >
 
-        <ImageButton
-            android:id="@+id/receiptsBackButton"
-            android:layout_width="60sp"
-            android:layout_height="60sp"
-            android:background="@android:color/transparent"
-            android:contentDescription="@string/back"
-            app:srcCompat="@drawable/back_arrow" />
-
-        <ImageView
-            android:id="@+id/receiptsLogoImage"
-            android:layout_width="316dp"
+        <FrameLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:contentDescription="@string/logo_alt"
-            android:padding="10sp"
-            app:srcCompat="@drawable/logo" />
+            android:background="#AFD0F7">
 
-    </FrameLayout>
-    <TextView
-        android:id="@+id/receiptsActivityTitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/imprima_regular"
-        android:text="@string/receipts"
-        android:textAlignment="center"
-        android:textColor="#344870"
-        android:textSize="50sp" />
+            <ImageButton
+                android:id="@+id/receiptsBackButton"
+                android:layout_width="60sp"
+                android:layout_height="60sp"
+                android:background="@android:color/transparent"
+                android:contentDescription="@string/back"
+                app:srcCompat="@drawable/back_arrow" />
 
-    <ScrollView
+            <ImageView
+                android:id="@+id/receiptsLogoImage"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_gravity="center"
+                android:contentDescription="@string/logo_alt"
+                android:padding="10sp"
+                app:srcCompat="@drawable/logo" />
+
+        </FrameLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="0sp"
-        android:layout_weight="1"
-        android:contentDescription="@string/receipts_description">
+        android:layout_height="match_parent"
+
+
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical" />
-    </ScrollView>
+            android:orientation="vertical"
+            tools:context=".Vouchers">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="77sp"
-        android:orientation="horizontal"
-        android:background="@color/sky_blue"
-        android:padding="0sp">
+            <TextView
+                android:id="@+id/receiptsActivityTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/imprima_regular"
+                android:text="@string/receipts"
+                android:textAlignment="center"
+                android:textColor="#344870"
+                android:textSize="50sp" />
 
-        <ImageButton
-            android:id="@+id/receipts_navbar_receipts_button"
-            android:layout_width="0sp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:layout_margin="0sp"
-            app:srcCompat="@drawable/navbar_receipts_icon_higlight"
-            android:background="@color/sky_blue"
-            android:contentDescription="@string/receipts"/>
+            <ProgressBar
+                android:id="@+id/progressBarReceipts"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
 
-        <ImageButton
-            android:id="@+id/receipts_navbar_vouchers_button"
-            android:layout_width="0sp"
-            android:layout_height="match_parent"
-            android:layout_margin="0sp"
-            android:layout_weight="1"
-            android:background="@color/sky_blue"
-            android:contentDescription="@string/vouchers"
-            app:srcCompat="@drawable/navbar_voucher_icon" />
-        <ImageButton
-            android:id="@+id/receipts_navbar_qrcode_button"
-            android:layout_width="0sp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:layout_margin="0sp"
-            app:srcCompat="@drawable/navbar_qrcode_scan_icon"
-            android:background="@color/sky_blue"
-            android:contentDescription="@string/qrcode_scan"/>
-        <ImageButton
-            android:id="@+id/receipts_navbar_shopping_cart_button"
-            android:layout_width="0sp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:layout_margin="0sp"
-            app:srcCompat="@drawable/navbar_shopping_cart_icon"
-            android:background="@color/sky_blue"
-            android:contentDescription="@string/shopping_cart"/>
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="528dp"
+                android:layout_weight="1"
+                android:contentDescription="@string/receipts_description">
 
-        <ImageButton
-            android:id="@+id/receipts_navbar_profile_button"
-            android:layout_width="0sp"
-            android:layout_height="match_parent"
-            android:layout_margin="0sp"
-            android:layout_weight="1"
-            android:background="@color/sky_blue"
-            app:srcCompat="@drawable/navbar_profile_icon"
-            android:contentDescription="@string/profile"/>
-    </LinearLayout>
-</LinearLayout>
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/receiptsList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </ScrollView>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="77sp"
+                android:background="@color/sky_blue"
+                android:orientation="horizontal"
+                android:padding="0sp">
+
+                <ImageButton
+                    android:id="@+id/receipts_navbar_receipts_button"
+                    android:layout_width="0sp"
+                    android:layout_height="match_parent"
+                    android:layout_margin="0sp"
+                    android:layout_weight="1"
+                    android:background="@color/sky_blue"
+                    android:contentDescription="@string/receipts"
+                    app:srcCompat="@drawable/navbar_receipts_icon_higlight" />
+
+                <ImageButton
+                    android:id="@+id/receipts_navbar_vouchers_button"
+                    android:layout_width="0sp"
+                    android:layout_height="match_parent"
+                    android:layout_margin="0sp"
+                    android:layout_weight="1"
+                    android:background="@color/sky_blue"
+                    android:contentDescription="@string/vouchers"
+                    app:srcCompat="@drawable/navbar_voucher_icon" />
+
+                <ImageButton
+                    android:id="@+id/receipts_navbar_qrcode_button"
+                    android:layout_width="0sp"
+                    android:layout_height="match_parent"
+                    android:layout_margin="0sp"
+                    android:layout_weight="1"
+                    android:background="@color/sky_blue"
+                    android:contentDescription="@string/qrcode_scan"
+                    app:srcCompat="@drawable/navbar_qrcode_scan_icon" />
+
+                <ImageButton
+                    android:id="@+id/receipts_navbar_shopping_cart_button"
+                    android:layout_width="0sp"
+                    android:layout_height="match_parent"
+                    android:layout_margin="0sp"
+                    android:layout_weight="1"
+                    android:background="@color/sky_blue"
+                    android:contentDescription="@string/shopping_cart"
+                    app:srcCompat="@drawable/navbar_shopping_cart_icon" />
+
+                <ImageButton
+                    android:id="@+id/receipts_navbar_profile_button"
+                    android:layout_width="0sp"
+                    android:layout_height="match_parent"
+                    android:layout_margin="0sp"
+                    android:layout_weight="1"
+                    android:background="@color/sky_blue"
+                    android:contentDescription="@string/profile"
+                    app:srcCompat="@drawable/navbar_profile_icon" />
+            </LinearLayout>
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

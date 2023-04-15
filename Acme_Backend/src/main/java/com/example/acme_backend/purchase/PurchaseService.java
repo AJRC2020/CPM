@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.acme_backend.user.AppUser;
+import com.example.acme_backend.voucher.AppVoucher;
 import com.example.acme_backend.item.AppItem;
 
 import java.sql.Date;
@@ -45,14 +46,29 @@ public class PurchaseService {
         purchaseRepository.flush();
     }
 
-    public AppPurchase updatePurchase(Float total, Date date, Boolean discount, AppUser user, Long id) {
+    public AppPurchase updatePurchase(Float total, Date date, AppUser user, Long id) {
         Optional<AppPurchase> purchase = purchaseRepository.findById(id);
         AppPurchase update_purchase = purchase.get();
 
         update_purchase.setDate(date);
         update_purchase.setPrice(total);
-        update_purchase.setVoucher(discount);
         update_purchase.setUser(user);
+
+        purchaseRepository.save(update_purchase);
+
+        purchaseRepository.flush();
+
+        return update_purchase;
+    }
+
+    public AppPurchase updatePurchase(Float total, Date date, AppUser user, Long id, AppVoucher voucher) {
+        Optional<AppPurchase> purchase = purchaseRepository.findById(id);
+        AppPurchase update_purchase = purchase.get();
+
+        update_purchase.setDate(date);
+        update_purchase.setPrice(total);
+        update_purchase.setUser(user);
+        update_purchase.setVoucher(voucher);
 
         purchaseRepository.save(update_purchase);
 

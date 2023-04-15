@@ -1,5 +1,6 @@
 package org.feup.apm.acme
 
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.security.KeyPairGeneratorSpec
@@ -58,13 +59,24 @@ class RegisterActivity : AppCompatActivity() {
                 val encodedPk = publicKey.encoded
                 val base64Pk =  android.util.Base64.encodeToString(encodedPk, android.util.Base64.NO_WRAP)
                 loading()
-                register(this,
-                    nameField.text.toString() ,
-                    usernameField.text.toString(),
-                    passwordField.text.toString(),
-                    paymentMethodField.text.toString(),
-                    base64Pk
-                )
+                thread{
+                    val result = register(this,
+                        nameField.text.toString() ,
+                        usernameField.text.toString(),
+                        passwordField.text.toString(),
+                        paymentMethodField.text.toString(),
+                        base64Pk
+                    )
+                    this.runOnUiThread {
+                        stopLoading()
+                        if (result){
+                            val intent = Intent(this, UserProfile::class.java)
+                            startActivity(intent)
+                        }
+                    }
+
+                }
+
             }
         }
         catch (ex: Exception){
@@ -90,7 +102,7 @@ class RegisterActivity : AppCompatActivity() {
 
     }
 
-    fun stopLoading(){
+    private fun stopLoading(){
         Log.d("stop","stop")
         progressBar.visibility = View.GONE
         registerButton.isEnabled = true

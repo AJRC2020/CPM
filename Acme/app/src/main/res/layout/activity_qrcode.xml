@@ -1,99 +1,257 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".QRCodeActivity">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
 
-    <FrameLayout
+
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbar"
+
         android:layout_width="match_parent"
-        android:layout_height="60sp"
+        android:layout_height="wrap_content"
         android:background="#AFD0F7">
 
-        <ImageButton
-            android:id="@+id/qrcodeBackButton"
-            android:layout_width="60sp"
-            android:layout_height="60sp"
-            android:background="@android:color/transparent"
-            android:contentDescription="@string/back"
-            app:srcCompat="@drawable/back_arrow" />
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-        <ImageView
-            android:id="@+id/shoppingCartLogoImage"
-            android:layout_width="316dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:contentDescription="@string/logo_alt"
-            android:padding="10sp"
-            app:srcCompat="@drawable/logo" />
+            <ImageView
+                android:id="@+id/shoppingCartLogoImage"
+                android:layout_width="60sp"
+                android:layout_height="60sp"
+                android:layout_gravity="center"
+                android:contentDescription="@string/logo_alt"
+                android:padding="10sp"
+                app:srcCompat="@drawable/logo" />
 
-    </FrameLayout>
+            <ImageButton
+                android:id="@+id/qrcodeBackButton"
+                android:layout_width="60sp"
+                android:layout_height="60sp"
+                android:layout_gravity="top"
+                android:background="@android:color/transparent"
+                android:contentDescription="@string/back"
+                app:srcCompat="@drawable/back_arrow" />
+        </FrameLayout>
 
-    <FrameLayout
-        android:layout_height="0sp"
-        android:layout_weight="1"
-        android:layout_width="match_parent">
+    </com.google.android.material.appbar.AppBarLayout>
 
-    </FrameLayout>
-
-    <LinearLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="77sp"
-        android:orientation="horizontal"
-        android:background="@color/sky_blue"
-        android:padding="0sp">
+        android:layout_height="wrap_content"
 
-        <ImageButton
-            android:id="@+id/qrcode_navbar_receipts_button"
-            android:layout_width="0sp"
+
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:layout_margin="0sp"
-            app:srcCompat="@drawable/navbar_receipts_icon"
-            android:background="@color/sky_blue"
-            android:contentDescription="@string/receipts"/>
+            android:orientation="vertical"
+            tools:context=".QRCodeActivity">
 
-        <ImageButton
-            android:id="@+id/qrcode_navbar_vouchers_button"
-            android:layout_width="0sp"
-            android:layout_height="match_parent"
-            android:layout_margin="0sp"
-            android:layout_weight="1"
-            android:background="@color/sky_blue"
-            android:contentDescription="@string/vouchers"
-            app:srcCompat="@drawable/navbar_voucher_icon" />
-        <ImageButton
-            android:id="@+id/qrcode_navbar_qrcode_button"
-            android:layout_width="0sp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:layout_margin="0sp"
-            app:srcCompat="@drawable/navbar_qrcode_scan_icon"
-            android:background="@color/sky_blue"
-            android:contentDescription="@string/qrcode_scan"/>
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="622dp">
 
-        <ImageButton
-            android:id="@+id/qrcode_navbar_shopping_cart_button"
-            android:layout_width="0sp"
-            android:layout_height="match_parent"
-            android:layout_margin="0sp"
-            android:layout_weight="1"
-            android:background="@color/sky_blue"
-            android:contentDescription="@string/shopping_cart"
-            app:srcCompat="@drawable/navbar_shopping_cart_icon_higlight" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="10dp">
 
-        <ImageButton
-            android:id="@+id/qrcode_navbar_profile_button"
-            android:layout_width="0sp"
-            android:layout_height="match_parent"
-            android:layout_margin="0sp"
-            android:layout_weight="1"
-            android:background="@color/sky_blue"
-            app:srcCompat="@drawable/navbar_profile_icon"
-            android:contentDescription="@string/profile"/>
-    </LinearLayout>
+                    <TextView
+                        android:id="@+id/noScanned"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/products"
+                        android:textColor="@color/black"
+                        android:textSize="48sp" />
+
+                    <ProgressBar
+                        android:id="@+id/progressBarQRCode"
+                        style="?android:attr/progressBarStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/noScanText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/noScan"
+                        android:textSize="24sp" />
+
+                    <LinearLayout
+                        android:id="@+id/productScanned"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        tools:visibility="visible">
+
+                        <TextView
+                            android:id="@+id/productNameField"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="20sp"
+                            android:text="@string/placeholder"
+                            android:textSize="24sp" />
+
+                        <TextView
+                            android:id="@+id/textView9"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="5sp"
+                            android:text="@string/price"
+                            android:textSize="34sp" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_margin="20sp"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/productPriceField"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/placeholder"
+                                android:textSize="24sp" />
+
+                            <TextView
+                                android:id="@+id/euroSymb"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="4sp"
+                                android:text="@string/euro"
+                                android:textSize="24sp" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                            <Button
+                                android:id="@+id/addToCartButton"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="5sp"
+                                android:background="#ACF699"
+                                android:padding="20sp"
+                                android:text="@string/addToCart"
+                                android:textSize="20sp" />
+
+                            <ImageButton
+                                android:id="@+id/forgetButton"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="5sp"
+                                android:background="@android:color/transparent"
+                                android:contentDescription="@string/forget"
+                                android:padding="20sp"
+                                android:src="@drawable/radix_icons_cross" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|center"
+                    android:layout_margin="5dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <ImageButton
+                        android:id="@+id/openScanner"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:layout_marginBottom="10dp"
+                        android:background="@color/sky_blue"
+                        android:contentDescription="@string/qrcode_scan"
+                        app:srcCompat="@drawable/navbar_qrcode_scan_icon" />
+
+                    <TextView
+                        android:id="@+id/textView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:labelFor="@id/openScanner"
+                        android:text="@string/qrcode_scan"
+                        android:textColor="@color/black"
+                        android:textSize="24sp" />
+                </LinearLayout>
+
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="77sp"
+                android:background="@color/sky_blue"
+                android:orientation="horizontal"
+                android:padding="0sp">
+
+                <ImageButton
+                    android:id="@+id/qrcode_navbar_receipts_button"
+                    android:layout_width="0sp"
+                    android:layout_height="match_parent"
+                    android:layout_margin="0sp"
+                    android:layout_weight="1"
+                    android:background="@color/sky_blue"
+                    android:contentDescription="@string/receipts"
+                    app:srcCompat="@drawable/navbar_receipts_icon" />
+
+                <ImageButton
+                    android:id="@+id/qrcode_navbar_vouchers_button"
+                    android:layout_width="0sp"
+                    android:layout_height="match_parent"
+                    android:layout_margin="0sp"
+                    android:layout_weight="1"
+                    android:background="@color/sky_blue"
+                    android:contentDescription="@string/vouchers"
+                    app:srcCompat="@drawable/navbar_voucher_icon" />
+
+                <ImageButton
+                    android:id="@+id/qrcode_navbar_qrcode_button"
+                    android:layout_width="0sp"
+                    android:layout_height="match_parent"
+                    android:layout_margin="0sp"
+                    android:layout_weight="1"
+                    android:background="@color/sky_blue"
+                    android:contentDescription="@string/qrcode_scan"
+                    app:srcCompat="@drawable/navbar_qrcode_scan_icon_higlight" />
+
+                <ImageButton
+                    android:id="@+id/qrcode_navbar_shopping_cart_button"
+                    android:layout_width="0sp"
+                    android:layout_height="match_parent"
+                    android:layout_margin="0sp"
+                    android:layout_weight="1"
+                    android:background="@color/sky_blue"
+                    android:contentDescription="@string/shopping_cart"
+                    app:srcCompat="@drawable/navbar_shopping_cart_icon" />
+
+                <ImageButton
+                    android:id="@+id/qrcode_navbar_profile_button"
+                    android:layout_width="0sp"
+                    android:layout_height="match_parent"
+                    android:layout_margin="0sp"
+                    android:layout_weight="1"
+                    android:background="@color/sky_blue"
+                    android:contentDescription="@string/profile"
+                    app:srcCompat="@drawable/navbar_profile_icon" />
+            </LinearLayout>
 
 
-</LinearLayout>
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
