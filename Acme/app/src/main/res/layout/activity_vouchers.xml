@@ -16,49 +16,6 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:contentDescription="@string/logo_alt"
-            android:padding="10sp"
-            app:srcCompat="@drawable/logo" />
-
-    </FrameLayout>
-    <TextView
-        android:id="@+id/vouchersActivityTitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/imprima_regular"
-        android:text="@string/vouchers"
-        android:textAlignment="center"
-        android:textColor="#344870"
-        android:textSize="50sp" />
-    <TextView
-        android:id="@+id/vouchersAmountUntilNextVoucherTitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/imprima_regular"
-        android:text="@string/vouchers_amount_until_next_voucher"
-        android:textAlignment="2"
-        android:textColor="#344870"
-        android:textSize="28sp"
-        android:paddingLeft="10sp"
-        android:paddingRight="10sp"/>
-
-    <TextView
-        android:id="@+id/vouchersAmountUntilNextVoucher"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/imprima_regular"
-        android:paddingLeft="20sp"
-        android:paddingRight="20sp"
-        android:text="@string/vouchers_amount_until_next_voucher_placeholder"
-        android:textAlignment="2"
-        android:textColor="#344870"
-        android:textSize="28sp"
-        android:layout_marginBottom="20sp"/>
-
-    <ScrollView
-        android:id="@+id/vouchersScrollView"
-
             android:background="#AFD0F7">
 
             <ImageButton
@@ -82,34 +39,18 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
-
         android:layout_width="match_parent"
         android:layout_height="match_parent"
 
 
+        android:layout_marginBottom="60sp"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
         <LinearLayout
-            android:id="@+id/vouchersScrollViewLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_gravity="center_horizontal"/>
-    </ScrollView>
-
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:menu="@menu/bottom_nav_menu"
-        app:itemIconTint="#ffffff"
-        app:itemTextColor="#ffffff"
-        android:background="@color/sky_blue"
-        app:labelVisibilityMode="unlabeled"
-        android:id="@+id/navbar"/>
-
-
-</LinearLayout>
-            tools:context=".Vouchers">
+            tools:context=".activities.Vouchers">
 
             <TextView
                 android:id="@+id/vouchersActivityTitle"
@@ -126,17 +67,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/imprima_regular"
+                android:paddingLeft="10sp"
+                android:paddingRight="10sp"
                 android:text="@string/vouchers_amount_until_next_voucher"
                 android:textAlignment="2"
                 android:textColor="#344870"
-                android:textSize="28sp"
-                android:paddingLeft="10sp"
-                android:paddingRight="10sp" />
+                android:textSize="28sp" />
 
             <TextView
                 android:id="@+id/vouchersAmountUntilNextVoucher"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="20sp"
                 android:fontFamily="@font/imprima_regular"
                 android:paddingLeft="20sp"
                 android:paddingRight="20sp"
@@ -145,78 +87,39 @@
                 android:textColor="#344870"
                 android:textSize="28sp" />
 
+            <ProgressBar
+                android:id="@+id/progressBar2"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
             <ScrollView
                 android:layout_width="match_parent"
-                android:layout_height="463dp"
-                android:layout_weight="1"
-                android:contentDescription="@string/vouchers_description">
+                android:layout_height="wrap_content">
 
                 <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/voucherList"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content">
+
+                </androidx.recyclerview.widget.RecyclerView>
             </ScrollView>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="77sp"
-                android:orientation="horizontal"
-                android:background="@color/sky_blue"
-                android:padding="0sp">
-
-                <ImageButton
-                    android:id="@+id/vouchers_navbar_receipts_button"
-                    android:layout_width="0sp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:layout_margin="0sp"
-                    app:srcCompat="@drawable/navbar_receipts_icon"
-                    android:background="@color/sky_blue"
-                    android:contentDescription="@string/receipts" />
-
-                <ImageButton
-                    android:id="@+id/vouchers_navbar_vouchers_button"
-                    android:layout_width="0sp"
-                    android:layout_height="match_parent"
-                    android:layout_margin="0sp"
-                    android:layout_weight="1"
-                    android:background="@color/sky_blue"
-                    android:contentDescription="@string/vouchers"
-                    app:srcCompat="@drawable/navbar_vouchers_icon_higlight" />
-
-                <ImageButton
-                    android:id="@+id/vouchers_navbar_qrcode_button"
-                    android:layout_width="0sp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:layout_margin="0sp"
-                    app:srcCompat="@drawable/navbar_qrcode_scan_icon"
-                    android:background="@color/sky_blue"
-                    android:contentDescription="@string/qrcode_scan" />
-
-                <ImageButton
-                    android:id="@+id/vouchers_navbar_shopping_cart_button"
-                    android:layout_width="0sp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:layout_margin="0sp"
-                    app:srcCompat="@drawable/navbar_shopping_cart_icon"
-                    android:background="@color/sky_blue"
-                    android:contentDescription="@string/shopping_cart" />
-
-                <ImageButton
-                    android:id="@+id/vouchers_navbar_profile_button"
-                    android:layout_width="0sp"
-                    android:layout_height="match_parent"
-                    android:layout_margin="0sp"
-                    android:layout_weight="1"
-                    android:background="@color/sky_blue"
-                    app:srcCompat="@drawable/navbar_profile_icon"
-                    android:contentDescription="@string/profile" />
-            </LinearLayout>
 
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/navbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@color/sky_blue"
+        app:itemIconTint="#ffffff"
+        app:itemTextColor="#ffffff"
+        app:labelVisibilityMode="unlabeled"
+        app:menu="@menu/bottom_nav_menu" />
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
