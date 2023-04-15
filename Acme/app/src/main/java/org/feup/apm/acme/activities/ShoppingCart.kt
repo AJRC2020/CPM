@@ -64,10 +64,10 @@ class ShoppingCart : AppCompatActivity() {
         val sharedPreferencePrices = this.getSharedPreferences("shopping_cart_prod_prices", Context.MODE_PRIVATE)
         val sharedPreferenceAmount = this.getSharedPreferences("shopping_cart_prod_amount", Context.MODE_PRIVATE)
 
+        var total = 0f
         val allEntries: Map<String, *> = sharedPreference.all
         for ((key, value) in allEntries) {
             var finalString = ""
-            var total = 0f
             val price = sharedPreferencePrices.getFloat(key,0f)
             val amount = sharedPreferenceAmount.getInt(key,0)
             total += price * amount
@@ -78,9 +78,9 @@ class ShoppingCart : AppCompatActivity() {
             finalString += amount.toString() + "X - " + Product(key,value.toString(),price).toString()
             val textView = TextView(this)
             textView.text = finalString
-            shoppingCartTotal.text = total.toString()
 
         }
+        shoppingCartTotal.text = total.toString()
 
 
     }

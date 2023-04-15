@@ -16,10 +16,11 @@ import kotlin.concurrent.thread
 class Vouchers : AppCompatActivity() {
     private val backButton by lazy { findViewById<ImageButton>(R.id.vouchersBackButton) }
     private val navbar by lazy { findViewById<BottomNavigationView>(R.id.navbar) }
-    private val mRecyclerView by lazy {findViewById<RecyclerView>(R.id.voucherList)}
+    private val mRecyclerView by lazy { findViewById<RecyclerView>(R.id.voucherList) }
     private var mAdapter: RecyclerView.Adapter<*> = VouchersAdapter(listOf())
     private val mLayoutManager: RecyclerView.LayoutManager = LinearLayoutManager(this)
-    private val progressBar by lazy {findViewById<ProgressBar>(R.id.progressBar2)}
+    private val progressBar by lazy { findViewById<ProgressBar>(R.id.progressBar2) }
+
 
     private var vouchers = listOf<Voucher>()
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,29 +34,30 @@ class Vouchers : AppCompatActivity() {
             finish()
         }
 
-        loading(progressBar,listOf())
+        loading(progressBar, listOf())
         val sharedPreference = this.getSharedPreferences("user_info", Context.MODE_PRIVATE)
-        val uuid = sharedPreference.getString("uuid","none")
+        val uuid = sharedPreference.getString("uuid", "none")
 
-        thread{
+        thread {
             vouchers = uuid?.let {
-                getVouchers(this,
+                getVouchers(
+                    this,
                     it
                 )
             }!!
 
-            Log.d("res",vouchers.toString())
+            Log.d("res", vouchers.toString())
 
             this.runOnUiThread {
-                stopLoading(progressBar,listOf())
+                stopLoading(progressBar, listOf())
                 addVouchers()
             }
         }
 
-        navBarListeners(navbar,this)
+        navBarListeners(navbar, this)
     }
 
-    private fun addVouchers(){
+    private fun addVouchers() {
         mAdapter = VouchersAdapter(vouchers)
         mRecyclerView.adapter = mAdapter
     }
