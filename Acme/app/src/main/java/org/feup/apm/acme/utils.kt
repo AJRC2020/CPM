@@ -3,13 +3,19 @@ package org.feup.apm.acme
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.security.KeyPairGeneratorSpec
 import android.util.Log
 import android.view.View
 import android.widget.ProgressBar
-import androidx.core.content.ContextCompat.startActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.snackbar.Snackbar
+import com.google.zxing.BarcodeFormat
+import com.google.zxing.EncodeHintType
+import com.google.zxing.MultiFormatWriter
+import com.google.zxing.common.BitMatrix
+import org.feup.apm.acme.Constants.ISO_SET
+import org.feup.apm.acme.Constants.SIZE_QR
 import org.feup.apm.acme.activities.*
 import java.io.BufferedReader
 import java.io.IOException
@@ -186,4 +192,35 @@ fun keysPresent(username: String): Boolean {
         getEntry(username, null)
     }
     return (entry != null)
+}
+
+fun encodeAsBitmap(str: String, act:Activity): Bitmap? {
+    val result: BitMatrix
+    val hints = Hashtable<EncodeHintType, String>().apply { put(EncodeHintType.CHARACTER_SET, ISO_SET) }
+    val width = SIZE_QR
+    try {
+        result = MultiFormatWriter().encode(str, BarcodeFormat.QR_CODE, width, SIZE_QR, hints)
+    }
+    catch (e: Exception) {
+        createSnackBar("\n${e.message}",act)
+
+        return null
+    }
+    val w = result.width
+    val h = result.height
+    val colorDark = act.resources.getColor(R.color.black, null)
+    val colorLight = act.resources.getColor(R.color.white, null)
+    val pixels = IntArray(w * h)
+    for (line in 0 until h) {
+        val offset = line * w
+        for (col in 0 until w)
+            pixels[offset + col] = if (result.get(col, line)) colorDark else colorLight
+    }
+    return Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888).apply { setPixels(pixels, 0, w, 0, 0, w, h) }
+}
+
+fun emptyShoppingCart(act: Activity){
+    act.deleteSharedPreferences("shopping_cart_prod_names")
+    act.deleteSharedPreferences("shopping_cart_prod_prices")
+    act.deleteSharedPreferences("shopping_cart_prod_amount")
 }

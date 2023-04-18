@@ -14,7 +14,7 @@ import org.feup.apm.acme.fragments.DialogWarningDelete
 import org.feup.apm.acme.models.ProductAmount
 
 
-class ProductsAdapter(private val dataSet: MutableList<ProductAmount>) :
+class ProductsAdapter(private val dataSet: ArrayList<ProductAmount>) :
     RecyclerView.Adapter<ProductsAdapter.ViewHolder>() {
 
     /**
@@ -52,11 +52,17 @@ class ProductsAdapter(private val dataSet: MutableList<ProductAmount>) :
         viewHolder.productName.text = dataSet[position].name
         viewHolder.priceField.text = convertToEuros(dataSet[position].price)
 
-        viewHolder.removeAllButton.setOnClickListener{
-            val delete = {dataSet[position].uuid?.let { it -> deleteProduct(it,position,viewHolder) }}
-            val popupMenu = DialogWarningDelete(dataSet[position].name,dataSet[position].amount, delete)
+        viewHolder.removeAllButton.setOnClickListener {
+            val delete =
+                { dataSet[position].uuid?.let { it -> deleteProduct(it, position, viewHolder) } }
             val manager = (viewHolder.itemView.context as FragmentActivity).supportFragmentManager
-            popupMenu.show(manager,"PopUp")
+            dataSet[position].name?.let { it1 ->
+                DialogWarningDelete(
+                    it1,
+                    dataSet[position].amount,
+                    delete
+                )
+            }?.show(manager, "PopUp")
         }
 
         viewHolder.removeOneButton.setOnClickListener{
@@ -84,6 +90,16 @@ class ProductsAdapter(private val dataSet: MutableList<ProductAmount>) :
         notifyItemRemoved(position);
         notifyItemRangeChanged(position, dataSet.size);
     }
+
+    public fun empty(){
+        dataSet.forEachIndexed { position, _ ->
+            dataSet.removeAt(position);
+            notifyItemRemoved(position);
+            notifyItemRangeChanged(position, dataSet.size); }
+
+    }
+
+
 
     private fun decreaseProductAmount(product: ProductAmount, position: Int, viewHolder: ViewHolder){
 

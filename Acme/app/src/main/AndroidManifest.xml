@@ -36,6 +36,13 @@
             android:name=".activities.RegisterActivity"
             android:exported="false" />
         <activity
+            android:name=".activities.CheckoutActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.CheckoutOptionsActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".activities.MainActivity"
             android:exported="true">
             <intent-filter>

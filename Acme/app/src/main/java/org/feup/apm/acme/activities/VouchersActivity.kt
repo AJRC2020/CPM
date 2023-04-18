@@ -19,12 +19,12 @@ class VouchersActivity : AppCompatActivity() {
     private val backButton by lazy { findViewById<ImageButton>(R.id.vouchersBackButton) }
     private val navbar by lazy { findViewById<BottomNavigationView>(R.id.navbar) }
     private val mRecyclerView by lazy { findViewById<RecyclerView>(R.id.voucherList) }
-    private var mAdapter: RecyclerView.Adapter<*> = VouchersAdapter(listOf())
+    private var mAdapter: RecyclerView.Adapter<*> = VouchersAdapter(arrayListOf())
     private val mLayoutManager: RecyclerView.LayoutManager = LinearLayoutManager(this)
     private val progressBar by lazy { findViewById<ProgressBar>(R.id.progressBar2) }
     private val amountTillNext by lazy {findViewById<TextView>(R.id.vouchersAmountUntilNextVoucher)}
 
-    private var vouchers = listOf<Voucher>()
+    private var vouchers = arrayListOf<Voucher>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

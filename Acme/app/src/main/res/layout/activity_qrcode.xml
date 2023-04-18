@@ -68,7 +68,7 @@
                         android:id="@+id/noScanned"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/products"
+                        android:text="@string/product"
                         android:textColor="@color/black"
                         android:textSize="48sp" />
 

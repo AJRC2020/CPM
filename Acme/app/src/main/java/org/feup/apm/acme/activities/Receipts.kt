@@ -20,11 +20,11 @@ class Receipts : AppCompatActivity() {
 
     private val progressBar by lazy {findViewById<ProgressBar>(R.id.progressBarReceipts)}
     private val mRecyclerView by lazy {findViewById<RecyclerView>(R.id.receiptsList)}
-    private var mAdapter: RecyclerView.Adapter<*> = ReceiptsAdapter(listOf())
+    private var mAdapter: RecyclerView.Adapter<*> = ReceiptsAdapter(arrayListOf())
     private val mLayoutManager: RecyclerView.LayoutManager = LinearLayoutManager(this)
     private val navbar by lazy { findViewById<BottomNavigationView>(R.id.navbar) }
 
-    private var receipts = listOf<Receipt>()
+    private var receipts = arrayListOf<Receipt>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -66,14 +66,14 @@ public class PurchaseController {
         
         List<ProductReceipt> items = new ArrayList<>();
 
-        for (ProductAndQuantity products : content.products) {
+        for (ProductReceipt products : content.products) {
             AppProduct product = productService.findByUuid(products.product);
-            total += product.getPrice() * products.quantity;
+            total += product.getPrice() * products.amount;
 
-            itemService.createItem(products.quantity, product, purchase);
+            itemService.createItem(products.amount, product, purchase);
             products.product = product.getName();
 
-            ProductReceipt PnP = new ProductReceipt(product.getName(), product.getPrice() * products.quantity,products.quantity);
+            ProductReceipt PnP = new ProductReceipt(product.getName(), product.getPrice() * products.amount,products.amount);
             items.add(PnP); 
         }   
 

@@ -11,4 +11,6 @@ object Constants {
   const val SIGN_ALGO = "SHA256WithRSA"
   const val PORT = "8080"
   const val REQUEST_CAMERA_ACCESS = 2
+  const val SIZE_QR = 600
+  const val ISO_SET = "ISO-8859-1"
 }

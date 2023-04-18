@@ -1,5 +1,6 @@
 package org.feup.apm.acme
 
+import android.app.Activity
 import android.content.Context
 import android.util.Log
 import org.feup.apm.acme.activities.*
@@ -84,7 +85,7 @@ fun getPurchases(
     act: Receipts,
     uuid: String,
     username: String
-    ) : List<Receipt> {
+    ) : ArrayList<Receipt> {
     // Building URL
     val urlRoute = "api/users/purchases"
     val url = URL("http://${Constants.BASE_ADDRESS}:${Constants.PORT}/$urlRoute")
@@ -96,7 +97,7 @@ fun getPurchases(
 
 
     var urlConnection: HttpURLConnection? = null
-    val receipts : MutableList<Receipt> = mutableListOf()
+    val receipts : ArrayList<Receipt> = arrayListOf()
     try {
         // Sending Request
         urlConnection = (url.openConnection() as HttpURLConnection).apply {
@@ -123,7 +124,7 @@ fun getPurchases(
                     val total = dataSet.getJSONObject(receipt)["price"].toString().toFloat()
                     val voucher = dataSet.getJSONObject(receipt)["voucher"].toString()
                     val itemsJson = dataSet.getJSONObject(receipt).getJSONArray("items")
-                    val items : MutableList<ProductAmount> = mutableListOf()
+                    val items : ArrayList<ProductAmount> = arrayListOf()
                     (0 until itemsJson.length()).forEach {
                         val item = itemsJson.getJSONObject(it)
 
@@ -158,7 +159,7 @@ fun getPurchases(
 
 
 fun getVouchers(
-    act: VouchersActivity,
+    act: Activity,
     uuid: String,
     username: String
     ) : VouchersInfo {
@@ -174,7 +175,7 @@ fun getVouchers(
 
     var urlConnection: HttpURLConnection? = null
 
-    var vouchersInfo = VouchersInfo(listOf(),0f)
+    var vouchersInfo = VouchersInfo(arrayListOf(),0f)
     try {
         // Sending Request
         urlConnection = (url.openConnection() as HttpURLConnection).apply {
@@ -197,7 +198,7 @@ fun getVouchers(
                 val info = JSONObject(read)
                 val valueToNext = info["valueToNextVoucher"].toString().toFloat()
                 val dataSet = info.getJSONArray("vouchers")
-                val vouchers : MutableList<Voucher> = mutableListOf()
+                val vouchers : ArrayList<Voucher> = arrayListOf()
 
                 (0 until dataSet.length()).forEach { receipt ->
                     val date = dataSet.getJSONObject(receipt)["date"].toString()
@@ -448,7 +449,7 @@ fun getUUID(
 }
 
 fun getUserInfo(
-    act: UserProfile,
+    act: Activity,
     uuid: String,
     username: String
     ) : Boolean {
