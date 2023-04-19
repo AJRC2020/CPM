@@ -19,6 +19,7 @@ import com.example.acme_backend.bodies.*;
 import com.example.acme_backend.item.AppItem;
 import com.example.acme_backend.product.AppProduct;
 import com.example.acme_backend.purchase.AppPurchase;
+import com.example.acme_backend.purchase.PurchaseService;
 import com.example.acme_backend.voucher.AppVoucher;
 
 import java.io.*;
@@ -28,10 +29,12 @@ import java.io.*;
 public class UserController {
 
     private final UserService userService;
+    private final PurchaseService purchaseService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, PurchaseService purchaseService) {
         this.userService = userService;
+        this.purchaseService = purchaseService;
     }
 
     @GetMapping
@@ -96,42 +99,14 @@ public class UserController {
 
     @PostMapping("/purchases")
     public ResponseEntity<List<ReturnPurchase>> getPurchasesUser(@RequestBody SignedId sign) throws Exception {
-        AppUser user = userService.getByUuid(sign.uuid);
-
-
-        if (!verifySignature(sign.signature, sign.uuid, user.getPublic_key())){
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
-
-
-        Iterator<AppPurchase> purchases = user.getPurchases().iterator();
-        List<ReturnPurchase> retPurchases = new ArrayList<>();
-
-        while (purchases.hasNext()) {
-            AppPurchase purchase = purchases.next();
-            Iterator<AppItem> items = purchase.getItems().iterator();
-
-
-            List<ProductReceipt> itemsList = new ArrayList<>();
-
-
-            while(items.hasNext()) {
-                AppItem item = items.next();
-                AppProduct product = item.getProduct();
-                itemsList.add(new ProductReceipt(product.getName(), item.getQuantity() * product.getPrice(),item.getQuantity()));
-            }
-
-            if (purchase.getVoucher() == null) {
-                retPurchases.add(new ReturnPurchase(purchase.getDate(), purchase.getPrice(), itemsList));
-            }
-            else {
-                retPurchases.add(new ReturnPurchase(purchase.getDate(), purchase.getPrice(), itemsList, purchase.getVoucher().getUuid()));
-            }
-
-        }
-
-        return ResponseEntity.ok().body(retPurchases);
+        return getReceipts(false, sign);
     }
+
+    @PostMapping("/purchases/emitted")
+    public ResponseEntity<List<ReturnPurchase>> getPurchasesEmitted(@RequestBody SignedId sign) throws Exception {
+        return getReceipts(true, sign);
+    }
+    
 
     @PostMapping("/info")
     public ResponseEntity<ReturnUser> getUser(@RequestBody SignedId sign) throws Exception {
@@ -224,5 +199,48 @@ public class UserController {
         }
 
         return bytes;
+    }
+
+    private ResponseEntity<List<ReturnPurchase>> getReceipts(Boolean getJustEmitted, SignedId sign) throws Exception {
+        AppUser user = userService.getByUuid(sign.uuid);
+
+        /*if (!verifySignature(sign.signature, sign.uuid, user.getPublic_key())){
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }*/
+
+        Iterator<AppPurchase> purchases = user.getPurchases().iterator();
+        List<ReturnPurchase> retPurchases = new ArrayList<>();
+
+        while (purchases.hasNext()) {
+            AppPurchase purchase = purchases.next();
+
+            if (!purchase.getEmitted() && getJustEmitted) {
+                continue;
+            }
+
+            if (!purchase.getEmitted() && !getJustEmitted) {
+                purchase = purchaseService.updatePurchase(true, purchase.getId());
+            }
+
+            Iterator<AppItem> items = purchase.getItems().iterator();
+
+            List<ProductReceipt> itemsList = new ArrayList<>();
+
+            while(items.hasNext()) {
+                AppItem item = items.next();
+                AppProduct product = item.getProduct();
+                itemsList.add(new ProductReceipt(product.getName(), item.getQuantity() * product.getPrice(),item.getQuantity()));
+            }
+
+            if (purchase.getVoucher() == null) {
+                retPurchases.add(new ReturnPurchase(purchase.getDate(), purchase.getPrice(), itemsList));
+            }
+            else {
+                retPurchases.add(new ReturnPurchase(purchase.getDate(), purchase.getPrice(), itemsList, purchase.getVoucher().getUuid()));
+            }
+
+        }
+
+        return ResponseEntity.ok().body(retPurchases);
     }
 }

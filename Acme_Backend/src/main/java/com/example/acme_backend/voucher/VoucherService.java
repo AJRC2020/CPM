@@ -21,7 +21,18 @@ public class VoucherService {
     }
 
     public List<AppVoucher> getVouchers() {
-        return voucherRepository.findAll();
+        List<AppVoucher> vouchers = voucherRepository.findAll();
+
+        for (AppVoucher voucher: vouchers) {
+            if (!voucher.getEmitted()) {
+                voucher.setEmitted(true);
+                voucherRepository.save(voucher);
+            }
+        }
+
+        voucherRepository.flush();
+
+        return vouchers;
     }
 
     public AppVoucher usedVoucher(String uuid) {

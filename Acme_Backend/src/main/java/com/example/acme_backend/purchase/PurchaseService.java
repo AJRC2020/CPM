@@ -22,7 +22,19 @@ public class PurchaseService {
     }
 
     public List<AppPurchase> getPurchases() {
-        return purchaseRepository.findAll();
+        List<AppPurchase> purchases = purchaseRepository.findAll();
+
+        for (AppPurchase purchase: purchases) {
+            if (!purchase.getEmitted()) {
+                purchase.setEmitted(true);
+
+                purchaseRepository.save(purchase);
+            }
+        }
+
+        purchaseRepository.flush();
+
+        return purchases;
     }
 
     public AppPurchase createPurchase() {
@@ -69,6 +81,19 @@ public class PurchaseService {
         update_purchase.setPrice(total);
         update_purchase.setUser(user);
         update_purchase.setVoucher(voucher);
+
+        purchaseRepository.save(update_purchase);
+
+        purchaseRepository.flush();
+
+        return update_purchase;
+    }
+
+    public AppPurchase updatePurchase(Boolean emitted, Long id) {
+        Optional<AppPurchase> purchase = purchaseRepository.findById(id);
+        AppPurchase update_purchase = purchase.get();
+
+        update_purchase.setEmitted(emitted);
 
         purchaseRepository.save(update_purchase);
 
