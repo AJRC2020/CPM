@@ -82,8 +82,7 @@ class CheckoutActivity : AppCompatActivity() {
         for (product in products) {
             val prodJ = JSONObject()
             prodJ.put("amount",product.amount)
-            prodJ.put("product",product.name)
-            prodJ.put("price",product.price)
+            prodJ.put("product",product.uuid)
             productsJson.add(prodJ)
         }
         message.put("products",JSONArray(productsJson))
