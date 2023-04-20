@@ -19,6 +19,7 @@ import com.google.zxing.integration.android.IntentResult
 import org.feup.apm.acme.*
 import org.feup.apm.acme.Constants.REQUEST_CAMERA_ACCESS
 import org.feup.apm.acme.models.Product
+import org.feup.apm.acme.models.ProductAmount
 import kotlin.concurrent.thread
 
 class QRCodeActivity : AppCompatActivity() {
@@ -32,7 +33,7 @@ class QRCodeActivity : AppCompatActivity() {
     private val forgetBtt by lazy { findViewById<ImageButton>(R.id.forgetButton)}
     private val scannedText by lazy {findViewById<LinearLayout>(R.id.productScanned)}
     private val navbar by lazy { findViewById<BottomNavigationView>(R.id.navbar) }
-    private var product: Product? = null
+    private var product: Product? = Product("sjakjkds","banana",12.5f)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
