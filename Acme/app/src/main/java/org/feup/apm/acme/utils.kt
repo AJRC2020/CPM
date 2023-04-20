@@ -86,7 +86,6 @@ fun createSnackBar(text:String, act: Activity){
 fun signContent(content:String, username:String): String {
     if (content.isEmpty()) throw Exception("no content")
 
-
     try {
         val entry = KeyStore.getInstance(Constants.ANDROID_KEYSTORE).run {
             load(null)
@@ -101,7 +100,7 @@ fun signContent(content:String, username:String): String {
 
         return Base64.encodeToString(result, Base64.NO_WRAP)
     } catch (e: Exception) {
-        throw e
+        throw SigningException("Error while signing a message. Please retry.")
     }
 }
 
@@ -148,7 +147,7 @@ fun checkIfLoggedIn(act: Activity){
     }
 }
 
-fun getPublicKey(username: String): PublicKey {
+fun getPublicKey(username: String) : PublicKey  {
     try {
         val entry = KeyStore.getInstance(Constants.ANDROID_KEYSTORE).run {
             load(null)
@@ -156,7 +155,7 @@ fun getPublicKey(username: String): PublicKey {
         }
         return (entry as KeyStore.PrivateKeyEntry).certificate.publicKey
     } catch (ex: Exception) {
-        throw ex
+        throw KeyException("Could not retrieve public key for user. Make sure you are using the device where your account was created.")
     }
 }
 
@@ -178,16 +177,22 @@ fun generateAndStoreKeys(username: String, act: Activity) {
         }
     }
     catch (ex: Exception) {
-        throw ex
+        throw GenerateKeysException("Issue with generating client keys. Please try registering again.")
     }
 }
 
 fun keysPresent(username: String): Boolean {
-    val entry = KeyStore.getInstance(Constants.ANDROID_KEYSTORE).run {
-        load(null)
-        getEntry(username, null)
+    try {
+        val entry = KeyStore.getInstance(Constants.ANDROID_KEYSTORE).run {
+            load(null)
+            getEntry(username, null)
+        }
+        return (entry != null)
     }
-    return (entry != null)
+    catch(e: Exception){
+        throw KeyException("Error retrieving user keys. Make sure you are using the device you first registered your account in.")
+    }
+
 }
 
 fun encodeAsBitmap(str: String, act:Activity): Bitmap? {
@@ -198,9 +203,7 @@ fun encodeAsBitmap(str: String, act:Activity): Bitmap? {
         result = MultiFormatWriter().encode(str, BarcodeFormat.QR_CODE, width, SIZE_QR, hints)
     }
     catch (e: Exception) {
-        createSnackBar("\n${e.message}",act)
-
-        return null
+        throw CreateQRCodeException("There was an issue generating the QR code. Please retry.")
     }
     val w = result.width
     val h = result.height
