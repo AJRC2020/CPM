@@ -204,9 +204,9 @@ public class UserController {
     private ResponseEntity<List<ReturnPurchase>> getReceipts(Boolean getJustEmitted, SignedId sign) throws Exception {
         AppUser user = userService.getByUuid(sign.uuid);
 
-        /*if (!verifySignature(sign.signature, sign.uuid, user.getPublic_key())){
+        if (!verifySignature(sign.signature, sign.uuid, user.getPublic_key())){
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }*/
+        }
 
         Iterator<AppPurchase> purchases = user.getPurchases().iterator();
         List<ReturnPurchase> retPurchases = new ArrayList<>();
@@ -214,7 +214,7 @@ public class UserController {
         while (purchases.hasNext()) {
             AppPurchase purchase = purchases.next();
 
-            if (!purchase.getEmitted() && getJustEmitted) {
+            if (purchase.getEmitted() && getJustEmitted) {
                 continue;
             }
 
