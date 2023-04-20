@@ -28,6 +28,7 @@ class ResultActivity : AppCompatActivity() {
 
         title.text = titleText
         content.text = descText
+        retry.visibility = View.GONE
 
         if (error){
             retry.visibility = View.VISIBLE

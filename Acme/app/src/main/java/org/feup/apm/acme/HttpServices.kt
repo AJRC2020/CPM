@@ -157,6 +157,78 @@ fun getPurchases(
     return receipts
 }
 
+fun getJustEmittedPurchases(
+    uuid: String,
+    username: String
+) : ArrayList<Receipt> {
+    // Building URL
+    val urlRoute = "api/users/purchases/emitted"
+    val url = URL("http://${Constants.BASE_ADDRESS}:${Constants.PORT}/$urlRoute")
+
+    // Creating payload
+    val payload = JSONObject()
+    payload.put("uuid", uuid)
+    payload.put("signature", signContent(uuid,username))
+
+
+    var urlConnection: HttpURLConnection? = null
+    val receipts : ArrayList<Receipt> = arrayListOf()
+    try {
+        // Sending Request
+        urlConnection = (url.openConnection() as HttpURLConnection).apply {
+            doOutput = true
+            doInput = true
+            requestMethod = "POST"
+            setRequestProperty("Content-Type", "application/json")
+            useCaches = false
+            connectTimeout = 5000
+            with(outputStream) {
+                write(payload.toString().toByteArray())
+                flush()
+                close()
+            }
+            if (responseCode == 200) {
+                // Getting response stream
+                val read = readStream(inputStream)
+                // Parsing stream into JSON
+                val dataSet = JSONArray(read)
+
+
+                (0 until dataSet.length()).forEach { receipt ->
+                    val date = dataSet.getJSONObject(receipt)["date"].toString()
+                    val total = dataSet.getJSONObject(receipt)["price"].toString().toFloat()
+                    val voucher = dataSet.getJSONObject(receipt)["voucher"].toString()
+                    val itemsJson = dataSet.getJSONObject(receipt).getJSONArray("items")
+                    val items : ArrayList<ProductAmount> = arrayListOf()
+                    (0 until itemsJson.length()).forEach {
+                        val item = itemsJson.getJSONObject(it)
+
+                        val name = item["product"].toString()
+                        val price =  item["price"].toString().toFloat()
+                        val amount =  item["amount"].toString().toInt()
+
+                        items.add(ProductAmount(null,amount,name,price))
+                    }
+                    receipts.add(Receipt(date,total,items,voucher))
+                }
+
+            } else {
+                // Putting error info in console
+                Log.d("error", "Code: $responseCode - $errorStream")
+            }
+        }
+    } catch (e: Exception) {
+
+        // Putting error info in console
+        Log.d("error", e.toString())
+
+    } finally {
+        // Closing url connection
+        urlConnection?.disconnect()
+    }
+    return receipts
+}
+
 
 fun getVouchers(
     act: Activity,

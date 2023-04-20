@@ -5,7 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.security.KeyPairGeneratorSpec
-import android.util.Log
+import android.util.Base64
 import android.view.View
 import android.widget.ProgressBar
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -99,12 +99,8 @@ fun signContent(content:String, username:String): String {
             sign()
         }
 
-        val encodedRed = android.util.Base64.encodeToString(result, android.util.Base64.NO_WRAP)
-        Log.d("signed content", encodedRed)
-        return encodedRed
-    }
-    catch  (e: Exception) {
-        Log.d("error",e.toString())
+        return Base64.encodeToString(result, Base64.NO_WRAP)
+    } catch (e: Exception) {
         throw e
     }
 }

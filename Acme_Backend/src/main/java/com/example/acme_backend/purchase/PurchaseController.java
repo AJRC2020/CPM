@@ -110,14 +110,14 @@ public class PurchaseController {
 
         userService.updateTotal(content.user_id, total);
 
+        ReturnPurchase return_purchase;
         if (content.voucher_id.isPresent()) {
-            ReturnPurchase return_purchase = new ReturnPurchase(updated_purchase.getDate(), updated_purchase.getPrice(), items, updated_purchase.getVoucher().getUuid());
-            return ResponseEntity.ok().body(return_purchase);
+            return_purchase = new ReturnPurchase(updated_purchase.getDate(), updated_purchase.getPrice(), items, updated_purchase.getVoucher().getUuid());
         }
         else{
-            ReturnPurchase return_purchase = new ReturnPurchase(updated_purchase.getDate(), updated_purchase.getPrice(), items);
-            return ResponseEntity.ok().body(return_purchase);
+            return_purchase = new ReturnPurchase(updated_purchase.getDate(), updated_purchase.getPrice(), items);
         }
+        return ResponseEntity.ok().body(return_purchase);
     }
 
     private boolean verifySignature(String signature, NewPurchase purchase, String public_key) throws Exception {

@@ -1,7 +1,10 @@
 package org.feup.apm.acme.activities
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.widget.ImageButton
 import android.widget.ImageView
@@ -11,8 +14,6 @@ import org.feup.apm.acme.*
 import org.feup.apm.acme.models.ProductAmount
 import org.json.JSONArray
 import org.json.JSONObject
-import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.concurrent.thread
 
 class CheckoutActivity : AppCompatActivity() {
@@ -30,10 +31,24 @@ class CheckoutActivity : AppCompatActivity() {
         checkIfLoggedOut(this)
         getIntentInfo()
 
-        val message = buildMessage()
+        val sharedPreference = this.getSharedPreferences("user_info", Context.MODE_PRIVATE)
+        val uuid = sharedPreference.getString("uuid","none")
+        val username = sharedPreference.getString("username","none").toString()
+
+
+
+        val message = uuid?.let { buildMessage(it,username) }
 
         thread {
-            encodeAsBitmap(message,this).also { runOnUiThread { qrCode.setImageBitmap(it) } }
+            if (message != null) {
+                encodeAsBitmap(message,this).also { runOnUiThread { qrCode.setImageBitmap(it) } }
+            }
+
+            runOnUiThread{
+                if (uuid != null) {
+                    requestPeriodically(uuid,username)
+                }
+            }
         }
 
         //Buttons
@@ -55,26 +70,46 @@ class CheckoutActivity : AppCompatActivity() {
         voucher = intent.getStringExtra("voucher") ?: "None"
     }
 
-    private fun requestPeriodically(){
-        val t = Timer()
-        t.schedule(object : TimerTask() {
+    private fun requestPeriodically(uuid:String,username: String){
+        val handler = Handler(Looper.getMainLooper())
+        val delay = 1000
+        var stop = false
+
+        handler.postDelayed(object : Runnable {
             override fun run() {
                 thread {
-                    //TODO: check fresh receipt endpoint
+                    val receipts = getJustEmittedPurchases(uuid,username)
+                    Log.d("receipts", receipts.toString())
+                    runOnUiThread {
+                        receipts.forEach{
+                            if (it.items == products){
+                                endPurchase()
+                                stop = true
+                                return@forEach
+                            }
+                        }
+                        if (!stop) {
+                            handler.postDelayed(this,1000)
+                        }
+                    }
                 }
             }
-        }, 1000)
+        }, delay.toLong())
     }
 
-    private fun buildMessage(): String{
+    private fun endPurchase(){
+        emptyShoppingCart(this)
+        val intent = Intent(this, ShoppingCart::class.java)
+        startActivity(intent)
+    }
 
-        val sharedPreference = this.getSharedPreferences("user_info", Context.MODE_PRIVATE)
-        val username = sharedPreference.getString("username","none").toString()
-        val uuid = sharedPreference.getString("uuid", "none")
+    private fun buildMessage(uuid: String, username: String): String{
 
         val message = JSONObject()
         if (voucher != "None"){
-            message.put("voucher",voucher)
+            message.put("voucher_id",voucher)
+        }else{
+            message.put("voucher_id",JSONObject.NULL)
         }
         message.put("discount",useAcc)
         message.put("user_id",uuid)
