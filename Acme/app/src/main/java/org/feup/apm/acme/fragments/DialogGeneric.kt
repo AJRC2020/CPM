@@ -16,8 +16,8 @@ class DialogGeneric(private val title:String, private val message:String) : Dial
         val builder = AlertDialog.Builder(requireActivity())
         builder.setTitle(title)
             .setMessage(message)
-            .setPositiveButton("OK") { dialog, which ->
-                // do something when OK button is clicked
+            .setPositiveButton("OK") { _, _ ->
+                dismiss()
             }
         return builder.create()
     }

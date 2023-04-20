@@ -26,7 +26,8 @@ class RegisterActivity : AppCompatActivity() {
     private val passwordField by lazy { findViewById<EditText>(R.id.registerPasswordFieldInput)}
     private val paymentMethodField by lazy { findViewById<EditText>(R.id.registerPaymentMethodFieldInput)}
     private val progressBar by lazy {findViewById<ProgressBar>(R.id.progressBar)}
-    @RequiresApi(Build.VERSION_CODES.O)
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
