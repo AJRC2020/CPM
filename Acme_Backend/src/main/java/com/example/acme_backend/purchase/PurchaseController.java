@@ -21,8 +21,6 @@ import com.example.acme_backend.voucher.AppVoucher;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.*;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectOutputStream;
 import java.security.KeyFactory;
 import java.security.PublicKey;
 import java.security.Signature;
@@ -58,9 +56,9 @@ public class PurchaseController {
         NewPurchase content = signedContent.purchase;
         AppUser user = userService.getByUuid(content.user_id);
 
-        /*if (!verifySignature(signedContent.signature, content, user.getPublic_key())){
+        if (!verifySignature(signedContent.signature, content, user.getPublic_key())){
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }*/
+        }
 
         AppPurchase purchase = purchaseService.createPurchase();
 
@@ -127,13 +125,12 @@ public class PurchaseController {
         X509EncodedKeySpec keySpec = new X509EncodedKeySpec(Base64.getDecoder().decode(public_key));
         PublicKey pubKey = kf.generatePublic(keySpec);
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ObjectOutputStream oos = new ObjectOutputStream(baos);
-        oos.writeObject(purchase);
-        oos.flush();
+        String purchase_string = purchase.toString();
+
+        System.out.println(purchase_string);
 
         sign.initVerify(pubKey);
-        sign.update(baos.toByteArray());
+        sign.update(purchase_string.getBytes());
 
         return sign.verify(Base64.getDecoder().decode(signature));
     }
