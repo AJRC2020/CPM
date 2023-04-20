@@ -71,7 +71,7 @@ public class PurchaseController {
             itemService.createItem(products.quantity, product, purchase);
             products.product = product.getName();
 
-            ProductReceipt PnP = new ProductReceipt(product.getName(), product.getPrice() * products.quantity,products.quantity);
+            ProductReceipt PnP = new ProductReceipt(product.getUuid() ,product.getName(), product.getPrice() * products.quantity,products.quantity);
             items.add(PnP);
         }
 

@@ -22,11 +22,11 @@ class CheckoutActivity : AppCompatActivity() {
     private val backButton by lazy { findViewById<ImageButton>(R.id.checkOuttBackButton)}
     private val navbar by lazy { findViewById<BottomNavigationView>(R.id.navbar) }
     private val qrCode by lazy { findViewById<ImageView>(R.id.qrCodePos) }
-    private val cancelBut by lazy {findViewById<Button>(R.id.cancelButton)}
+    private val cancelBut by lazy {findViewById<Button>(R.id.cancelPurchase)}
     private var products = arrayListOf<ProductAmount>()
     private var useAcc = false
     private var voucher = "None"
-    val handler = Handler(Looper.getMainLooper())
+    private var handler = Handler(Looper.getMainLooper())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,8 +38,6 @@ class CheckoutActivity : AppCompatActivity() {
         val sharedPreference = this.getSharedPreferences("user_info", Context.MODE_PRIVATE)
         val uuid = sharedPreference.getString("uuid","none")
         val username = sharedPreference.getString("username","none").toString()
-
-
 
         val message = uuid?.let { buildMessage(it,username) }
 
@@ -63,6 +61,7 @@ class CheckoutActivity : AppCompatActivity() {
 
         cancelBut.setOnClickListener {
             handler.removeCallbacksAndMessages(null)
+            finish()
         }
 
         onBackPressedDispatcher.addCallback(this, object: OnBackPressedCallback(true) {
@@ -74,10 +73,6 @@ class CheckoutActivity : AppCompatActivity() {
 
         navBarListeners(navbar,this)
     }
-
-
-
-
 
     private fun getIntentInfo(){
         val intent = intent
@@ -92,34 +87,40 @@ class CheckoutActivity : AppCompatActivity() {
     }
 
     private fun requestPeriodically(uuid:String,username: String){
-        val delay = 1000
+        val delay = 100
         var stop = false
 
         handler.postDelayed(object : Runnable {
             override fun run() {
                 thread {
                     val receipts = getJustEmittedPurchases(uuid,username)
-                    Log.d("receipts", receipts.toString())
-                    runOnUiThread {
-                        receipts.forEach{
-                            if (it.items == products){
-                                endPurchase()
-                                stop = true
-                                return@forEach
-                            }
+                    Log.d("called","handler")
+                    if (receipts.isNotEmpty()) {
+                        Log.d("receipts", receipts.toString())
+                    }
+
+                    receipts.forEach{
+                        if (it.items == products &&
+                            (it.voucher == voucher || (it.voucher == "null" && voucher == "None"))
+                                ){
+                            endPurchase()
+                            stop = true
+                            return@forEach
                         }
-                        if (!stop) {
-                            handler.postDelayed(this,1000)
-                        }
+                    }
+                    if (!stop) {
+                        handler.postDelayed(this,delay.toLong())
                     }
                 }
             }
         }, delay.toLong())
     }
 
+
     private fun endPurchase(){
         emptyShoppingCart(this)
-        val intent = Intent(this, ShoppingCart::class.java)
+        val intent = Intent(this, PurchaseResponseActivity::class.java)
+        intent.putExtra("message","Purchase completed!")
         startActivity(intent)
     }
 

@@ -128,11 +128,12 @@ fun getPurchases(
                     (0 until itemsJson.length()).forEach {
                         val item = itemsJson.getJSONObject(it)
 
+                        val uuid = item["uuid"].toString()
                         val name = item["product"].toString()
                         val price =  item["price"].toString().toFloat()
                         val amount =  item["amount"].toString().toInt()
 
-                        items.add(ProductAmount(null,amount,name,price))
+                        items.add(ProductAmount(uuid,amount,name,price))
                     }
                     receipts.add(Receipt(date,total,items,voucher))
                 }
@@ -203,11 +204,12 @@ fun getJustEmittedPurchases(
                     (0 until itemsJson.length()).forEach {
                         val item = itemsJson.getJSONObject(it)
 
+                        val prodUuid = item["uuid"].toString()
                         val name = item["product"].toString()
                         val price =  item["price"].toString().toFloat()
                         val amount =  item["amount"].toString().toInt()
 
-                        items.add(ProductAmount(null,amount,name,price))
+                        items.add(ProductAmount(prodUuid,amount,name,price))
                     }
                     receipts.add(Receipt(date,total,items,voucher))
                 }

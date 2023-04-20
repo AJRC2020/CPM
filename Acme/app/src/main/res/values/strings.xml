@@ -82,9 +82,10 @@
     <string name="checkout_options">Checkout Options</string>
     <string name="voucher_select">Voucher:</string>
     <string name="clear">Clear</string>
-    <string name="waiting_payment">Waiting for payment confirmation...</string>
+    <string name="waiting_payment">Waiting for payment confirmation…</string>
     <string name="cancel_purchase">Cancel Purchase</string>
     <string name="apply_acc">Discount Accumulated Value</string>
     <string name="warning_delete_cart">You\'re about to remove %1$d of the item %2$s from your shopping cart, do you wish to proceed?</string>
     <string name="noScan">Scan a product\'s QR code to add it to your cart</string>
+
 </resources>

@@ -218,7 +218,7 @@ public class UserController {
                 continue;
             }
 
-            if (!purchase.getEmitted() && !getJustEmitted) {
+            if (!purchase.getEmitted()) {
                 purchase = purchaseService.updatePurchase(true, purchase.getId());
             }
 
@@ -229,7 +229,7 @@ public class UserController {
             while(items.hasNext()) {
                 AppItem item = items.next();
                 AppProduct product = item.getProduct();
-                itemsList.add(new ProductReceipt(product.getName(), item.getQuantity() * product.getPrice(),item.getQuantity()));
+                itemsList.add(new ProductReceipt(product.getUuid(), product.getName(), item.getQuantity() * product.getPrice(),item.getQuantity()));
             }
 
             if (purchase.getVoucher() == null) {

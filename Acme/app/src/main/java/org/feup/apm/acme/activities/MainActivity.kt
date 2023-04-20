@@ -17,7 +17,7 @@ class MainActivity : AppCompatActivity() {
 
         checkIfLoggedIn(this)
 
-        registerButton.setOnClickListener {z
+        registerButton.setOnClickListener {
             val intent = Intent(this, RegisterActivity::class.java)
             startActivity(intent)
         }

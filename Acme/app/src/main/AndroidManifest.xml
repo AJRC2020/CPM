@@ -18,6 +18,9 @@
             android:name=".activities.QRCodeActivity"
             android:exported="false" />
         <activity
+            android:name=".activities.PurchaseResponseActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.Receipts"
             android:exported="false" />
         <activity
