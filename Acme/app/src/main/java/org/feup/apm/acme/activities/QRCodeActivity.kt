@@ -33,7 +33,7 @@ class QRCodeActivity : AppCompatActivity() {
     private val forgetBtt by lazy { findViewById<ImageButton>(R.id.forgetButton)}
     private val scannedText by lazy {findViewById<LinearLayout>(R.id.productScanned)}
     private val navbar by lazy { findViewById<BottomNavigationView>(R.id.navbar) }
-    private var product: Product? = Product("sjakjkds","banana",12.5f)
+    private var product: Product? = Product("33sdsdaa-fs-assd-9asdab3-sadasdsdasd","banana",12.5f)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

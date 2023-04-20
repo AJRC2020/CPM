@@ -31,7 +31,7 @@ import java.security.spec.X509EncodedKeySpec;
 @RestController
 @RequestMapping(path = "api/purchases")
 public class PurchaseController {
-    
+
     private final PurchaseService purchaseService;
     private final VoucherService voucherService;
     private final UserService userService;
@@ -63,19 +63,19 @@ public class PurchaseController {
         }*/
 
         AppPurchase purchase = purchaseService.createPurchase();
-        
+
         List<ProductReceipt> items = new ArrayList<>();
 
-        for (ProductReceipt products : content.products) {
+        for (ProductAndQuantity products : content.products) {
             AppProduct product = productService.findByUuid(products.product);
-            total += product.getPrice() * products.amount;
+            total += product.getPrice() * products.quantity;
 
-            itemService.createItem(products.amount, product, purchase);
+            itemService.createItem(products.quantity, product, purchase);
             products.product = product.getName();
 
-            ProductReceipt PnP = new ProductReceipt(product.getName(), product.getPrice() * products.amount,products.amount);
-            items.add(PnP); 
-        }   
+            ProductReceipt PnP = new ProductReceipt(product.getName(), product.getPrice() * products.quantity,products.quantity);
+            items.add(PnP);
+        }
 
         if (content.discount) {
             total -= userService.getByUuid(content.user_id).getDiscount();
@@ -99,7 +99,7 @@ public class PurchaseController {
         else {
             updated_purchase = purchaseService.updatePurchase(total, Date.valueOf(date), user, purchase.getId());
         }
-    
+
         Integer previous = (int)(user.getTotal() / 100);
         Integer next = (int)((total + user.getTotal()) / 100);
         Integer count = next - previous;
