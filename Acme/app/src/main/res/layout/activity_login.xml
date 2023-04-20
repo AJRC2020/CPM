@@ -115,6 +115,15 @@
                     android:textSize="20sp"
                     tools:ignore="SpeakableTextPresentCheck" />
 
+                <TextView
+                    android:id="@+id/nicknameError"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/placeholder"
+                    android:textColor="@android:color/holo_red_light"
+                    android:visibility="gone" />
+
             </LinearLayout>
 
             <LinearLayout
@@ -151,6 +160,15 @@
                     android:padding="10dp"
                     android:textSize="20sp"
                     tools:ignore="SpeakableTextPresentCheck" />
+
+                <TextView
+                    android:id="@+id/passwordError"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/placeholder"
+                    android:textColor="@android:color/holo_red_light"
+                    android:visibility="gone" />
 
             </LinearLayout>
 

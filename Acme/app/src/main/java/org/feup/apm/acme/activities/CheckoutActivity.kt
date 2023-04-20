@@ -6,8 +6,10 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import org.feup.apm.acme.*
@@ -20,9 +22,11 @@ class CheckoutActivity : AppCompatActivity() {
     private val backButton by lazy { findViewById<ImageButton>(R.id.checkOuttBackButton)}
     private val navbar by lazy { findViewById<BottomNavigationView>(R.id.navbar) }
     private val qrCode by lazy { findViewById<ImageView>(R.id.qrCodePos) }
+    private val cancelBut by lazy {findViewById<Button>(R.id.cancelButton)}
     private var products = arrayListOf<ProductAmount>()
     private var useAcc = false
     private var voucher = "None"
+    val handler = Handler(Looper.getMainLooper())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,12 +55,29 @@ class CheckoutActivity : AppCompatActivity() {
             }
         }
 
-        //Buttons
+        // Destroying handler so it doesn't keep running in the bg forever
         backButton.setOnClickListener {
+            handler.removeCallbacksAndMessages(null)
             finish()
         }
+
+        cancelBut.setOnClickListener {
+            handler.removeCallbacksAndMessages(null)
+        }
+
+        onBackPressedDispatcher.addCallback(this, object: OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                handler.removeCallbacksAndMessages(null)
+                finish()
+            }
+        })
+
         navBarListeners(navbar,this)
     }
+
+
+
+
 
     private fun getIntentInfo(){
         val intent = intent
@@ -71,7 +92,6 @@ class CheckoutActivity : AppCompatActivity() {
     }
 
     private fun requestPeriodically(uuid:String,username: String){
-        val handler = Handler(Looper.getMainLooper())
         val delay = 1000
         var stop = false
 
