@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Paint
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
@@ -79,7 +80,8 @@ class CheckoutOptionsActivity : AppCompatActivity() {
 
     private fun confirmCheckout(){
         val voucher = vouchersDropDown.selectedItem.toString()
-        val acc = checkBox.isSelected
+        val acc = checkBox.isChecked
+        Log.d("acc",acc.toString())
         val intent = Intent(this, CheckoutActivity::class.java)
         intent.putExtra("voucher",voucher)
         intent.putExtra("useAcc",acc)

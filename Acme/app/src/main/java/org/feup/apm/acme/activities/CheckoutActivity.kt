@@ -83,6 +83,7 @@ class CheckoutActivity : AppCompatActivity() {
             products = prods
         }
         useAcc = intent.getBooleanExtra("useAcc",false)
+        Log.d("useAcc",useAcc.toString())
         voucher = intent.getStringExtra("voucher") ?: "None"
     }
 
