@@ -129,7 +129,7 @@ class CheckoutOptionsActivity : AppCompatActivity() {
                 )
             }!!
             allVouchers = vouchersInfo.vouchers
-            getUserInfo(
+            getUserProfileInfo(
                 this,
                 uuid,username
             )

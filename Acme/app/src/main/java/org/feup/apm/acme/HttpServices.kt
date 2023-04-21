@@ -7,22 +7,22 @@ import org.feup.apm.acme.activities.*
 import org.feup.apm.acme.models.*
 import org.json.JSONArray
 import org.json.JSONObject
+import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
 
 
 fun register(
-    act: RegisterActivity,
+    act: Activity,
     name: String,
     username: String,
     password: String,
     card_number: String,
     public_key: String
-) : Boolean {
+)  {
     // Building URL
     val urlRoute = "api/users/new"
     val url = URL("http://${Constants.BASE_ADDRESS}:${Constants.PORT}/$urlRoute")
-    var uuid : String
     // Creating payload
     val payload = JSONObject()
     payload.put("name", name)
@@ -32,46 +32,267 @@ fun register(
     payload.put("public_key", public_key)
 
     var urlConnection: HttpURLConnection? = null
+    try {
+        // Sending Request
+        urlConnection = (url.openConnection() as HttpURLConnection).apply {
+            postRequestSettings(this,payload)
+            when(responseCode){
+                200 -> {
+                    // Getting response stream
+                    val read = readStream(inputStream)
+
+                    // Parsing stream into JSON
+                    val jsonObject = JSONObject(read)
+
+                    // Saving data into sharedPreferences
+                    saveUserDataRegister(act,name,username,jsonObject)
+                }
+                226 -> {
+                    disconnect()
+                    throw ElementAlreadyInUse("Username is already in use")
+                }
+                500 -> {
+                    disconnect()
+                    throw ServerError("Internal server error, please retry.")
+                }
+                else ->  {
+                    disconnect()
+                    throw ServerError ("Internal server error, please retry.") }
+            }
+        }
+    } catch (io: IOException){
+        throw ConnectionError("Could not connect to server. Make sure you are connected to the network and retry.")
+    }
+    finally {
+        // Closing url connection
+        urlConnection?.disconnect()
+    }
+}
+
+fun login(
+    username: String,
+    password: String,
+) {
+    // Building URL
+    val urlRoute = "api/users/login"
+    val url = URL("http://${Constants.BASE_ADDRESS}:${Constants.PORT}/$urlRoute")
+
+    // Creating payload
+    val payload = JSONObject()
+    payload.put("username", username)
+    payload.put("password", password)
+
+
+    try {
+        (url.openConnection() as HttpURLConnection).apply {
+            postRequestSettings(this,payload)
+            when (responseCode){
+                200 ->{
+                    return
+                }
+                403 -> {
+                    disconnect()
+                    throw Forbidden("Nickname and Password do not match, please retry.")
+                }
+                404 -> {
+                    disconnect()
+                    throw NotFound("User not found, make sure the username is correct.")
+                }
+                else -> {
+                    disconnect()
+                    throw ServerError("Internal server error, please retry.")
+                }
+            }
+
+        }
+    } catch (io: IOException){
+        throw ConnectionError("Could not connect to server. Make sure you are connected to the network and retry.")
+    }
+}
+
+
+fun getUUID(
+    act: Activity,
+    username: String
+)  {
+    // Building URL
+    val urlRoute = "api/users/uuid/$username"
+    val url = URL("http://${Constants.BASE_ADDRESS}:${Constants.PORT}/$urlRoute")
+
+    var urlConnection: HttpURLConnection? = null
+    try {
+        // Sending Request
+        urlConnection = (url.openConnection() as HttpURLConnection).apply {
+            getRequestSettings(this)
+            when (responseCode){
+                200 -> {
+                    val uuid = readStream(inputStream)
+                    saveUserDataLogin(act,uuid,username)
+                }
+                404 -> {
+                    disconnect()
+                    throw NotFound("User not found, make sure the username is correct.")
+                }
+                else -> {
+                    disconnect()
+                    throw ServerError("Internal server error, please retry.")
+                }
+
+            }
+        }
+    } catch (io: IOException){
+        throw ConnectionError("Could not connect to server. Make sure you are connected to the network and retry.")
+    }finally {
+        urlConnection?.disconnect()
+    }
+}
+
+fun getUserProfileInfo(
+    act: Activity,
+    uuid: String,
+    username: String
+)  {
+    // Building URL
+    val urlRoute = "api/users/info"
+    val url = URL("http://${Constants.BASE_ADDRESS}:${Constants.PORT}/$urlRoute")
+
+    // Creating payload
+    val payload = JSONObject()
+    payload.put("uuid", uuid)
+
+    val signature : String
+
+    try{
+        signature = signContent(uuid,username)
+    }catch(e: SigningException){
+        throw e
+    }
+
+    payload.put("signature", signature)
+
+
+    var urlConnection: HttpURLConnection? = null
+    try {
+        // Sending Request
+        urlConnection = (url.openConnection() as HttpURLConnection).apply {
+            postRequestSettings(this,payload)
+            when (responseCode){
+                200 -> {
+                    // Getting response stream
+                    val read = readStream(inputStream)
+                    // Parsing stream into JSON
+                    val jsonObject = JSONObject(read)
+                    saverExtraUserData(act,jsonObject)
+                }
+                404 -> {
+                    disconnect()
+                    throw NotFound("Fatal error, user not found. Please log out.")
+                }
+                403 -> {
+                    disconnect()
+                    throw Forbidden("You don't have permission to retrieve this user's information.")
+                }
+                else -> {
+                    disconnect()
+                    throw ServerError("Internal server error, please retry.")
+                }
+
+            }
+        }
+    }catch (io: IOException){
+        throw ConnectionError("Could not connect to server. Make sure you are connected to the network and retry.")
+    } finally {
+        urlConnection?.disconnect()
+    }
+}
+
+fun changePaymentMethod(
+    act: UserProfile,
+    newCard: Long,
+    uuid: String,
+    username: String
+) : Boolean {
+    // Building URL
+    val urlRoute = "api/users/update/payment"
+    val url = URL("http://${Constants.BASE_ADDRESS}:${Constants.PORT}/$urlRoute")
+
+    // Creating payload
+    val payload = JSONObject()
+    payload.put("uuid", uuid)
+    payload.put("payment", newCard)
+    payload.put("signature", signContent(uuid,username))
+
+
+    var urlConnection: HttpURLConnection? = null
     var result = false
     try {
         // Sending Request
         urlConnection = (url.openConnection() as HttpURLConnection).apply {
-            doOutput = true
-            doInput = true
-            requestMethod = "POST"
-            setRequestProperty("Content-Type", "application/json")
-            useCaches = false
-            connectTimeout = 5000
-            with(outputStream) {
-                write(payload.toString().toByteArray())
-                flush()
-                close()
-            }
+            postRequestSettings(this,payload)
             if (responseCode == 200) {
-                // Getting response stream
-                val read = readStream(inputStream)
-                // Parsing stream into JSON
-                val jsonObject = JSONObject(read)
-                // Saving data into sharedPreferences
-                val sharedPreference = act.getSharedPreferences("user_info", Context.MODE_PRIVATE)
-                val editor = sharedPreference.edit()
-                uuid =  jsonObject["uuid"].toString()
-                editor.putString("uuid", uuid)
-                editor.putString("name", name)
-                editor.putString("username", username)
-                editor.putString("server_public_key", jsonObject["public_key"].toString())
-                editor.apply()
-
                 result = true
+
             } else {
                 // Putting error info in snack bar
-                createSnackBar("Code: $responseCode - $errorStream",act)
-
+                createSnackBar("Code: $responseCode - $errorStream", act)
+                // Putting error info in console
+                Log.d("error", "Code: $responseCode - $errorStream")
             }
         }
     } catch (e: Exception) {
         // Putting error info in snack bar
         createSnackBar(e.toString(),act)
+        // Putting error info in console
+        Log.d("error", e.toString())
+
+    } finally {
+        // Closing url connection
+        urlConnection?.disconnect()
+    }
+    return result
+}
+
+
+fun changePassword(
+    act: UserProfile,
+    currentPassword: String,
+    newPassword: String,
+    uuid: String,
+    username: String
+) : Boolean {
+    // Building URL
+    val urlRoute = "api/users/update/password"
+    val url = URL("http://${Constants.BASE_ADDRESS}:${Constants.PORT}/$urlRoute")
+
+    // Creating payload
+    val payload = JSONObject()
+    payload.put("uuid", uuid)
+    payload.put("old_password", currentPassword)
+    payload.put("new_password", newPassword)
+    payload.put("signature", signContent(uuid,username))
+
+
+    var urlConnection: HttpURLConnection? = null
+    var result = false
+    try {
+        // Sending Request
+        urlConnection = (url.openConnection() as HttpURLConnection).apply {
+            postRequestSettings(this,payload)
+            if (responseCode == 200) {
+                result = true
+
+            } else {
+                // Putting error info in snack bar
+                createSnackBar("Code: $responseCode - $errorStream", act)
+                // Putting error info in console
+                Log.d("error", "Code: $responseCode - $errorStream")
+            }
+        }
+    } catch (e: Exception) {
+        // Putting error info in snack bar
+        createSnackBar(e.toString(),act)
+        // Putting error info in console
+        Log.d("error", e.toString())
 
     } finally {
         // Closing url connection
@@ -101,17 +322,7 @@ fun getPurchases(
     try {
         // Sending Request
         urlConnection = (url.openConnection() as HttpURLConnection).apply {
-            doOutput = true
-            doInput = true
-            requestMethod = "POST"
-            setRequestProperty("Content-Type", "application/json")
-            useCaches = false
-            connectTimeout = 5000
-            with(outputStream) {
-                write(payload.toString().toByteArray())
-                flush()
-                close()
-            }
+            postRequestSettings(this,payload)
             if (responseCode == 200) {
                 // Getting response stream
                 val read = readStream(inputStream)
@@ -177,17 +388,7 @@ fun getJustEmittedPurchases(
     try {
         // Sending Request
         urlConnection = (url.openConnection() as HttpURLConnection).apply {
-            doOutput = true
-            doInput = true
-            requestMethod = "POST"
-            setRequestProperty("Content-Type", "application/json")
-            useCaches = false
-            connectTimeout = 5000
-            with(outputStream) {
-                write(payload.toString().toByteArray())
-                flush()
-                close()
-            }
+            postRequestSettings(this,payload)
             if (responseCode == 200) {
                 // Getting response stream
                 val read = readStream(inputStream)
@@ -253,17 +454,7 @@ fun getVouchers(
     try {
         // Sending Request
         urlConnection = (url.openConnection() as HttpURLConnection).apply {
-            doOutput = true
-            doInput = true
-            requestMethod = "POST"
-            setRequestProperty("Content-Type", "application/json")
-            useCaches = false
-            connectTimeout = 5000
-            with(outputStream) {
-                write(payload.toString().toByteArray())
-                flush()
-                close()
-            }
+            postRequestSettings(this,payload)
             if (responseCode == 200) {
                 // Getting response stream
                 val read = readStream(inputStream)
@@ -303,285 +494,6 @@ fun getVouchers(
     }
     return vouchersInfo
 }
-fun changePaymentMethod(
-    act: UserProfile,
-    newCard: Long,
-    uuid: String,
-    username: String
-    ) : Boolean {
-    // Building URL
-    val urlRoute = "api/users/update/payment"
-    val url = URL("http://${Constants.BASE_ADDRESS}:${Constants.PORT}/$urlRoute")
-
-    // Creating payload
-    val payload = JSONObject()
-    payload.put("uuid", uuid)
-    payload.put("payment", newCard)
-    payload.put("signature", signContent(uuid,username))
-
-
-    var urlConnection: HttpURLConnection? = null
-    var result = false
-    try {
-        // Sending Request
-        urlConnection = (url.openConnection() as HttpURLConnection).apply {
-            doOutput = true
-            doInput = true
-            requestMethod = "POST"
-            setRequestProperty("Content-Type", "application/json")
-            useCaches = false
-            connectTimeout = 5000
-            with(outputStream) {
-                write(payload.toString().toByteArray())
-                flush()
-                close()
-            }
-            if (responseCode == 200) {
-                result = true
-
-            } else {
-                // Putting error info in snack bar
-                createSnackBar("Code: $responseCode - $errorStream", act)
-                // Putting error info in console
-                Log.d("error", "Code: $responseCode - $errorStream")
-            }
-        }
-    } catch (e: Exception) {
-        // Putting error info in snack bar
-        createSnackBar(e.toString(),act)
-        // Putting error info in console
-        Log.d("error", e.toString())
-
-    } finally {
-        // Closing url connection
-        urlConnection?.disconnect()
-    }
-    return result
-}
-
-
-fun changePassword(
-    act: UserProfile,
-    currentPassword: String,
-    newPassword: String,
-    uuid: String,
-    username: String
-    ) : Boolean {
-    // Building URL
-    val urlRoute = "api/users/update/password"
-    val url = URL("http://${Constants.BASE_ADDRESS}:${Constants.PORT}/$urlRoute")
-
-    // Creating payload
-    val payload = JSONObject()
-    payload.put("uuid", uuid)
-    payload.put("old_password", currentPassword)
-    payload.put("new_password", newPassword)
-    payload.put("signature", signContent(uuid,username))
-
-
-    var urlConnection: HttpURLConnection? = null
-    var result = false
-    try {
-        // Sending Request
-        urlConnection = (url.openConnection() as HttpURLConnection).apply {
-            doOutput = true
-            doInput = true
-            requestMethod = "POST"
-            setRequestProperty("Content-Type", "application/json")
-            useCaches = false
-            connectTimeout = 5000
-            with(outputStream) {
-                write(payload.toString().toByteArray())
-                flush()
-                close()
-            }
-            if (responseCode == 200) {
-                 result = true
-
-            } else {
-                // Putting error info in snack bar
-                createSnackBar("Code: $responseCode - $errorStream", act)
-                // Putting error info in console
-                Log.d("error", "Code: $responseCode - $errorStream")
-            }
-        }
-    } catch (e: Exception) {
-        // Putting error info in snack bar
-        createSnackBar(e.toString(),act)
-        // Putting error info in console
-        Log.d("error", e.toString())
-
-    } finally {
-        // Closing url connection
-        urlConnection?.disconnect()
-    }
-    return result
-}
-
-
-fun login(
-    act: LoginActivity,
-    username: String,
-    password: String,
-    ) : Boolean {
-    // Building URL
-    val urlRoute = "api/users/login"
-    val url = URL("http://${Constants.BASE_ADDRESS}:${Constants.PORT}/$urlRoute")
-
-    // Creating payload
-    val payload = JSONObject()
-    payload.put("username", username)
-    payload.put("password", password)
-
-
-    var urlConnection: HttpURLConnection? = null
-    var result = false
-    try {
-        // Sending Request
-        urlConnection = (url.openConnection() as HttpURLConnection).apply {
-            doOutput = true
-            doInput = true
-            requestMethod = "POST"
-            setRequestProperty("Content-Type", "application/json")
-            useCaches = false
-            connectTimeout = 5000
-            with(outputStream) {
-                write(payload.toString().toByteArray())
-                flush()
-                close()
-            }
-            if (responseCode == 200) {
-                result = true
-
-            } else {
-                // Putting error info in snack bar
-                createSnackBar("Code: $responseCode - $errorStream", act)
-                // Putting error info in console
-                Log.d("error", "Code: $responseCode - $errorStream")
-            }
-        }
-    } catch (e: Exception) {
-        // Putting error info in snack bar
-        createSnackBar(e.toString(),act)
-        // Putting error info in console
-        Log.d("error", e.toString())
-
-    } finally {
-        // Closing url connection
-        urlConnection?.disconnect()
-    }
-    return result
-}
-
-
-fun getUUID(
-    act: LoginActivity,
-    username: String
-) : Boolean {
-    // Building URL
-    val urlRoute = "api/users/uuid/$username"
-    val url = URL("http://${Constants.BASE_ADDRESS}:${Constants.PORT}/$urlRoute")
-
-    var urlConnection: HttpURLConnection? = null
-    var result = false
-    try {
-        // Sending Request
-        urlConnection = (url.openConnection() as HttpURLConnection).apply {
-            doInput = true
-            setRequestProperty("Content-Type", "application/json")
-            useCaches = false
-            connectTimeout = 5000
-            if (responseCode == 200) {
-
-                val uuid = readStream(inputStream)
-                val sharedPreference = act.getSharedPreferences("user_info", Context.MODE_PRIVATE)
-                val editor = sharedPreference.edit()
-                editor.putString("uuid", uuid)
-                editor.putString("username", username)
-                editor.apply()
-
-                result = true
-
-            } else {
-                // Putting error info in snack bar
-                createSnackBar("Code: $responseCode - $errorStream", act)
-                // Putting error info in console
-                Log.d("error", "Code: $responseCode - $errorStream")
-            }
-        }
-    } catch (e: Exception) {
-        // Putting error info in snack bar
-        createSnackBar(e.toString(),act)
-        // Putting error info in console
-        Log.d("error", e.toString())
-
-    } finally {
-        // Closing url connection
-        urlConnection?.disconnect()
-    }
-    return result
-}
-
-fun getUserInfo(
-    act: Activity,
-    uuid: String,
-    username: String
-    ) : Boolean {
-    // Building URL
-    val urlRoute = "api/users/info"
-    val url = URL("http://${Constants.BASE_ADDRESS}:${Constants.PORT}/$urlRoute")
-
-    // Creating payload
-    val payload = JSONObject()
-    payload.put("uuid", uuid)
-    payload.put("signature", signContent(uuid,username))
-
-
-    var urlConnection: HttpURLConnection? = null
-    var result = false
-    try {
-        // Sending Request
-        urlConnection = (url.openConnection() as HttpURLConnection).apply {
-            doOutput = true
-            doInput = true
-            requestMethod = "POST"
-            setRequestProperty("Content-Type", "application/json")
-            useCaches = false
-            connectTimeout = 5000
-            with(outputStream) {
-                write(payload.toString().toByteArray())
-                flush()
-                close()
-            }
-            if (responseCode == 200) {
-                // Getting response stream
-                val read = readStream(inputStream)
-                // Parsing stream into JSON
-                val jsonObject = JSONObject(read)
-                val sharedPreference = act.getSharedPreferences("user_info", Context.MODE_PRIVATE)
-                val editor = sharedPreference.edit()
-                editor.putFloat("discount", jsonObject["discount"].toString().toFloat())
-                editor.putFloat("total", jsonObject["total"].toString().toFloat())
-                editor.putString("name", jsonObject["name"].toString())
-                editor.apply()
-
-                result = true
-            } else {
-                // Putting error info in snack bar
-                createSnackBar("Code: $responseCode - $errorStream",act)
-
-            }
-        }
-    } catch (e: Exception) {
-        // Putting error info in snack bar
-        createSnackBar(e.toString(),act)
-
-    } finally {
-        // Closing url connection
-        urlConnection?.disconnect()
-    }
-    return result
-}
 
 
 fun getProduct(
@@ -602,17 +514,7 @@ fun getProduct(
     try {
         // Sending Request
         urlConnection = (url.openConnection() as HttpURLConnection).apply {
-            doOutput = true
-            doInput = true
-            requestMethod = "POST"
-            setRequestProperty("Content-Type", "application/json")
-            useCaches = false
-            connectTimeout = 5000
-            with(outputStream) {
-                write(payload.toString().toByteArray())
-                flush()
-                close()
-            }
+            postRequestSettings(this,payload)
             if (responseCode == 200) {
                 // Getting response stream
                 val read = readStream(inputStream)

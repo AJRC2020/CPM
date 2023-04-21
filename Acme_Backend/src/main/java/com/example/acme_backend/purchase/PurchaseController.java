@@ -76,8 +76,9 @@ public class PurchaseController {
         }
 
         if (content.discount) {
-            total -= userService.getByUuid(content.user_id).getDiscount();
-            userService.updateDiscount(content.user_id, 0.0f);
+            float disc = userService.getByUuid(content.user_id).getDiscount();
+            total -= disc;
+            userService.updateDiscount(content.user_id, -disc);
             if (total < 0) {
                 userService.updateDiscount(content.user_id, -total);
                 total = 0.0f;

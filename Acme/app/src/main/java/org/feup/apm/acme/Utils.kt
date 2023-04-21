@@ -8,6 +8,7 @@ import android.security.KeyPairGeneratorSpec
 import android.util.Base64
 import android.view.View
 import android.widget.ProgressBar
+import android.widget.TextView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.google.zxing.BarcodeFormat
@@ -222,4 +223,9 @@ fun emptyShoppingCart(act: Activity){
     act.deleteSharedPreferences("shopping_cart_prod_names")
     act.deleteSharedPreferences("shopping_cart_prod_prices")
     act.deleteSharedPreferences("shopping_cart_prod_amount")
+}
+
+fun showError(view: TextView, message:String){
+    view.visibility = View.VISIBLE
+    view.text = message
 }
