@@ -50,6 +50,7 @@
     <string name="qrcode_scan">Scan QR code</string>
     <string name="qrcode">QR code</string>
     <string name="locket">Locket</string>
+    <string name="valid_coupon">Valid Coupon</string>
     <string name="chose_voucher">Chose voucher</string>
     <string name="no_receipts_warning">You don\'t have any receipts</string>
     <string name="date">Date:</string>
