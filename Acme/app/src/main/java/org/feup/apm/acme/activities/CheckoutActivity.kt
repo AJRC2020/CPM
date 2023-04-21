@@ -13,6 +13,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import org.feup.apm.acme.*
+import org.feup.apm.acme.fragments.DialogGeneric
 import org.feup.apm.acme.models.ProductAmount
 import org.json.JSONArray
 import org.json.JSONObject
@@ -94,23 +95,23 @@ class CheckoutActivity : AppCompatActivity() {
         handler.postDelayed(object : Runnable {
             override fun run() {
                 thread {
-                    val receipts = getJustEmittedPurchases(uuid,username)
-                    Log.d("called","handler")
-                    if (receipts.isNotEmpty()) {
-                        Log.d("receipts", receipts.toString())
-                    }
-
-                    receipts.forEach{
-                        if (it.items == products &&
-                            (it.voucher == voucher || (it.voucher == "null" && voucher == "None"))
-                                ){
-                            endPurchase()
-                            stop = true
-                            return@forEach
+                    try {
+                        val receipts = getJustEmittedPurchases(uuid, username)
+                        receipts.forEach {
+                            if (it.items == products &&
+                                (it.voucher == voucher || (it.voucher == "null" && voucher == "None"))
+                            ) {
+                                endPurchase()
+                                stop = true
+                                return@forEach
+                            }
                         }
-                    }
-                    if (!stop) {
-                        handler.postDelayed(this,delay.toLong())
+                        if (!stop) {
+                            handler.postDelayed(this, delay.toLong())
+                        }
+                    }catch (e: Exception){
+                        val dialog = e.message?.let { DialogGeneric("Error", it) }
+                        dialog?.show(supportFragmentManager, "error")
                     }
                 }
             }

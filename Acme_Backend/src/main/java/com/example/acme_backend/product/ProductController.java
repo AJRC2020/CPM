@@ -40,20 +40,26 @@ public class ProductController {
         File file = new File("src/main/resources/privatekey.der");
 
         if (!file.exists()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         byte[] market_key = Files.readAllBytes(file.toPath());
-        
-        String info = decryption(encryption.encryption, market_key);
 
-        System.out.println(info);
+        try{
+            String info = decryption(encryption.encryption, market_key);
+            String[] infoSplitted = info.split(":");
 
-        String[] infoSplitted = info.split(":");
+            if (infoSplitted.length < 3){
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
 
-        AppProduct product = productService.createProduct(infoSplitted[1], Float.parseFloat(infoSplitted[2]), infoSplitted[0]);
+            AppProduct product = productService.createProduct(infoSplitted[1], Float.parseFloat(infoSplitted[2]), infoSplitted[0]);
 
-        return ResponseEntity.ok().body(product);
+            return ResponseEntity.ok().body(product);
+        }
+        catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
     }
 
     private String decryption(String encrypted, byte[] key) throws Exception {

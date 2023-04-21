@@ -14,8 +14,7 @@ data class ProductAmount(
         parcel.readInt(),
         parcel.readString(),
         parcel.readFloat()
-    ) {
-    }
+    )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(uuid)

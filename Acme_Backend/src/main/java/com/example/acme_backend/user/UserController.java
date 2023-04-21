@@ -234,6 +234,10 @@ public class UserController {
     private ResponseEntity<List<ReturnPurchase>> getReceipts(Boolean getJustEmitted, SignedId sign) throws Exception {
         AppUser user = userService.getByUuid(sign.uuid);
 
+        if (user == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
         if (!verifySignature(sign.signature, sign.uuid, user.getPublic_key())){
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }

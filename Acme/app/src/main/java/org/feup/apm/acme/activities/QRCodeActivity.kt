@@ -18,8 +18,8 @@ import com.google.zxing.integration.android.IntentIntegrator
 import com.google.zxing.integration.android.IntentResult
 import org.feup.apm.acme.*
 import org.feup.apm.acme.Constants.REQUEST_CAMERA_ACCESS
+import org.feup.apm.acme.fragments.DialogGeneric
 import org.feup.apm.acme.models.Product
-import org.feup.apm.acme.models.ProductAmount
 import kotlin.concurrent.thread
 
 class QRCodeActivity : AppCompatActivity() {
@@ -33,7 +33,7 @@ class QRCodeActivity : AppCompatActivity() {
     private val forgetBtt by lazy { findViewById<ImageButton>(R.id.forgetButton)}
     private val scannedText by lazy {findViewById<LinearLayout>(R.id.productScanned)}
     private val navbar by lazy { findViewById<BottomNavigationView>(R.id.navbar) }
-    private var product: Product? = Product("33sdsdaa-fs-assd-9asdab3-sadasdsdasd","banana",12.5f)
+    private var product: Product? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -135,9 +135,17 @@ class QRCodeActivity : AppCompatActivity() {
     private fun showProduct(content: String){
         loading(progressBar, listOf(noScanText,scannedText))
         thread {
-            product = getProduct(this,content)
-            this.runOnUiThread {
-                stopLoading()
+            try{
+                getProduct(content)
+                this.runOnUiThread {
+                    stopLoading()
+                }
+            }catch (e:Exception){
+                this.runOnUiThread {
+                    stopLoading()
+                    val dialog = e.message?.let { DialogGeneric("Error", it) }
+                    dialog?.show(supportFragmentManager, "error")
+                }
             }
         }
     }

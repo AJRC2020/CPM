@@ -1,9 +1,6 @@
 package org.feup.apm.acme
 
 import android.app.Activity
-import android.content.Context
-import android.util.Log
-import org.feup.apm.acme.activities.*
 import org.feup.apm.acme.models.*
 import org.json.JSONArray
 import org.json.JSONObject
@@ -161,16 +158,7 @@ fun getUserProfileInfo(
     val payload = JSONObject()
     payload.put("uuid", uuid)
 
-    val signature : String
-
-    try{
-        signature = signContent(uuid,username)
-    }catch(e: SigningException){
-        throw e
-    }
-
-    payload.put("signature", signature)
-
+    signUuid(payload,uuid,username)
 
     var urlConnection: HttpURLConnection? = null
     try {
@@ -220,7 +208,7 @@ fun changePaymentMethod(
     val payload = JSONObject()
     payload.put("uuid", uuid)
     payload.put("payment", newCard)
-    payload.put("signature", signContent(uuid,username))
+    signUuid(payload,uuid,username)
 
     try {
         // Sending Request
@@ -266,7 +254,7 @@ fun changePassword(
     payload.put("uuid", uuid)
     payload.put("old_password", currentPassword)
     payload.put("new_password", newPassword)
-    payload.put("signature", signContent(uuid,username))
+    signUuid(payload,uuid,username)
 
 
     try {
@@ -299,7 +287,6 @@ fun changePassword(
 
 
 fun getPurchases(
-    act: Receipts,
     uuid: String,
     username: String
     ) : ArrayList<Receipt> {
@@ -310,59 +297,39 @@ fun getPurchases(
     // Creating payload
     val payload = JSONObject()
     payload.put("uuid", uuid)
-    payload.put("signature", signContent(uuid,username))
+    signUuid(payload,uuid,username)
 
 
-    var urlConnection: HttpURLConnection? = null
-    val receipts : ArrayList<Receipt> = arrayListOf()
     try {
         // Sending Request
-        urlConnection = (url.openConnection() as HttpURLConnection).apply {
+        (url.openConnection() as HttpURLConnection).apply {
             postRequestSettings(this,payload)
-            if (responseCode == 200) {
-                // Getting response stream
-                val read = readStream(inputStream)
-                // Parsing stream into JSON
-                val dataSet = JSONArray(read)
-
-
-                (0 until dataSet.length()).forEach { receipt ->
-                    val date = dataSet.getJSONObject(receipt)["date"].toString()
-                    val total = dataSet.getJSONObject(receipt)["price"].toString().toFloat()
-                    val voucher = dataSet.getJSONObject(receipt)["voucher"].toString()
-                    val itemsJson = dataSet.getJSONObject(receipt).getJSONArray("items")
-                    val items : ArrayList<ProductAmount> = arrayListOf()
-                    (0 until itemsJson.length()).forEach {
-                        val item = itemsJson.getJSONObject(it)
-
-                        val uuid = item["uuid"].toString()
-                        val name = item["product"].toString()
-                        val price =  item["price"].toString().toFloat()
-                        val amount =  item["amount"].toString().toInt()
-
-                        items.add(ProductAmount(uuid,amount,name,price))
-                    }
-                    receipts.add(Receipt(date,total,items,voucher))
+            when(responseCode){
+                200 -> {
+                    disconnect()
+                    val read = readStream(inputStream)
+                    // Parsing stream into JSON
+                    val dataSet = JSONArray(read)
+                    disconnect()
+                    return createReceiptList(dataSet)
                 }
-
-            } else {
-                // Putting error info in snack bar
-                createSnackBar("Code: $responseCode - $errorStream", act)
-                // Putting error info in console
-                Log.d("error", "Code: $responseCode - $errorStream")
+                404 -> {
+                    disconnect()
+                    throw NotFound("Fatal error, user not found. Please log out.")
+                }
+                403 -> {
+                    disconnect()
+                    throw Forbidden("You don't have permission to access this user's receipts")
+                }
+                else -> {
+                    disconnect()
+                    throw ServerError("Internal server error, please retry.")
+                }
             }
         }
-    } catch (e: Exception) {
-        // Putting error info in snack bar
-        createSnackBar(e.toString(),act)
-        // Putting error info in console
-        Log.d("error", e.toString())
-
-    } finally {
-        // Closing url connection
-        urlConnection?.disconnect()
+    } catch (io: IOException){
+        throw ConnectionError("Could not connect to server. Make sure you are connected to the network and retry.")
     }
-    return receipts
 }
 
 fun getJustEmittedPurchases(
@@ -376,61 +343,43 @@ fun getJustEmittedPurchases(
     // Creating payload
     val payload = JSONObject()
     payload.put("uuid", uuid)
-    payload.put("signature", signContent(uuid,username))
+    signUuid(payload,uuid,username)
 
 
-    var urlConnection: HttpURLConnection? = null
-    val receipts : ArrayList<Receipt> = arrayListOf()
     try {
         // Sending Request
-        urlConnection = (url.openConnection() as HttpURLConnection).apply {
+        (url.openConnection() as HttpURLConnection).apply {
             postRequestSettings(this,payload)
-            if (responseCode == 200) {
-                // Getting response stream
-                val read = readStream(inputStream)
-                // Parsing stream into JSON
-                val dataSet = JSONArray(read)
-
-
-                (0 until dataSet.length()).forEach { receipt ->
-                    val date = dataSet.getJSONObject(receipt)["date"].toString()
-                    val total = dataSet.getJSONObject(receipt)["price"].toString().toFloat()
-                    val voucher = dataSet.getJSONObject(receipt)["voucher"].toString()
-                    val itemsJson = dataSet.getJSONObject(receipt).getJSONArray("items")
-                    val items : ArrayList<ProductAmount> = arrayListOf()
-                    (0 until itemsJson.length()).forEach {
-                        val item = itemsJson.getJSONObject(it)
-
-                        val prodUuid = item["uuid"].toString()
-                        val name = item["product"].toString()
-                        val price =  item["price"].toString().toFloat()
-                        val amount =  item["amount"].toString().toInt()
-
-                        items.add(ProductAmount(prodUuid,amount,name,price))
-                    }
-                    receipts.add(Receipt(date,total,items,voucher))
+            when(responseCode){
+                200 -> {
+                    val read = readStream(inputStream)
+                    // Parsing stream into JSON
+                    val dataSet = JSONArray(read)
+                    disconnect()
+                    return createReceiptList(dataSet)
                 }
-
-            } else {
-                // Putting error info in console
-                Log.d("error", "Code: $responseCode - $errorStream")
+                404 -> {
+                    disconnect()
+                    throw NotFound("Fatal error, user not found. Please log out.")
+                }
+                403 -> {
+                    disconnect()
+                    throw Forbidden("You don't have permission to access this user's receipts")
+                }
+                else -> {
+                    disconnect()
+                    throw ServerError("Internal server error, please retry.")
+                }
             }
         }
-    } catch (e: Exception) {
-
-        // Putting error info in console
-        Log.d("error", e.toString())
-
-    } finally {
-        // Closing url connection
-        urlConnection?.disconnect()
+    } catch (io: IOException){
+        throw ConnectionError("Could not connect to server. Make sure you are connected to the network and retry.")
     }
-    return receipts
+
 }
 
 
 fun getVouchers(
-    act: Activity,
     uuid: String,
     username: String
     ) : VouchersInfo {
@@ -441,62 +390,43 @@ fun getVouchers(
     // Creating payload
     val payload = JSONObject()
     payload.put("uuid", uuid)
-    payload.put("signature", signContent(uuid,username))
+    signUuid(payload,uuid,username)
 
-
-    var urlConnection: HttpURLConnection? = null
-
-    var vouchersInfo = VouchersInfo(arrayListOf(),0f)
     try {
         // Sending Request
-        urlConnection = (url.openConnection() as HttpURLConnection).apply {
+        (url.openConnection() as HttpURLConnection).apply {
             postRequestSettings(this,payload)
-            if (responseCode == 200) {
-                // Getting response stream
-                val read = readStream(inputStream)
-                // Parsing stream into JSON
-
-                val info = JSONObject(read)
-                val valueToNext = info["valueToNextVoucher"].toString().toFloat()
-                val dataSet = info.getJSONArray("vouchers")
-                val vouchers : ArrayList<Voucher> = arrayListOf()
-
-                (0 until dataSet.length()).forEach { receipt ->
-                    val date = dataSet.getJSONObject(receipt)["date"].toString()
-                    val used = dataSet.getJSONObject(receipt)["used"].toString().toBoolean()
-                    val emitted = dataSet.getJSONObject(receipt)["emitted"].toString().toBoolean()
-                    val id = dataSet.getJSONObject(receipt)["uuid"].toString()
-                    vouchers.add(Voucher(emitted,used,date,id))
+            when(responseCode){
+                200 -> {
+                    val read = readStream(inputStream)
+                    // Parsing stream into JSON
+                    val info = JSONObject(read)
+                    disconnect()
+                    return createVouchersInfo(info)
                 }
-
-                vouchersInfo = VouchersInfo(vouchers,valueToNext)
-
-            } else {
-                // Putting error info in snack bar
-                createSnackBar("Code: $responseCode - $errorStream", act)
-                // Putting error info in console
-                Log.d("error", "Code: $responseCode - $errorStream")
+                404 -> {
+                    disconnect()
+                    throw NotFound("Fatal error, user not found. Please log out.")
+                }
+                403 -> {
+                    disconnect()
+                    throw Forbidden("You don't have permission to access this user's vouchers")
+                }
+                else -> {
+                    disconnect()
+                    throw ServerError("Internal server error, please retry.")
+                }
             }
         }
-    } catch (e: Exception) {
-        // Putting error info in snack bar
-        createSnackBar(e.toString(),act)
-        // Putting error info in console
-        Log.d("error", e.toString())
-
-    } finally {
-        // Closing url connection
-        urlConnection?.disconnect()
+    } catch (io: IOException){
+        throw ConnectionError("Could not connect to server. Make sure you are connected to the network and retry.")
     }
-    return vouchersInfo
 }
 
 
 fun getProduct(
-    act: QRCodeActivity,
     encryptedProduct: String,
-
-    ) : Product? {
+    ) : Product {
     // Building URL
     val urlRoute = "api/products/new"
     val url = URL("http://${Constants.BASE_ADDRESS}:${Constants.PORT}/$urlRoute")
@@ -506,31 +436,30 @@ fun getProduct(
     payload.put("encryption", encryptedProduct)
 
 
-    var urlConnection: HttpURLConnection? = null
     try {
         // Sending Request
-        urlConnection = (url.openConnection() as HttpURLConnection).apply {
+        (url.openConnection() as HttpURLConnection).apply {
             postRequestSettings(this,payload)
-            if (responseCode == 200) {
-                // Getting response stream
-                val read = readStream(inputStream)
-                // Parsing stream into JSON
-                val jsonObject = JSONObject(read)
-
-                return Product(jsonObject["uuid"].toString(),jsonObject["name"].toString(),jsonObject["price"].toString().toFloat())
-            } else {
-                // Putting error info in snack bar
-                createSnackBar("Code: $responseCode - $errorStream",act)
+            when(responseCode){
+                200 -> {
+                    // Getting response stream
+                    val read = readStream(inputStream)
+                    // Parsing stream into JSON
+                    val jsonObject = JSONObject(read)
+                    disconnect()
+                    return createProduct(jsonObject)
+                }
+                403 -> {
+                    disconnect()
+                    throw Forbidden("Invalid QR Code")
+                }
+                else -> {
+                    disconnect()
+                    throw ServerError("Internal server error, please retry.")
+                }
             }
         }
-    } catch (e: Exception) {
-        // Putting error info in snack bar
-        createSnackBar(e.toString(),act)
-
-    } finally {
-        // Closing url connection
-        urlConnection?.disconnect()
+    }catch (io: IOException){
+        throw ConnectionError("Could not connect to server. Make sure you are connected to the network and retry.")
     }
-
-    return null
 }

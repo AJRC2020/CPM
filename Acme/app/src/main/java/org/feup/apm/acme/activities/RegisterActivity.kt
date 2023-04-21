@@ -1,21 +1,13 @@
 package org.feup.apm.acme.activities
 
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
-import android.security.KeyPairGeneratorSpec
 import android.view.View
 import android.widget.*
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import org.feup.apm.acme.*
 import org.feup.apm.acme.fragments.DialogGeneric
-import java.math.BigInteger
-import java.security.KeyPairGenerator
-import java.security.KeyStore
 import java.security.PublicKey
-import java.util.*
-import javax.security.auth.x500.X500Principal
 import kotlin.concurrent.thread
 
 

@@ -5,5 +5,4 @@ data class Receipt(
     var price: Float,
     var items: ArrayList<ProductAmount>,
     var voucher: String
-
 )

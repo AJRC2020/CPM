@@ -69,7 +69,8 @@
                 android:layout_height="400dp"
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="20dp"
-                tools:srcCompat="@tools:sample/avatars" />
+                android:contentDescription="@string/qrcode"
+                app:srcCompat="@drawable/logo" />
 
             <TextView
                 android:id="@+id/textView13"
@@ -89,6 +90,7 @@
                 android:layout_margin="10dp"
                 android:background="@color/sky_blue"
                 android:fontFamily="@font/imprima_regular"
+                android:maxWidth="320dp"
                 android:text="@string/cancel_purchase"
                 android:textColor="@color/white"
                 android:textSize="24sp" />

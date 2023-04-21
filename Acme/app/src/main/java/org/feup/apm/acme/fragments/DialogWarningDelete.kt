@@ -1,6 +1,5 @@
 package org.feup.apm.acme.fragments
 
-import android.content.res.Resources
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,7 +9,6 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import org.feup.apm.acme.R
-import javax.security.auth.callback.Callback
 
 class DialogWarningDelete(private val product: String,private val amount: Int, private val delete: () -> Unit? ): DialogFragment(){
 

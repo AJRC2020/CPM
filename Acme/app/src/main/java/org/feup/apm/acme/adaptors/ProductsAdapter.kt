@@ -86,15 +86,15 @@ class ProductsAdapter(private val dataSet: ArrayList<ProductAmount>) :
         editorAmount.remove(uuid)
         editorAmount.apply()
 
-        dataSet.removeAt(position);
-        notifyItemRemoved(position);
-        notifyItemRangeChanged(position, dataSet.size);
+        dataSet.removeAt(position)
+        notifyItemRemoved(position)
+        notifyItemRangeChanged(position, dataSet.size)
     }
 
-    public fun empty(){
+    fun empty(){
         dataSet.forEachIndexed { position, _ ->
-            dataSet.removeAt(position);
-            notifyItemRemoved(position);
+            dataSet.removeAt(position)
+            notifyItemRemoved(position)
             notifyItemRangeChanged(position, dataSet.size); }
 
     }
@@ -114,7 +114,7 @@ class ProductsAdapter(private val dataSet: ArrayList<ProductAmount>) :
 
             product.amount -= 1
 
-            notifyItemChanged(position);
+            notifyItemChanged(position)
         }
     }
 

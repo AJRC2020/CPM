@@ -5,10 +5,6 @@ import android.app.Dialog
 import android.os.Bundle
 import androidx.fragment.app.DialogFragment
 
-// To use
-//val dialog = MyDialogFragment("Whatever title", "Whatever message")
-//dialog.show(supportFragmentManager, "Whatever tag")
-
 
 class DialogGeneric(private val title:String, private val message:String) : DialogFragment() {
 

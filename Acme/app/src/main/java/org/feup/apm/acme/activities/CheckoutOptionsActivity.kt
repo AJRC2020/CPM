@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import org.feup.apm.acme.*
 import org.feup.apm.acme.adaptors.ProductsAdapter
+import org.feup.apm.acme.fragments.DialogGeneric
 import org.feup.apm.acme.models.ProductAmount
 import org.feup.apm.acme.models.Voucher
 import kotlin.concurrent.thread
@@ -122,27 +123,38 @@ class CheckoutOptionsActivity : AppCompatActivity() {
         val username = sharedPreference.getString("username", "none").toString()
 
         thread {
-            val vouchersInfo = uuid?.let {
-                getVouchers(
+            try{
+                val vouchersInfo = uuid?.let {
+                    getVouchers(
+                        it,username
+                    )
+                }!!
+                allVouchers = vouchersInfo.vouchers
+                getUserProfileInfo(
                     this,
-                    it,username
+                    uuid,username
                 )
-            }!!
-            allVouchers = vouchersInfo.vouchers
-            getUserProfileInfo(
-                this,
-                uuid,username
-            )
-            this.runOnUiThread {
-                for (voucher in allVouchers) {
-                    if (!voucher.used){
-                        vouchers.add(voucher.uuid)
+                this.runOnUiThread {
+                    for (voucher in allVouchers) {
+                        if (!voucher.used){
+                            vouchers.add(voucher.uuid)
+                        }
                     }
+                    accAmount = sharedPreference.getFloat("discount",0f)
+                    stopLoading(progressBar,listOf(confirmCheckout))
+                    setUpCheckBox()
+                    setUpDropDown()
                 }
-                accAmount = sharedPreference.getFloat("discount",0f)
-                stopLoading(progressBar,listOf(confirmCheckout))
-                setUpCheckBox()
-                setUpDropDown()
+            }catch (e: Exception){
+                this.runOnUiThread {
+                    stopLoading(progressBar,listOf(confirmCheckout))
+                    val dialog = e.message?.let { DialogGeneric("Error", it) }
+                    dialog?.show(supportFragmentManager, "error")
+                    confirmCheckout.isEnabled = false
+                    vouchersDropDown.isEnabled = false
+                    checkBox.isEnabled = false
+                    accAmountField.text = convertToEuros(0f)
+                }
             }
         }
     }

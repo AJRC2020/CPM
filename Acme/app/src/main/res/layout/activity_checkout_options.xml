@@ -75,7 +75,6 @@
                     android:id="@+id/voucherChoiceTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:fontFamily="@font/imprima_regular"
                     android:text="@string/voucher_select"
                     android:textColor="#000"
@@ -85,10 +84,10 @@
                     android:id="@+id/vouchersDropDown"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:contentDescription="@string/chose_voucher"
                     android:labelFor="@id/voucherChoiceTitle"
                     android:minHeight="48dp"
-                    android:visibility="visible"
-                    tools:labelFor="@id/voucherChoiceTitle" />
+                    android:visibility="visible" />
 
             </LinearLayout>
 
