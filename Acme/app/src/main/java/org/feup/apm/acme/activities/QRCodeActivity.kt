@@ -136,7 +136,7 @@ class QRCodeActivity : AppCompatActivity() {
         loading(progressBar, listOf(noScanText,scannedText))
         thread {
             try{
-                getProduct(content)
+                product = getProduct(content)
                 this.runOnUiThread {
                     stopLoading()
                 }

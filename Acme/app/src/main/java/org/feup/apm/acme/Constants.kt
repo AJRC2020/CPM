@@ -5,7 +5,7 @@ object Constants {
   const val ANDROID_KEYSTORE = "AndroidKeyStore"
   const val KEY_ALGO = "RSA"
   const val serialNr = 1234567890L
-  const val BASE_ADDRESS = "10.0.2.2"
+  const val BASE_ADDRESS = "localhost"
   //"10.0.2.2" - for emulator
   //"localhost" - for phone connected by USB
   const val SIGN_ALGO = "SHA256WithRSA"
