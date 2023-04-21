@@ -56,7 +56,7 @@ public class ProductController {
 
             AppProduct product = productService.createProduct(infoSplitted[1], Float.parseFloat(infoSplitted[2]), infoSplitted[0]);
 
-            ReturnProduct retProduct = new ReturnProduct(product.getName(), product.getPrice());
+            ReturnProduct retProduct = new ReturnProduct(product.getUuid(),product.getName(), product.getPrice());
 
             return ResponseEntity.ok().body(retProduct);
         }

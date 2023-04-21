@@ -1,6 +1,7 @@
 package org.feup.apm.acme
 
 import android.app.Activity
+import android.util.Log
 import org.feup.apm.acme.models.*
 import org.json.JSONArray
 import org.json.JSONObject
@@ -306,7 +307,6 @@ fun getPurchases(
             postRequestSettings(this,payload)
             when(responseCode){
                 200 -> {
-                    disconnect()
                     val read = readStream(inputStream)
                     // Parsing stream into JSON
                     val dataSet = JSONArray(read)
