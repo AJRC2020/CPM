@@ -143,6 +143,7 @@ public class UserController {
     public ResponseEntity<String> getUuid(@PathVariable("username") String username) {
         AppUser user = userService.getByUsername(username);
 
+
         if (user == null){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -153,6 +154,10 @@ public class UserController {
     @PostMapping("update/password")
     public ResponseEntity<String> updatePassword(@RequestBody UpdatePassword sign) throws Exception {
         AppUser user = userService.getByUuid(sign.uuid);
+
+        if (user == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
 
         if (!verifySignature(sign.signature, sign.uuid, user.getPublic_key())){
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -170,6 +175,10 @@ public class UserController {
     @PostMapping("update/payment")
     public ResponseEntity<String> updatePayment(@RequestBody UpdatePayment sign) throws Exception {
         AppUser user = userService.getByUuid(sign.uuid);
+
+        if (user == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
 
         if (!verifySignature(sign.signature, sign.uuid, user.getPublic_key())){
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);

@@ -88,6 +88,7 @@ fun login(
             postRequestSettings(this,payload)
             when (responseCode){
                 200 ->{
+                    disconnect()
                     return
                 }
                 403 -> {
@@ -207,11 +208,10 @@ fun getUserProfileInfo(
 }
 
 fun changePaymentMethod(
-    act: UserProfile,
     newCard: Long,
     uuid: String,
     username: String
-) : Boolean {
+) {
     // Building URL
     val urlRoute = "api/users/update/payment"
     val url = URL("http://${Constants.BASE_ADDRESS}:${Constants.PORT}/$urlRoute")
@@ -222,44 +222,41 @@ fun changePaymentMethod(
     payload.put("payment", newCard)
     payload.put("signature", signContent(uuid,username))
 
-
-    var urlConnection: HttpURLConnection? = null
-    var result = false
     try {
         // Sending Request
-        urlConnection = (url.openConnection() as HttpURLConnection).apply {
+        (url.openConnection() as HttpURLConnection).apply {
             postRequestSettings(this,payload)
-            if (responseCode == 200) {
-                result = true
-
-            } else {
-                // Putting error info in snack bar
-                createSnackBar("Code: $responseCode - $errorStream", act)
-                // Putting error info in console
-                Log.d("error", "Code: $responseCode - $errorStream")
+            when(responseCode){
+                200 -> {
+                    disconnect()
+                    return
+                }
+                404 -> {
+                    disconnect()
+                    throw NotFound("Fatal error, user not found. Please log out.")
+                }
+                403 -> {
+                    disconnect()
+                    throw Forbidden("You don't have permission to change the payment method of this user.")
+                }
+                else -> {
+                    disconnect()
+                    throw ServerError("Internal server error, please retry.")
+                }
             }
         }
-    } catch (e: Exception) {
-        // Putting error info in snack bar
-        createSnackBar(e.toString(),act)
-        // Putting error info in console
-        Log.d("error", e.toString())
-
-    } finally {
-        // Closing url connection
-        urlConnection?.disconnect()
+    }catch (io: IOException){
+        throw ConnectionError("Could not connect to server. Make sure you are connected to the network and retry.")
     }
-    return result
 }
 
 
 fun changePassword(
-    act: UserProfile,
     currentPassword: String,
     newPassword: String,
     uuid: String,
     username: String
-) : Boolean {
+)  {
     // Building URL
     val urlRoute = "api/users/update/password"
     val url = URL("http://${Constants.BASE_ADDRESS}:${Constants.PORT}/$urlRoute")
@@ -272,33 +269,32 @@ fun changePassword(
     payload.put("signature", signContent(uuid,username))
 
 
-    var urlConnection: HttpURLConnection? = null
-    var result = false
     try {
         // Sending Request
-        urlConnection = (url.openConnection() as HttpURLConnection).apply {
+        (url.openConnection() as HttpURLConnection).apply {
             postRequestSettings(this,payload)
-            if (responseCode == 200) {
-                result = true
-
-            } else {
-                // Putting error info in snack bar
-                createSnackBar("Code: $responseCode - $errorStream", act)
-                // Putting error info in console
-                Log.d("error", "Code: $responseCode - $errorStream")
+            when(responseCode){
+                200 -> {
+                    disconnect()
+                    return
+                }
+                404 -> {
+                    disconnect()
+                    throw NotFound("Fatal error, user not found. Please log out.")
+                }
+                403 -> {
+                    disconnect()
+                    throw Forbidden("Authentication error. Current password is incorrect, please retry")
+                }
+                else -> {
+                    disconnect()
+                    throw ServerError("Internal server error, please retry.")
+                }
             }
         }
-    } catch (e: Exception) {
-        // Putting error info in snack bar
-        createSnackBar(e.toString(),act)
-        // Putting error info in console
-        Log.d("error", e.toString())
-
-    } finally {
-        // Closing url connection
-        urlConnection?.disconnect()
+    }catch (io: IOException){
+        throw ConnectionError("Could not connect to server. Make sure you are connected to the network and retry.")
     }
-    return result
 }
 
 
