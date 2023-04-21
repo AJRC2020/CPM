@@ -18,6 +18,7 @@ import com.google.zxing.integration.android.IntentIntegrator
 import com.google.zxing.integration.android.IntentResult
 import org.feup.apm.acme.*
 import org.feup.apm.acme.Constants.REQUEST_CAMERA_ACCESS
+import org.feup.apm.acme.fragments.DialogGeneric
 import org.feup.apm.acme.models.Product
 import kotlin.concurrent.thread
 
@@ -134,9 +135,17 @@ class QRCodeActivity : AppCompatActivity() {
     private fun showProduct(content: String){
         loading(progressBar, listOf(noScanText,scannedText))
         thread {
-            product = getProduct(this,content)
-            this.runOnUiThread {
-                stopLoading()
+            try{
+                product = getProduct(content)
+                this.runOnUiThread {
+                    stopLoading()
+                }
+            }catch (e:Exception){
+                this.runOnUiThread {
+                    stopLoading()
+                    val dialog = e.message?.let { DialogGeneric("Error", it) }
+                    dialog?.show(supportFragmentManager, "error")
+                }
             }
         }
     }

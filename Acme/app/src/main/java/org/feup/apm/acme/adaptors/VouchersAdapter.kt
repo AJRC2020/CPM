@@ -12,7 +12,7 @@ import org.feup.apm.acme.R
 import org.feup.apm.acme.models.Voucher
 
 
-class VouchersAdapter(private val dataSet: List<Voucher>) :
+class VouchersAdapter(private val dataSet: ArrayList<Voucher>) :
     RecyclerView.Adapter<VouchersAdapter.ViewHolder>() {
 
     /**

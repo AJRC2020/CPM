@@ -8,6 +8,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import org.feup.apm.acme.*
 import org.feup.apm.acme.activities.UserProfile
@@ -31,31 +32,45 @@ class DialogChangePayment(private val uuid: String, private val username: String
         val closeButton = view.findViewById<ImageButton>(R.id.closePopUpButton)
         val changeCardField = view.findViewById<EditText>(R.id.changeCardField)
         val progressBar = view.findViewById<ProgressBar>(R.id.progressBar3)
+        val warning = view.findViewById<TextView>(R.id.cardChangeError)
 
         closeButton.setOnClickListener{
             dismiss()
         }
 
         yesButton.setOnClickListener {
-            if (changeCardField.text.toString().trim().isNotEmpty()
-            ) {
-                val newCard = changeCardField.text.toString().toLong()
-                loading(progressBar, listOf(yesButton))
-                closeButton.isEnabled = false
-                thread {
-                    val result = changePaymentMethod(act, newCard, uuid, username)
+
+            warning.visibility = View.GONE
+
+            if (changeCardField.text.toString().trim().isEmpty()){
+                showError(warning, "The new card field has be filled")
+                return@setOnClickListener
+            }
+
+            val newCard = changeCardField.text.toString().toLong()
+            loading(progressBar, listOf(yesButton))
+            closeButton.isEnabled = false
+
+            thread {
+                try{
+                    changePaymentMethod(newCard, uuid, username)
                     act.runOnUiThread {
                         stopLoading(progressBar, listOf(yesButton))
                         closeButton.isEnabled = true
                         dismiss()
-                        if (result) {
-                            createSnackBar("Payment method change successfully", act)
-                        } else {
-                            createSnackBar("Error while changing payment method", act)
-                        }
+                        val dialog = DialogGeneric("Success", "Password was changed successfully")
+                        dialog.show(act.supportFragmentManager, "success")
+                    }
+                }catch (e: Exception){
+                    act.runOnUiThread {
+                        stopLoading(progressBar, listOf(yesButton))
+                        dismiss()
+                        val dialog = e.message?.let { DialogGeneric("Error", it) }
+                        dialog?.show(act.supportFragmentManager, "error")
                     }
                 }
             }
+
         }
     }
 

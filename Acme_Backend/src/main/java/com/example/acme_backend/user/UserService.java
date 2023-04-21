@@ -44,10 +44,12 @@ public class UserService {
     }
 
     public AppUser getByUuid(String uuid) {
+        if (userRepository.findByUuid(uuid).isEmpty()) return null;
         return userRepository.findByUuid(uuid).get(0);
     }
 
     public AppUser getByUsername(String username) {
+        if (userRepository.findByUsername(username).isEmpty()) return null;
         return userRepository.findByUsername(username).get(0);
     }
 

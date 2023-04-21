@@ -46,25 +46,35 @@ public class UserController {
     @ResponseBody
     public ResponseEntity<ReturnNewUser> newUser(@RequestBody NewUser user) throws Exception {
 
-        String uuid = this.userService.newUser(user);
+            if (this.userService.getByUsername(user.username) != null){
+               return new ResponseEntity<>(HttpStatus.IM_USED);
+            }
 
-        File file = new File("src/main/resources/publickey.der");
+            String uuid = this.userService.newUser(user);
 
-        if (!file.exists()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+            File file = new File("src/main/resources/publickey.der");
 
-        byte[] market_key = Files.readAllBytes(file.toPath());
-        String encodeKey = Base64.getEncoder().encodeToString(market_key);
+            if (!file.exists()) {
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
 
-        ReturnNewUser new_user = new ReturnNewUser(uuid, encodeKey);
+            byte[] market_key = Files.readAllBytes(file.toPath());
+            String encodeKey = Base64.getEncoder().encodeToString(market_key);
 
-        return ResponseEntity.ok().body(new_user);
+            ReturnNewUser new_user = new ReturnNewUser(uuid, encodeKey);
+
+
+            return ResponseEntity.ok().body(new_user);
+
     }
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody Login login) throws Exception {
         AppUser user = this.userService.getByUsername(login.username);
+
+        if (user == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
 
         if (validatePassword(login.password, user.getPassword())) {
             return new ResponseEntity<>(HttpStatus.OK);
@@ -77,6 +87,10 @@ public class UserController {
     @PostMapping("/vouchers")
     public ResponseEntity<ReturnVoucherPage> getVouchersUser(@RequestBody SignedId sign) throws Exception {
         AppUser user = userService.getByUuid(sign.uuid);
+
+        if (user == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
 
         if (!verifySignature(sign.signature, sign.uuid, user.getPublic_key())){
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -112,6 +126,10 @@ public class UserController {
     public ResponseEntity<ReturnUser> getUser(@RequestBody SignedId sign) throws Exception {
         AppUser user = userService.getByUuid(sign.uuid);
 
+        if (user == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
         if (!verifySignature(sign.signature, sign.uuid, user.getPublic_key())){
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
@@ -125,12 +143,21 @@ public class UserController {
     public ResponseEntity<String> getUuid(@PathVariable("username") String username) {
         AppUser user = userService.getByUsername(username);
 
+
+        if (user == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
         return ResponseEntity.ok().body(user.getUuid());
     }
 
     @PostMapping("update/password")
     public ResponseEntity<String> updatePassword(@RequestBody UpdatePassword sign) throws Exception {
         AppUser user = userService.getByUuid(sign.uuid);
+
+        if (user == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
 
         if (!verifySignature(sign.signature, sign.uuid, user.getPublic_key())){
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -148,6 +175,10 @@ public class UserController {
     @PostMapping("update/payment")
     public ResponseEntity<String> updatePayment(@RequestBody UpdatePayment sign) throws Exception {
         AppUser user = userService.getByUuid(sign.uuid);
+
+        if (user == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
 
         if (!verifySignature(sign.signature, sign.uuid, user.getPublic_key())){
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -175,19 +206,18 @@ public class UserController {
         String[] parts = hashed.split(":");
         int iterations = Integer.parseInt(parts[0]);
 
+
         byte[] salt = fromHex(parts[1]);
         byte[] hash = fromHex(parts[2]);
 
         PBEKeySpec keySpec = new PBEKeySpec(verify.toCharArray(), salt, iterations, hash.length * 8);
         SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
         byte[] testHash = skf.generateSecret(keySpec).getEncoded();
-
         int diff = hash.length ^ testHash.length;
         
         for (int i = 0; i < hash.length && i < testHash.length; i++) {
             diff |= hash[i] ^ testHash[i];
         }
-
         return diff == 0;
     }
 
@@ -204,6 +234,10 @@ public class UserController {
     private ResponseEntity<List<ReturnPurchase>> getReceipts(Boolean getJustEmitted, SignedId sign) throws Exception {
         AppUser user = userService.getByUuid(sign.uuid);
 
+        if (user == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
         if (!verifySignature(sign.signature, sign.uuid, user.getPublic_key())){
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
@@ -218,7 +252,7 @@ public class UserController {
                 continue;
             }
 
-            if (!purchase.getEmitted() && !getJustEmitted) {
+            if (!purchase.getEmitted()) {
                 purchase = purchaseService.updatePurchase(true, purchase.getId());
             }
 
@@ -229,7 +263,7 @@ public class UserController {
             while(items.hasNext()) {
                 AppItem item = items.next();
                 AppProduct product = item.getProduct();
-                itemsList.add(new ProductReceipt(product.getName(), item.getQuantity() * product.getPrice(),item.getQuantity()));
+                itemsList.add(new ProductReceipt(product.getUuid(), product.getName(), item.getQuantity() * product.getPrice(),item.getQuantity()));
             }
 
             if (purchase.getVoucher() == null) {

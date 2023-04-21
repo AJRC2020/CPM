@@ -14,6 +14,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import org.feup.apm.acme.*
 import org.feup.apm.acme.fragments.DialogChangePassword
 import org.feup.apm.acme.fragments.DialogChangePayment
+import org.feup.apm.acme.fragments.DialogGeneric
 import kotlin.concurrent.thread
 
 class UserProfile : AppCompatActivity() {
@@ -38,21 +39,8 @@ class UserProfile : AppCompatActivity() {
 
         val sharedPreference = this.getSharedPreferences("user_info", Context.MODE_PRIVATE)
         val username = sharedPreference.getString("username","none").toString()
-        usernameField.text = username
-        uuid = sharedPreference.getString("uuid","none").toString()
-        loading(progressBar, listOf(otherSection))
 
-        thread{
-            getUserInfo(
-                this,
-                uuid,username
-            )
-
-            this.runOnUiThread {
-                updateInfo(sharedPreference)
-                stopLoading(progressBar,listOf(otherSection))
-            }
-        }
+        getExtraInfo(username,sharedPreference)
 
         backButton.setOnClickListener {
             finish()
@@ -80,6 +68,32 @@ class UserProfile : AppCompatActivity() {
         }
 
         navBarListeners(navbar,this)
+    }
+
+    private fun getExtraInfo(username: String, sharedPreference: SharedPreferences){
+
+        usernameField.text = username
+        uuid = sharedPreference.getString("uuid","none").toString()
+        loading(progressBar, listOf(otherSection))
+        thread{
+            try{
+                getUserProfileInfo(
+                    this,
+                    uuid,username
+                )
+                this.runOnUiThread {
+                    updateInfo(sharedPreference)
+                    stopLoading(progressBar,listOf(otherSection))
+                }
+            }
+            catch(e: Exception){
+                this.runOnUiThread {
+                    stopLoading(progressBar,listOf(otherSection))
+                }
+                val dialog = e.message?.let { DialogGeneric("Error", it) }
+                dialog?.show(supportFragmentManager, "error")
+            }
+        }
     }
 
     private fun updateInfo(sharedPreference: SharedPreferences){

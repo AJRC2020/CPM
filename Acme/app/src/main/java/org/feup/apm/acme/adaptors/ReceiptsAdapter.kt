@@ -17,7 +17,7 @@ import org.feup.apm.acme.convertToEuros
 import org.feup.apm.acme.models.Receipt
 
 
-class ReceiptsAdapter(private val dataSet: List<Receipt>) :
+class ReceiptsAdapter(private val dataSet: ArrayList<Receipt>) :
     RecyclerView.Adapter<ReceiptsAdapter.ViewHolder>() {
 
     /**

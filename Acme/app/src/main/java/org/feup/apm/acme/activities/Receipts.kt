@@ -2,7 +2,6 @@ package org.feup.apm.acme.activities
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.widget.ImageButton
 import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
@@ -11,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import org.feup.apm.acme.*
 import org.feup.apm.acme.adaptors.ReceiptsAdapter
+import org.feup.apm.acme.fragments.DialogGeneric
 import org.feup.apm.acme.models.Receipt
 import kotlin.concurrent.thread
 
@@ -20,11 +20,11 @@ class Receipts : AppCompatActivity() {
 
     private val progressBar by lazy {findViewById<ProgressBar>(R.id.progressBarReceipts)}
     private val mRecyclerView by lazy {findViewById<RecyclerView>(R.id.receiptsList)}
-    private var mAdapter: RecyclerView.Adapter<*> = ReceiptsAdapter(listOf())
+    private var mAdapter: RecyclerView.Adapter<*> = ReceiptsAdapter(arrayListOf())
     private val mLayoutManager: RecyclerView.LayoutManager = LinearLayoutManager(this)
     private val navbar by lazy { findViewById<BottomNavigationView>(R.id.navbar) }
 
-    private var receipts = listOf<Receipt>()
+    private var receipts = arrayListOf<Receipt>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,18 +45,24 @@ class Receipts : AppCompatActivity() {
         val username = sharedPreference.getString("username","none").toString()
 
         thread{
-            receipts = uuid?.let {
-                getPurchases(this,
-                    it,username
-                )
-            }!!
-
-            Log.d("res",receipts.toString())
-
-            this.runOnUiThread {
-                stopLoading(progressBar,listOf())
-                addReceipts()
+            try{
+                receipts = uuid?.let {
+                    getPurchases(
+                        it,username
+                    )
+                }!!
+                this.runOnUiThread {
+                    stopLoading(progressBar,listOf())
+                    addReceipts()
+                }
+            }catch (e :Exception){
+                this.runOnUiThread {
+                    stopLoading(progressBar,listOf())
+                    val dialog = e.message?.let { DialogGeneric("Error", it) }
+                    dialog?.show(supportFragmentManager, "error")
+                }
             }
+
         }
         navBarListeners(navbar,this)
     }

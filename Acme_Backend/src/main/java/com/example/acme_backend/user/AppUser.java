@@ -23,12 +23,12 @@ public class AppUser {
     @Column(name = "app_user_id")
     private Long id;
     private String name;
+    @Column(unique = true)
     private String username;
     @Column(nullable = false)
     private String password;
     @Column(unique = true)
     private String public_key;
-    @Column(unique = true)
     private Long card_number;
     @Column(unique = true)
     private String uuid;

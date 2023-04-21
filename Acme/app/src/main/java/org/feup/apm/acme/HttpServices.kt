@@ -1,27 +1,26 @@
 package org.feup.apm.acme
 
-import android.content.Context
+import android.app.Activity
 import android.util.Log
-import org.feup.apm.acme.activities.*
 import org.feup.apm.acme.models.*
 import org.json.JSONArray
 import org.json.JSONObject
+import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
 
 
 fun register(
-    act: RegisterActivity,
+    act: Activity,
     name: String,
     username: String,
     password: String,
     card_number: String,
     public_key: String
-) : Boolean {
+)  {
     // Building URL
     val urlRoute = "api/users/new"
     val url = URL("http://${Constants.BASE_ADDRESS}:${Constants.PORT}/$urlRoute")
-    var uuid : String
     // Creating payload
     val payload = JSONObject()
     payload.put("name", name)
@@ -31,324 +30,47 @@ fun register(
     payload.put("public_key", public_key)
 
     var urlConnection: HttpURLConnection? = null
-    var result = false
     try {
         // Sending Request
         urlConnection = (url.openConnection() as HttpURLConnection).apply {
-            doOutput = true
-            doInput = true
-            requestMethod = "POST"
-            setRequestProperty("Content-Type", "application/json")
-            useCaches = false
-            connectTimeout = 5000
-            with(outputStream) {
-                write(payload.toString().toByteArray())
-                flush()
-                close()
-            }
-            if (responseCode == 200) {
-                // Getting response stream
-                val read = readStream(inputStream)
-                // Parsing stream into JSON
-                val jsonObject = JSONObject(read)
-                // Saving data into sharedPreferences
-                val sharedPreference = act.getSharedPreferences("user_info", Context.MODE_PRIVATE)
-                val editor = sharedPreference.edit()
-                uuid =  jsonObject["uuid"].toString()
-                editor.putString("uuid", uuid)
-                editor.putString("name", name)
-                editor.putString("username", username)
-                editor.putString("server_public_key", jsonObject["public_key"].toString())
-                editor.apply()
+            postRequestSettings(this,payload)
+            when(responseCode){
+                200 -> {
+                    // Getting response stream
+                    val read = readStream(inputStream)
 
-                result = true
-            } else {
-                // Putting error info in snack bar
-                createSnackBar("Code: $responseCode - $errorStream",act)
+                    // Parsing stream into JSON
+                    val jsonObject = JSONObject(read)
 
-            }
-        }
-    } catch (e: Exception) {
-        // Putting error info in snack bar
-        createSnackBar(e.toString(),act)
-
-    } finally {
-        // Closing url connection
-        urlConnection?.disconnect()
-    }
-    return result
-}
-
-
-fun getPurchases(
-    act: Receipts,
-    uuid: String,
-    username: String
-    ) : List<Receipt> {
-    // Building URL
-    val urlRoute = "api/users/purchases"
-    val url = URL("http://${Constants.BASE_ADDRESS}:${Constants.PORT}/$urlRoute")
-
-    // Creating payload
-    val payload = JSONObject()
-    payload.put("uuid", uuid)
-    payload.put("signature", signContent(uuid,username))
-
-
-    var urlConnection: HttpURLConnection? = null
-    val receipts : MutableList<Receipt> = mutableListOf()
-    try {
-        // Sending Request
-        urlConnection = (url.openConnection() as HttpURLConnection).apply {
-            doOutput = true
-            doInput = true
-            requestMethod = "POST"
-            setRequestProperty("Content-Type", "application/json")
-            useCaches = false
-            connectTimeout = 5000
-            with(outputStream) {
-                write(payload.toString().toByteArray())
-                flush()
-                close()
-            }
-            if (responseCode == 200) {
-                // Getting response stream
-                val read = readStream(inputStream)
-                // Parsing stream into JSON
-                val dataSet = JSONArray(read)
-
-
-                (0 until dataSet.length()).forEach { receipt ->
-                    val date = dataSet.getJSONObject(receipt)["date"].toString()
-                    val total = dataSet.getJSONObject(receipt)["price"].toString().toFloat()
-                    val voucher = dataSet.getJSONObject(receipt)["voucher"].toString()
-                    val itemsJson = dataSet.getJSONObject(receipt).getJSONArray("items")
-                    val items : MutableList<ProductAmount> = mutableListOf()
-                    (0 until itemsJson.length()).forEach {
-                        val item = itemsJson.getJSONObject(it)
-
-                        val name = item["product"].toString()
-                        val price =  item["price"].toString().toFloat()
-                        val amount =  item["amount"].toString().toInt()
-
-                        items.add(ProductAmount(null,amount,name,price))
-                    }
-                    receipts.add(Receipt(date,total,items,voucher))
+                    // Saving data into sharedPreferences
+                    saveUserDataRegister(act,name,username,jsonObject)
                 }
-
-            } else {
-                // Putting error info in snack bar
-                createSnackBar("Code: $responseCode - $errorStream", act)
-                // Putting error info in console
-                Log.d("error", "Code: $responseCode - $errorStream")
-            }
-        }
-    } catch (e: Exception) {
-        // Putting error info in snack bar
-        createSnackBar(e.toString(),act)
-        // Putting error info in console
-        Log.d("error", e.toString())
-
-    } finally {
-        // Closing url connection
-        urlConnection?.disconnect()
-    }
-    return receipts
-}
-
-
-fun getVouchers(
-    act: VouchersActivity,
-    uuid: String,
-    username: String
-    ) : VouchersInfo {
-    // Building URL
-    val urlRoute = "api/users/vouchers"
-    val url = URL("http://${Constants.BASE_ADDRESS}:${Constants.PORT}/$urlRoute")
-
-    // Creating payload
-    val payload = JSONObject()
-    payload.put("uuid", uuid)
-    payload.put("signature", signContent(uuid,username))
-
-
-    var urlConnection: HttpURLConnection? = null
-
-    var vouchersInfo = VouchersInfo(listOf(),0f)
-    try {
-        // Sending Request
-        urlConnection = (url.openConnection() as HttpURLConnection).apply {
-            doOutput = true
-            doInput = true
-            requestMethod = "POST"
-            setRequestProperty("Content-Type", "application/json")
-            useCaches = false
-            connectTimeout = 5000
-            with(outputStream) {
-                write(payload.toString().toByteArray())
-                flush()
-                close()
-            }
-            if (responseCode == 200) {
-                // Getting response stream
-                val read = readStream(inputStream)
-                // Parsing stream into JSON
-
-                val info = JSONObject(read)
-                val valueToNext = info["valueToNextVoucher"].toString().toFloat()
-                val dataSet = info.getJSONArray("vouchers")
-                val vouchers : MutableList<Voucher> = mutableListOf()
-
-                (0 until dataSet.length()).forEach { receipt ->
-                    val date = dataSet.getJSONObject(receipt)["date"].toString()
-                    val used = dataSet.getJSONObject(receipt)["used"].toString().toBoolean()
-                    val emitted = dataSet.getJSONObject(receipt)["emitted"].toString().toBoolean()
-                    val id = dataSet.getJSONObject(receipt)["uuid"].toString()
-                    vouchers.add(Voucher(emitted,used,date,id))
+                226 -> {
+                    disconnect()
+                    throw ElementAlreadyInUse("Username is already in use")
                 }
-
-                vouchersInfo = VouchersInfo(vouchers,valueToNext)
-
-            } else {
-                // Putting error info in snack bar
-                createSnackBar("Code: $responseCode - $errorStream", act)
-                // Putting error info in console
-                Log.d("error", "Code: $responseCode - $errorStream")
+                500 -> {
+                    disconnect()
+                    throw ServerError("Internal server error, please retry.")
+                }
+                else ->  {
+                    disconnect()
+                    throw ServerError ("Internal server error, please retry.") }
             }
         }
-    } catch (e: Exception) {
-        // Putting error info in snack bar
-        createSnackBar(e.toString(),act)
-        // Putting error info in console
-        Log.d("error", e.toString())
-
-    } finally {
+    } catch (io: IOException){
+        throw ConnectionError("Could not connect to server. Make sure you are connected to the network and retry.")
+    }
+    finally {
         // Closing url connection
         urlConnection?.disconnect()
     }
-    return vouchersInfo
 }
-fun changePaymentMethod(
-    act: UserProfile,
-    newCard: Long,
-    uuid: String,
-    username: String
-    ) : Boolean {
-    // Building URL
-    val urlRoute = "api/users/update/payment"
-    val url = URL("http://${Constants.BASE_ADDRESS}:${Constants.PORT}/$urlRoute")
-
-    // Creating payload
-    val payload = JSONObject()
-    payload.put("uuid", uuid)
-    payload.put("payment", newCard)
-    payload.put("signature", signContent(uuid,username))
-
-
-    var urlConnection: HttpURLConnection? = null
-    var result = false
-    try {
-        // Sending Request
-        urlConnection = (url.openConnection() as HttpURLConnection).apply {
-            doOutput = true
-            doInput = true
-            requestMethod = "POST"
-            setRequestProperty("Content-Type", "application/json")
-            useCaches = false
-            connectTimeout = 5000
-            with(outputStream) {
-                write(payload.toString().toByteArray())
-                flush()
-                close()
-            }
-            if (responseCode == 200) {
-                result = true
-
-            } else {
-                // Putting error info in snack bar
-                createSnackBar("Code: $responseCode - $errorStream", act)
-                // Putting error info in console
-                Log.d("error", "Code: $responseCode - $errorStream")
-            }
-        }
-    } catch (e: Exception) {
-        // Putting error info in snack bar
-        createSnackBar(e.toString(),act)
-        // Putting error info in console
-        Log.d("error", e.toString())
-
-    } finally {
-        // Closing url connection
-        urlConnection?.disconnect()
-    }
-    return result
-}
-
-
-fun changePassword(
-    act: UserProfile,
-    currentPassword: String,
-    newPassword: String,
-    uuid: String,
-    username: String
-    ) : Boolean {
-    // Building URL
-    val urlRoute = "api/users/update/password"
-    val url = URL("http://${Constants.BASE_ADDRESS}:${Constants.PORT}/$urlRoute")
-
-    // Creating payload
-    val payload = JSONObject()
-    payload.put("uuid", uuid)
-    payload.put("old_password", currentPassword)
-    payload.put("new_password", newPassword)
-    payload.put("signature", signContent(uuid,username))
-
-
-    var urlConnection: HttpURLConnection? = null
-    var result = false
-    try {
-        // Sending Request
-        urlConnection = (url.openConnection() as HttpURLConnection).apply {
-            doOutput = true
-            doInput = true
-            requestMethod = "POST"
-            setRequestProperty("Content-Type", "application/json")
-            useCaches = false
-            connectTimeout = 5000
-            with(outputStream) {
-                write(payload.toString().toByteArray())
-                flush()
-                close()
-            }
-            if (responseCode == 200) {
-                 result = true
-
-            } else {
-                // Putting error info in snack bar
-                createSnackBar("Code: $responseCode - $errorStream", act)
-                // Putting error info in console
-                Log.d("error", "Code: $responseCode - $errorStream")
-            }
-        }
-    } catch (e: Exception) {
-        // Putting error info in snack bar
-        createSnackBar(e.toString(),act)
-        // Putting error info in console
-        Log.d("error", e.toString())
-
-    } finally {
-        // Closing url connection
-        urlConnection?.disconnect()
-    }
-    return result
-}
-
 
 fun login(
-    act: LoginActivity,
     username: String,
     password: String,
-    ) : Boolean {
+) {
     // Building URL
     val urlRoute = "api/users/login"
     val url = URL("http://${Constants.BASE_ADDRESS}:${Constants.PORT}/$urlRoute")
@@ -359,99 +81,76 @@ fun login(
     payload.put("password", password)
 
 
-    var urlConnection: HttpURLConnection? = null
-    var result = false
     try {
-        // Sending Request
-        urlConnection = (url.openConnection() as HttpURLConnection).apply {
-            doOutput = true
-            doInput = true
-            requestMethod = "POST"
-            setRequestProperty("Content-Type", "application/json")
-            useCaches = false
-            connectTimeout = 5000
-            with(outputStream) {
-                write(payload.toString().toByteArray())
-                flush()
-                close()
+        (url.openConnection() as HttpURLConnection).apply {
+            postRequestSettings(this,payload)
+            when (responseCode){
+                200 ->{
+                    disconnect()
+                    return
+                }
+                403 -> {
+                    disconnect()
+                    throw Forbidden("Nickname and Password do not match, please retry.")
+                }
+                404 -> {
+                    disconnect()
+                    throw NotFound("User not found, make sure the username is correct.")
+                }
+                else -> {
+                    disconnect()
+                    throw ServerError("Internal server error, please retry.")
+                }
             }
-            if (responseCode == 200) {
-                result = true
 
-            } else {
-                // Putting error info in snack bar
-                createSnackBar("Code: $responseCode - $errorStream", act)
-                // Putting error info in console
-                Log.d("error", "Code: $responseCode - $errorStream")
-            }
         }
-    } catch (e: Exception) {
-        // Putting error info in snack bar
-        createSnackBar(e.toString(),act)
-        // Putting error info in console
-        Log.d("error", e.toString())
-
-    } finally {
-        // Closing url connection
-        urlConnection?.disconnect()
+    } catch (io: IOException){
+        throw ConnectionError("Could not connect to server. Make sure you are connected to the network and retry.")
     }
-    return result
 }
 
 
 fun getUUID(
-    act: LoginActivity,
+    act: Activity,
     username: String
-) : Boolean {
+)  {
     // Building URL
     val urlRoute = "api/users/uuid/$username"
     val url = URL("http://${Constants.BASE_ADDRESS}:${Constants.PORT}/$urlRoute")
 
     var urlConnection: HttpURLConnection? = null
-    var result = false
     try {
         // Sending Request
         urlConnection = (url.openConnection() as HttpURLConnection).apply {
-            doInput = true
-            setRequestProperty("Content-Type", "application/json")
-            useCaches = false
-            connectTimeout = 5000
-            if (responseCode == 200) {
+            getRequestSettings(this)
+            when (responseCode){
+                200 -> {
+                    val uuid = readStream(inputStream)
+                    saveUserDataLogin(act,uuid,username)
+                }
+                404 -> {
+                    disconnect()
+                    throw NotFound("User not found, make sure the username is correct.")
+                }
+                else -> {
+                    disconnect()
+                    throw ServerError("Internal server error, please retry.")
+                }
 
-                val uuid = readStream(inputStream)
-                val sharedPreference = act.getSharedPreferences("user_info", Context.MODE_PRIVATE)
-                val editor = sharedPreference.edit()
-                editor.putString("uuid", uuid)
-                editor.putString("username", username)
-                editor.apply()
-
-                result = true
-
-            } else {
-                // Putting error info in snack bar
-                createSnackBar("Code: $responseCode - $errorStream", act)
-                // Putting error info in console
-                Log.d("error", "Code: $responseCode - $errorStream")
             }
         }
-    } catch (e: Exception) {
-        // Putting error info in snack bar
-        createSnackBar(e.toString(),act)
-        // Putting error info in console
-        Log.d("error", e.toString())
-
-    } finally {
-        // Closing url connection
+    } catch (io: IOException){
+        throw ConnectionError("Could not connect to server. Make sure you are connected to the network and retry.")
+    }finally {
         urlConnection?.disconnect()
     }
-    return result
 }
 
-fun getUserInfo(
-    act: UserProfile,
+fun getUserProfileInfo(
+    act: Activity,
     uuid: String,
     username: String
-    ) : Boolean {
+)  {
     // Building URL
     val urlRoute = "api/users/info"
     val url = URL("http://${Constants.BASE_ADDRESS}:${Constants.PORT}/$urlRoute")
@@ -459,61 +158,275 @@ fun getUserInfo(
     // Creating payload
     val payload = JSONObject()
     payload.put("uuid", uuid)
-    payload.put("signature", signContent(uuid,username))
 
+    signUuid(payload,uuid,username)
 
     var urlConnection: HttpURLConnection? = null
-    var result = false
     try {
         // Sending Request
         urlConnection = (url.openConnection() as HttpURLConnection).apply {
-            doOutput = true
-            doInput = true
-            requestMethod = "POST"
-            setRequestProperty("Content-Type", "application/json")
-            useCaches = false
-            connectTimeout = 5000
-            with(outputStream) {
-                write(payload.toString().toByteArray())
-                flush()
-                close()
-            }
-            if (responseCode == 200) {
-                // Getting response stream
-                val read = readStream(inputStream)
-                // Parsing stream into JSON
-                val jsonObject = JSONObject(read)
-                val sharedPreference = act.getSharedPreferences("user_info", Context.MODE_PRIVATE)
-                val editor = sharedPreference.edit()
-                editor.putFloat("discount", jsonObject["discount"].toString().toFloat())
-                editor.putFloat("total", jsonObject["total"].toString().toFloat())
-                editor.putString("name", jsonObject["name"].toString())
-                editor.apply()
-
-                result = true
-            } else {
-                // Putting error info in snack bar
-                createSnackBar("Code: $responseCode - $errorStream",act)
+            postRequestSettings(this,payload)
+            when (responseCode){
+                200 -> {
+                    // Getting response stream
+                    val read = readStream(inputStream)
+                    // Parsing stream into JSON
+                    val jsonObject = JSONObject(read)
+                    saverExtraUserData(act,jsonObject)
+                }
+                404 -> {
+                    disconnect()
+                    throw NotFound("Fatal error, user not found. Please log out.")
+                }
+                403 -> {
+                    disconnect()
+                    throw Forbidden("You don't have permission to retrieve this user's information.")
+                }
+                else -> {
+                    disconnect()
+                    throw ServerError("Internal server error, please retry.")
+                }
 
             }
         }
-    } catch (e: Exception) {
-        // Putting error info in snack bar
-        createSnackBar(e.toString(),act)
-
+    }catch (io: IOException){
+        throw ConnectionError("Could not connect to server. Make sure you are connected to the network and retry.")
     } finally {
-        // Closing url connection
         urlConnection?.disconnect()
     }
-    return result
+}
+
+fun changePaymentMethod(
+    newCard: Long,
+    uuid: String,
+    username: String
+) {
+    // Building URL
+    val urlRoute = "api/users/update/payment"
+    val url = URL("http://${Constants.BASE_ADDRESS}:${Constants.PORT}/$urlRoute")
+
+    // Creating payload
+    val payload = JSONObject()
+    payload.put("uuid", uuid)
+    payload.put("payment", newCard)
+    signUuid(payload,uuid,username)
+
+    try {
+        // Sending Request
+        (url.openConnection() as HttpURLConnection).apply {
+            postRequestSettings(this,payload)
+            when(responseCode){
+                200 -> {
+                    disconnect()
+                    return
+                }
+                404 -> {
+                    disconnect()
+                    throw NotFound("Fatal error, user not found. Please log out.")
+                }
+                403 -> {
+                    disconnect()
+                    throw Forbidden("You don't have permission to change the payment method of this user.")
+                }
+                else -> {
+                    disconnect()
+                    throw ServerError("Internal server error, please retry.")
+                }
+            }
+        }
+    }catch (io: IOException){
+        throw ConnectionError("Could not connect to server. Make sure you are connected to the network and retry.")
+    }
+}
+
+
+fun changePassword(
+    currentPassword: String,
+    newPassword: String,
+    uuid: String,
+    username: String
+)  {
+    // Building URL
+    val urlRoute = "api/users/update/password"
+    val url = URL("http://${Constants.BASE_ADDRESS}:${Constants.PORT}/$urlRoute")
+
+    // Creating payload
+    val payload = JSONObject()
+    payload.put("uuid", uuid)
+    payload.put("old_password", currentPassword)
+    payload.put("new_password", newPassword)
+    signUuid(payload,uuid,username)
+
+
+    try {
+        // Sending Request
+        (url.openConnection() as HttpURLConnection).apply {
+            postRequestSettings(this,payload)
+            when(responseCode){
+                200 -> {
+                    disconnect()
+                    return
+                }
+                404 -> {
+                    disconnect()
+                    throw NotFound("Fatal error, user not found. Please log out.")
+                }
+                403 -> {
+                    disconnect()
+                    throw Forbidden("Authentication error. Current password is incorrect, please retry")
+                }
+                else -> {
+                    disconnect()
+                    throw ServerError("Internal server error, please retry.")
+                }
+            }
+        }
+    }catch (io: IOException){
+        throw ConnectionError("Could not connect to server. Make sure you are connected to the network and retry.")
+    }
+}
+
+
+fun getPurchases(
+    uuid: String,
+    username: String
+    ) : ArrayList<Receipt> {
+    // Building URL
+    val urlRoute = "api/users/purchases"
+    val url = URL("http://${Constants.BASE_ADDRESS}:${Constants.PORT}/$urlRoute")
+
+    // Creating payload
+    val payload = JSONObject()
+    payload.put("uuid", uuid)
+    signUuid(payload,uuid,username)
+
+
+    try {
+        // Sending Request
+        (url.openConnection() as HttpURLConnection).apply {
+            postRequestSettings(this,payload)
+            when(responseCode){
+                200 -> {
+                    val read = readStream(inputStream)
+                    // Parsing stream into JSON
+                    val dataSet = JSONArray(read)
+                    disconnect()
+                    return createReceiptList(dataSet)
+                }
+                404 -> {
+                    disconnect()
+                    throw NotFound("Fatal error, user not found. Please log out.")
+                }
+                403 -> {
+                    disconnect()
+                    throw Forbidden("You don't have permission to access this user's receipts")
+                }
+                else -> {
+                    disconnect()
+                    throw ServerError("Internal server error, please retry.")
+                }
+            }
+        }
+    } catch (io: IOException){
+        throw ConnectionError("Could not connect to server. Make sure you are connected to the network and retry.")
+    }
+}
+
+fun getJustEmittedPurchases(
+    uuid: String,
+    username: String
+) : ArrayList<Receipt> {
+    // Building URL
+    val urlRoute = "api/users/purchases/emitted"
+    val url = URL("http://${Constants.BASE_ADDRESS}:${Constants.PORT}/$urlRoute")
+
+    // Creating payload
+    val payload = JSONObject()
+    payload.put("uuid", uuid)
+    signUuid(payload,uuid,username)
+
+
+    try {
+        // Sending Request
+        (url.openConnection() as HttpURLConnection).apply {
+            postRequestSettings(this,payload)
+            when(responseCode){
+                200 -> {
+                    val read = readStream(inputStream)
+                    // Parsing stream into JSON
+                    val dataSet = JSONArray(read)
+                    disconnect()
+                    return createReceiptList(dataSet)
+                }
+                404 -> {
+                    disconnect()
+                    throw NotFound("Fatal error, user not found. Please log out.")
+                }
+                403 -> {
+                    disconnect()
+                    throw Forbidden("You don't have permission to access this user's receipts")
+                }
+                else -> {
+                    disconnect()
+                    throw ServerError("Internal server error, please retry.")
+                }
+            }
+        }
+    } catch (io: IOException){
+        throw ConnectionError("Could not connect to server. Make sure you are connected to the network and retry.")
+    }
+
+}
+
+
+fun getVouchers(
+    uuid: String,
+    username: String
+    ) : VouchersInfo {
+    // Building URL
+    val urlRoute = "api/users/vouchers"
+    val url = URL("http://${Constants.BASE_ADDRESS}:${Constants.PORT}/$urlRoute")
+
+    // Creating payload
+    val payload = JSONObject()
+    payload.put("uuid", uuid)
+    signUuid(payload,uuid,username)
+
+    try {
+        // Sending Request
+        (url.openConnection() as HttpURLConnection).apply {
+            postRequestSettings(this,payload)
+            when(responseCode){
+                200 -> {
+                    val read = readStream(inputStream)
+                    // Parsing stream into JSON
+                    val info = JSONObject(read)
+                    disconnect()
+                    return createVouchersInfo(info)
+                }
+                404 -> {
+                    disconnect()
+                    throw NotFound("Fatal error, user not found. Please log out.")
+                }
+                403 -> {
+                    disconnect()
+                    throw Forbidden("You don't have permission to access this user's vouchers")
+                }
+                else -> {
+                    disconnect()
+                    throw ServerError("Internal server error, please retry.")
+                }
+            }
+        }
+    } catch (io: IOException){
+        throw ConnectionError("Could not connect to server. Make sure you are connected to the network and retry.")
+    }
 }
 
 
 fun getProduct(
-    act: QRCodeActivity,
     encryptedProduct: String,
-
-    ) : Product? {
+    ) : Product {
     // Building URL
     val urlRoute = "api/products/new"
     val url = URL("http://${Constants.BASE_ADDRESS}:${Constants.PORT}/$urlRoute")
@@ -522,42 +435,30 @@ fun getProduct(
     val payload = JSONObject()
     payload.put("encryption", encryptedProduct)
 
-
-    var urlConnection: HttpURLConnection? = null
     try {
         // Sending Request
-        urlConnection = (url.openConnection() as HttpURLConnection).apply {
-            doOutput = true
-            doInput = true
-            requestMethod = "POST"
-            setRequestProperty("Content-Type", "application/json")
-            useCaches = false
-            connectTimeout = 5000
-            with(outputStream) {
-                write(payload.toString().toByteArray())
-                flush()
-                close()
-            }
-            if (responseCode == 200) {
-                // Getting response stream
-                val read = readStream(inputStream)
-                // Parsing stream into JSON
-                val jsonObject = JSONObject(read)
-
-                return Product(jsonObject["uuid"].toString(),jsonObject["name"].toString(),jsonObject["price"].toString().toFloat())
-            } else {
-                // Putting error info in snack bar
-                createSnackBar("Code: $responseCode - $errorStream",act)
+        (url.openConnection() as HttpURLConnection).apply {
+            postRequestSettings(this,payload)
+            when(responseCode){
+                200 -> {
+                    // Getting response stream
+                    val read = readStream(inputStream)
+                    // Parsing stream into JSON
+                    val jsonObject = JSONObject(read)
+                    disconnect()
+                    return createProduct(jsonObject)
+                }
+                403 -> {
+                    disconnect()
+                    throw Forbidden("Invalid QR Code")
+                }
+                else -> {
+                    disconnect()
+                    throw ServerError("Internal server error, please retry.")
+                }
             }
         }
-    } catch (e: Exception) {
-        // Putting error info in snack bar
-        createSnackBar(e.toString(),act)
-
-    } finally {
-        // Closing url connection
-        urlConnection?.disconnect()
+    }catch (io: IOException){
+        throw ConnectionError("Could not connect to server. Make sure you are connected to the network and retry.")
     }
-
-    return null
 }

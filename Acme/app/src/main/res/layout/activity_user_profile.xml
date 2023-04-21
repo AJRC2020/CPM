@@ -113,6 +113,7 @@
                 android:layout_marginTop="0sp"
                 android:layout_marginBottom="0sp"
                 android:paddingLeft="20sp"
+                android:paddingRight="20sp"
                 android:text="@string/profile_others"
                 android:textColor="#000"
                 android:textSize="45sp" />
@@ -137,6 +138,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="5sp"
                     android:paddingLeft="40sp"
+                    android:paddingRight="40sp"
                     android:text="@string/profile_accumulated_discount"
                     android:textColor="#000"
                     android:textSize="22sp" />
@@ -156,6 +158,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="5sp"
                     android:paddingLeft="40sp"
+                    android:paddingRight="40sp"
                     android:text="@string/profile_total_amount_spent"
                     android:textColor="#000"
                     android:textSize="22sp" />

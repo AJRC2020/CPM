@@ -1,7 +1,6 @@
 package org.feup.apm.acme.activities
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -9,9 +8,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import org.feup.apm.acme.*
 import org.feup.apm.acme.adaptors.VouchersAdapter
+import org.feup.apm.acme.fragments.DialogGeneric
 import org.feup.apm.acme.models.Voucher
-import java.text.NumberFormat
-import java.util.*
 import kotlin.concurrent.thread
 
 
@@ -19,12 +17,12 @@ class VouchersActivity : AppCompatActivity() {
     private val backButton by lazy { findViewById<ImageButton>(R.id.vouchersBackButton) }
     private val navbar by lazy { findViewById<BottomNavigationView>(R.id.navbar) }
     private val mRecyclerView by lazy { findViewById<RecyclerView>(R.id.voucherList) }
-    private var mAdapter: RecyclerView.Adapter<*> = VouchersAdapter(listOf())
+    private var mAdapter: RecyclerView.Adapter<*> = VouchersAdapter(arrayListOf())
     private val mLayoutManager: RecyclerView.LayoutManager = LinearLayoutManager(this)
     private val progressBar by lazy { findViewById<ProgressBar>(R.id.progressBar2) }
     private val amountTillNext by lazy {findViewById<TextView>(R.id.vouchersAmountUntilNextVoucher)}
 
-    private var vouchers = listOf<Voucher>()
+    private var vouchers = arrayListOf<Voucher>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -45,20 +43,27 @@ class VouchersActivity : AppCompatActivity() {
         val username = sharedPreference.getString("username", "none").toString()
 
         thread {
-            val vouchersInfo = uuid?.let {
-                getVouchers(
-                    this,
-                    it,username
-                )
-            }!!
-            Log.d("res", vouchers.toString())
-            vouchers = vouchersInfo.vouchers
+            try{
+                val vouchersInfo = uuid?.let {
+                    getVouchers(
+                        it,username
+                    )
+                }!!
+                vouchers = vouchersInfo.vouchers
 
-            this.runOnUiThread {
-                stopLoading(progressBar, listOf())
-                changeValueToNext(vouchersInfo.valueToNext)
-                addVouchers()
+                this.runOnUiThread {
+                    stopLoading(progressBar, listOf())
+                    changeValueToNext(vouchersInfo.valueToNext)
+                    addVouchers()
+                }
+            }catch (e: Exception){
+                this.runOnUiThread {
+                    stopLoading(progressBar, listOf())
+                }
+                val dialog = e.message?.let { DialogGeneric("Error", it) }
+                dialog?.show(supportFragmentManager, "error")
             }
+
         }
 
         navBarListeners(navbar, this)

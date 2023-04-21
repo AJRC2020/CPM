@@ -1,5 +1,5 @@
 <resources>
-  <string name="app_name">ACME Code Gen</string>
+  <string name="app_name">ACME Code Generator</string>
   <string name="price_hint">Enter the price</string>
   <string name="price_tag">Price:</string>
   <string name="product_hint">Enter the product name</string>

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.acme_backend.bodies.Encrypt;
+import com.example.acme_backend.bodies.ReturnProduct;
 
 @RestController
 @RequestMapping(path = "api/products")
@@ -36,24 +37,32 @@ public class ProductController {
     }
 
     @PostMapping("/new")
-    public ResponseEntity<AppProduct> createProduct(@RequestBody Encrypt encryption) throws Exception {
+    public ResponseEntity<ReturnProduct> createProduct(@RequestBody Encrypt encryption) throws Exception {
         File file = new File("src/main/resources/privatekey.der");
 
         if (!file.exists()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         byte[] market_key = Files.readAllBytes(file.toPath());
-        
-        String info = decryption(encryption.encryption, market_key);
 
-        System.out.println(info);
+        try{
+            String info = decryption(encryption.encryption, market_key);
+            String[] infoSplitted = info.split(":");
 
-        String[] infoSplitted = info.split(":");
+            if (infoSplitted.length < 3){
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
 
-        AppProduct product = productService.createProduct(infoSplitted[1], Float.parseFloat(infoSplitted[2]), infoSplitted[0]);
+            AppProduct product = productService.createProduct(infoSplitted[1], Float.parseFloat(infoSplitted[2]), infoSplitted[0]);
 
-        return ResponseEntity.ok().body(product);
+            ReturnProduct retProduct = new ReturnProduct(product.getUuid(),product.getName(), product.getPrice());
+
+            return ResponseEntity.ok().body(retProduct);
+        }
+        catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
     }
 
     private String decryption(String encrypted, byte[] key) throws Exception {

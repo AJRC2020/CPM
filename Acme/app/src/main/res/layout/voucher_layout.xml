@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="350sp"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:background="@drawable/border"
+    android:layout_marginLeft="30sp"
+    android:layout_marginRight="30sp"
     android:layout_marginBottom="15sp"
-    android:layout_marginLeft="30sp">
+    android:background="@drawable/border"
+    android:orientation="horizontal">
 
     <LinearLayout
         android:layout_width="250sp"
@@ -17,22 +18,24 @@
             android:id="@+id/voucherDateText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/voucher_date_placeholder"
             android:fontFamily="@font/imprima_regular"
-            android:textSize="25sp"
             android:paddingLeft="10sp"
-            android:paddingTop="10sp"/>
+            android:paddingTop="10sp"
+            android:paddingRight="10sp"
+            android:text="@string/voucher_date_placeholder"
+            android:textSize="25sp" />
 
         <TextView
             android:id="@+id/voucherCodeText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/voucher_code_placeholder"
             android:fontFamily="@font/imprima_regular"
-            android:textSize="25sp"
             android:paddingLeft="10sp"
             android:paddingTop="10sp"
-            android:paddingBottom="10sp"/>
+            android:paddingRight="10sp"
+            android:paddingBottom="10sp"
+            android:text="@string/voucher_code_placeholder"
+            android:textSize="25sp" />
     </LinearLayout>
 
     <LinearLayout
@@ -44,22 +47,24 @@
             android:id="@+id/voucherPercentageText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/voucher_percentage_placeholder"
             android:fontFamily="@font/imprima_regular"
-            android:textSize="25sp"
-            android:textAlignment="3"
+            android:paddingLeft="10sp"
+            android:paddingTop="10sp"
             android:paddingRight="10sp"
-            android:paddingTop="10sp"/>
+            android:text="@string/voucher_percentage_placeholder"
+            android:textAlignment="3"
+            android:textSize="25sp" />
 
         <ImageView
             android:id="@+id/voucherValidImage"
             android:layout_width="match_parent"
             android:layout_height="53sp"
-            android:layout_weight="1"
-            android:scaleType="fitEnd"
+            android:contentDescription="@string/valid_coupon"
+            android:paddingLeft="10sp"
+            android:paddingTop="5sp"
             android:paddingRight="10sp"
             android:paddingBottom="5sp"
-            android:paddingTop="5sp"
+            android:scaleType="fitEnd"
             app:srcCompat="@drawable/tick_icon" />
 
     </LinearLayout>

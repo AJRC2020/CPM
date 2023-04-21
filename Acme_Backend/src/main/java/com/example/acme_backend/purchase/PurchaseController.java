@@ -29,7 +29,7 @@ import java.security.spec.X509EncodedKeySpec;
 @RestController
 @RequestMapping(path = "api/purchases")
 public class PurchaseController {
-    
+
     private final PurchaseService purchaseService;
     private final VoucherService voucherService;
     private final UserService userService;
@@ -56,28 +56,38 @@ public class PurchaseController {
         NewPurchase content = signedContent.purchase;
         AppUser user = userService.getByUuid(content.user_id);
 
+        if (user == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
         if (!verifySignature(signedContent.signature, content, user.getPublic_key())){
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
         AppPurchase purchase = purchaseService.createPurchase();
-        
+
         List<ProductReceipt> items = new ArrayList<>();
 
         for (ProductAndQuantity products : content.products) {
             AppProduct product = productService.findByUuid(products.product);
+
+            if (product == null){
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+
             total += product.getPrice() * products.quantity;
 
             itemService.createItem(products.quantity, product, purchase);
             products.product = product.getName();
 
-            ProductReceipt PnP = new ProductReceipt(product.getName(), product.getPrice() * products.quantity,products.quantity);
-            items.add(PnP); 
-        }   
+            ProductReceipt PnP = new ProductReceipt(product.getUuid() ,product.getName(), product.getPrice() * products.quantity,products.quantity);
+            items.add(PnP);
+        }
 
         if (content.discount) {
-            total -= userService.getByUuid(content.user_id).getDiscount();
-            userService.updateDiscount(content.user_id, 0.0f);
+            float disc = userService.getByUuid(content.user_id).getDiscount();
+            total -= disc;
+            userService.updateDiscount(content.user_id, -disc);
             if (total < 0) {
                 userService.updateDiscount(content.user_id, -total);
                 total = 0.0f;
@@ -97,7 +107,7 @@ public class PurchaseController {
         else {
             updated_purchase = purchaseService.updatePurchase(total, Date.valueOf(date), user, purchase.getId());
         }
-    
+
         Integer previous = (int)(user.getTotal() / 100);
         Integer next = (int)((total + user.getTotal()) / 100);
         Integer count = next - previous;
@@ -108,14 +118,14 @@ public class PurchaseController {
 
         userService.updateTotal(content.user_id, total);
 
+        ReturnPurchase return_purchase;
         if (content.voucher_id.isPresent()) {
-            ReturnPurchase return_purchase = new ReturnPurchase(updated_purchase.getDate(), updated_purchase.getPrice(), items, updated_purchase.getVoucher().getUuid());
-            return ResponseEntity.ok().body(return_purchase);
+            return_purchase = new ReturnPurchase(updated_purchase.getDate(), updated_purchase.getPrice(), items, updated_purchase.getVoucher().getUuid());
         }
         else{
-            ReturnPurchase return_purchase = new ReturnPurchase(updated_purchase.getDate(), updated_purchase.getPrice(), items);
-            return ResponseEntity.ok().body(return_purchase);
+            return_purchase = new ReturnPurchase(updated_purchase.getDate(), updated_purchase.getPrice(), items);
         }
+        return ResponseEntity.ok().body(return_purchase);
     }
 
     private boolean verifySignature(String signature, NewPurchase purchase, String public_key) throws Exception {
