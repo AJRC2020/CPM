@@ -1,5 +1,6 @@
 package org.feup.apm.terminalacme
 
+import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -9,9 +10,8 @@ fun createPurchase(
     val urlRoute = "api/purchases/new"
     val url = URL("http://${Constants.BASE_ADDRESS}:${Constants.PORT}/$urlRoute")
 
-    var urlConnection: HttpURLConnection? = null
     try {
-        urlConnection = (url.openConnection() as HttpURLConnection).apply {
+        (url.openConnection() as HttpURLConnection).apply {
             doOutput = true
             doInput = true
             requestMethod = "POST"
@@ -23,13 +23,30 @@ fun createPurchase(
                 flush()
                 close()
             }
-            if (responseCode != 200) {
-                throw Exception("$responseCode  -  $errorStream")
+            when (responseCode){
+                200 ->{
+                    disconnect()
+                    return
+                }
+                403 -> {
+                    disconnect()
+                    throw Exception("Authentication error. Please log out and retry.")
+                }
+                400 -> {
+                    disconnect()
+                    throw Exception("One or more items in the list are not registered in the system, please rescan the items.")
+                }
+                404 -> {
+                    disconnect()
+                    throw Exception("Invalid QR code. Please log out and retry.")
+                }
+                else -> {
+                    disconnect()
+                    throw Exception("Internal server error, please retry.")
+                }
             }
         }
-    } catch (e: Exception) {
-        throw e
-    } finally {
-        urlConnection?.disconnect()
+    } catch (io: IOException){
+        throw java.lang.Exception("Could not connect to server. Make sure you are connected to the network and retry.")
     }
 }

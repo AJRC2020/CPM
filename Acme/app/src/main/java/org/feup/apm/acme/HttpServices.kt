@@ -435,7 +435,6 @@ fun getProduct(
     val payload = JSONObject()
     payload.put("encryption", encryptedProduct)
 
-
     try {
         // Sending Request
         (url.openConnection() as HttpURLConnection).apply {

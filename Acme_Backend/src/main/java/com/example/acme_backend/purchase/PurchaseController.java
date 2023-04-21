@@ -56,6 +56,10 @@ public class PurchaseController {
         NewPurchase content = signedContent.purchase;
         AppUser user = userService.getByUuid(content.user_id);
 
+        if (user == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
         if (!verifySignature(signedContent.signature, content, user.getPublic_key())){
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
@@ -66,6 +70,11 @@ public class PurchaseController {
 
         for (ProductAndQuantity products : content.products) {
             AppProduct product = productService.findByUuid(products.product);
+
+            if (product == null){
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+
             total += product.getPrice() * products.quantity;
 
             itemService.createItem(products.quantity, product, purchase);

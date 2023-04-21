@@ -71,7 +71,7 @@ class MainActivity : AppCompatActivity() {
                         intent.putExtra("title", "An error has occurred")
                         intent.putExtra(
                             "description",
-                            "There was an error while scanning the QRcode, please retry"
+                            "There was an error while scanning the QR code, please retry"
                         )
                         intent.putExtra("error", true)
                     }
@@ -81,7 +81,7 @@ class MainActivity : AppCompatActivity() {
                     intent.putExtra("title", "An error has occurred")
                     intent.putExtra(
                         "description",
-                        "There was an error while scanning the QRcode, please retry"
+                        "There was an error while scanning the QR code, please retry"
                     )
                     intent.putExtra("error", true)
                 }
