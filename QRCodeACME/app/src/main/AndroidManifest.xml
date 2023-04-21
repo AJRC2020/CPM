@@ -7,7 +7,7 @@
       android:icon="@drawable/qr_code_gen_logo"
       android:label="@string/app_name"
       android:supportsRtl="true"
-      android:theme="@style/Theme.ZXCodeGenerator">
+      android:theme="@style/Theme.AppCompat.Light.NoActionBar">
     <activity
         android:name="org.feup.apm.qrcodeACME.ShowCodeActivity"
         android:exported="false" />

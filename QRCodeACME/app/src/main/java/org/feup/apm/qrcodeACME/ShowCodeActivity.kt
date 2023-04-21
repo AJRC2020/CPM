@@ -5,21 +5,20 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
 import android.widget.ImageView
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
 import com.google.zxing.MultiFormatWriter
 import com.google.zxing.common.BitMatrix
-
+import org.feup.apm.qrcodeACME.Constants.ISO_SET
+import org.feup.apm.qrcodeACME.Constants.SIZE
 import java.security.*
 import java.security.spec.X509EncodedKeySpec
 import java.util.*
 import javax.crypto.Cipher
 import kotlin.concurrent.thread
 
-private const val SIZE = 600
-private const val ISO_SET = "ISO-8859-1"
+
 
 class ShowCodeActivity : AppCompatActivity() {
   private var content = ""
@@ -31,23 +30,22 @@ class ShowCodeActivity : AppCompatActivity() {
     val image = findViewById<ImageView>(R.id.img_code)
     val value = intent.getStringExtra("value") ?: ""
 
-    findViewById<TextView>(R.id.tv_title).text =  "QR Code"
     thread {
-      encodeAsBitmap(encryptContent(value).toString()).also { runOnUiThread { image.setImageBitmap(it) } }
+      encodeAsBitmap(encryptContent(value)).also { runOnUiThread { image.setImageBitmap(it) } }
     }
   }
 
-  private fun getPublic(filename: String): PublicKey? {
+  private fun getPublic(): PublicKey? {
     try{
-      val file = assets.open("keys/$filename")
+      val file = assets.open("keys/publickey.der")
       val keyBytes = file.readBytes()
       val spec = X509EncodedKeySpec(keyBytes)
       val kf = KeyFactory.getInstance("RSA")
       return kf.generatePublic(spec)
     }
     catch (e: Exception) {
-      Log.d("error", e.message.toString());
-      throw e;
+      Log.d("error", e.message.toString())
+      throw e
     }
   }
 
@@ -55,7 +53,7 @@ class ShowCodeActivity : AppCompatActivity() {
   private fun encryptContent(content : String) : String {
     if (content.isEmpty()) throw Exception("No Content")
     return try {
-      val prKey = getPublic("publickey.der")
+      val prKey = getPublic()
       val result = Cipher.getInstance(Constants.ENC_ALGO).run {
         init(Cipher.ENCRYPT_MODE, prKey)
         doFinal(content.encodeToByteArray())

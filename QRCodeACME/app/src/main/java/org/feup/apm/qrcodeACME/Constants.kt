@@ -7,4 +7,6 @@ object Constants {
   const val ENC_ALGO = "RSA/ECB/PKCS1Padding"
   const val keyname = "myIdKey"
   const val serialNr = 1234567890L
+  const val SIZE = 600
+  const val ISO_SET = "ISO-8859-1"
 }
