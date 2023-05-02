@@ -20,7 +20,7 @@ fun register(
 )  {
     // Building URL
     val urlRoute = "api/users/new"
-    val url = URL("http://${Constants.BASE_ADDRESS}:${Constants.PORT}/$urlRoute")
+    val url = URL("https://${Constants.BASE_ADDRESS}${Constants.PORT}/$urlRoute")
     // Creating payload
     val payload = JSONObject()
     payload.put("name", name)
@@ -73,7 +73,7 @@ fun login(
 ) {
     // Building URL
     val urlRoute = "api/users/login"
-    val url = URL("http://${Constants.BASE_ADDRESS}:${Constants.PORT}/$urlRoute")
+    val url = URL("https://${Constants.BASE_ADDRESS}${Constants.PORT}/$urlRoute")
 
     // Creating payload
     val payload = JSONObject()
@@ -116,7 +116,7 @@ fun getUUID(
 )  {
     // Building URL
     val urlRoute = "api/users/uuid/$username"
-    val url = URL("http://${Constants.BASE_ADDRESS}:${Constants.PORT}/$urlRoute")
+    val url = URL("https://${Constants.BASE_ADDRESS}${Constants.PORT}/$urlRoute")
 
     var urlConnection: HttpURLConnection? = null
     try {
@@ -153,7 +153,7 @@ fun getUserProfileInfo(
 )  {
     // Building URL
     val urlRoute = "api/users/info"
-    val url = URL("http://${Constants.BASE_ADDRESS}:${Constants.PORT}/$urlRoute")
+    val url = URL("https://${Constants.BASE_ADDRESS}${Constants.PORT}/$urlRoute")
 
     // Creating payload
     val payload = JSONObject()
@@ -203,7 +203,7 @@ fun changePaymentMethod(
 ) {
     // Building URL
     val urlRoute = "api/users/update/payment"
-    val url = URL("http://${Constants.BASE_ADDRESS}:${Constants.PORT}/$urlRoute")
+    val url = URL("https://${Constants.BASE_ADDRESS}${Constants.PORT}/$urlRoute")
 
     // Creating payload
     val payload = JSONObject()
@@ -248,7 +248,7 @@ fun changePassword(
 )  {
     // Building URL
     val urlRoute = "api/users/update/password"
-    val url = URL("http://${Constants.BASE_ADDRESS}:${Constants.PORT}/$urlRoute")
+    val url = URL("https://${Constants.BASE_ADDRESS}${Constants.PORT}/$urlRoute")
 
     // Creating payload
     val payload = JSONObject()
@@ -293,7 +293,7 @@ fun getPurchases(
     ) : ArrayList<Receipt> {
     // Building URL
     val urlRoute = "api/users/purchases"
-    val url = URL("http://${Constants.BASE_ADDRESS}:${Constants.PORT}/$urlRoute")
+    val url = URL("https://${Constants.BASE_ADDRESS}${Constants.PORT}/$urlRoute")
 
     // Creating payload
     val payload = JSONObject()
@@ -338,7 +338,7 @@ fun getJustEmittedPurchases(
 ) : ArrayList<Receipt> {
     // Building URL
     val urlRoute = "api/users/purchases/emitted"
-    val url = URL("http://${Constants.BASE_ADDRESS}:${Constants.PORT}/$urlRoute")
+    val url = URL("https://${Constants.BASE_ADDRESS}${Constants.PORT}/$urlRoute")
 
     // Creating payload
     val payload = JSONObject()
@@ -385,7 +385,7 @@ fun getVouchers(
     ) : VouchersInfo {
     // Building URL
     val urlRoute = "api/users/vouchers"
-    val url = URL("http://${Constants.BASE_ADDRESS}:${Constants.PORT}/$urlRoute")
+    val url = URL("https://${Constants.BASE_ADDRESS}${Constants.PORT}/$urlRoute")
 
     // Creating payload
     val payload = JSONObject()
@@ -429,7 +429,7 @@ fun getProduct(
     ) : Product {
     // Building URL
     val urlRoute = "api/products/new"
-    val url = URL("http://${Constants.BASE_ADDRESS}:${Constants.PORT}/$urlRoute")
+    val url = URL("https://${Constants.BASE_ADDRESS}${Constants.PORT}/$urlRoute")
 
     // Creating payload
     val payload = JSONObject()

@@ -8,7 +8,7 @@ fun createPurchase(
     message: String,
 ) {
     val urlRoute = "api/purchases/new"
-    val url = URL("http://${Constants.BASE_ADDRESS}:${Constants.PORT}/$urlRoute")
+    val url = URL("https://${Constants.BASE_ADDRESS}${Constants.PORT}/$urlRoute")
 
     try {
         (url.openConnection() as HttpURLConnection).apply {
